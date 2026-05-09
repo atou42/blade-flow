@@ -235,6 +235,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.67",
+    title: "划动降卡",
+    date: "2026-05-09",
+    icon: "稳",
+    color: "#4bbda8",
+    points: ["SFX 播放移出手势同步路径", "手机窄屏跳过划动装饰音", "补测解锁有声状态下的右滑 trace"],
+  },
+  {
     id: "v0.2.66",
     title: "右滑预热",
     date: "2026-05-09",
@@ -1828,6 +1836,9 @@ const audioState = {
   warmEvents: [],
 };
 
+const sfxPlayQueue = [];
+let sfxFlushScheduled = false;
+
 function rememberSfxEvent(key) {
   audioState.sfxEvents.push({ key, at: Math.round(performance.now()) });
   if (audioState.sfxEvents.length > 40) audioState.sfxEvents.shift();
@@ -1853,11 +1864,11 @@ function ensureSfxAudio(key, preload = "auto") {
   return track.audio;
 }
 
-function playSfx(key, { volume = 1, force = false } = {}) {
+function playSfxNow(key, { volume = 1, force = false } = {}) {
   const track = sfxTracks[key];
   if (!track) return false;
   if (!force && (!audioState.enabled || !audioState.unlocked || document.visibilityState === "hidden")) return false;
-  if (!force && isLowPowerMode() && track.decorative) return false;
+  if (!force && isCompactMotionMode() && track.decorative) return false;
   const audio = ensureSfxAudio(key, "auto");
   if (!audio) return false;
   try {
@@ -1883,7 +1894,33 @@ function playSfx(key, { volume = 1, force = false } = {}) {
   }
 }
 
+function flushSfxQueue() {
+  sfxFlushScheduled = false;
+  const items = sfxPlayQueue.splice(0, sfxPlayQueue.length);
+  items.forEach((item) => playSfxNow(item.key, item));
+}
+
+function scheduleSfxFlush() {
+  if (sfxFlushScheduled) return;
+  sfxFlushScheduled = true;
+  window.requestAnimationFrame(() => {
+    window.setTimeout(flushSfxQueue, 0);
+  });
+}
+
+function playSfx(key, { volume = 1, force = false } = {}) {
+  const track = sfxTracks[key];
+  if (!track) return false;
+  if (force) return playSfxNow(key, { volume, force });
+  if (!audioState.enabled || !audioState.unlocked || document.visibilityState === "hidden") return false;
+  if (isCompactMotionMode() && track.decorative) return false;
+  sfxPlayQueue.push({ key, volume, force: false });
+  scheduleSfxFlush();
+  return true;
+}
+
 function pauseAllSfx() {
+  sfxPlayQueue.length = 0;
   Object.values(sfxTracks).forEach((track) => {
     if (!track.audio) return;
     track.audio.pause();
@@ -4950,7 +4987,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.66",
+      version: "v0.2.67",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -5046,9 +5083,9 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>滑</i>当前 v0.2.66</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>稳</i>当前 v0.2.67</small>
         <b>版本记录</b>
-        <span class="choice-effect">${effectTextMarkup("这版把右滑所需音频、美术和动作节点提前预热。")}</span>
+        <span class="choice-effect">${effectTextMarkup("这版把手机划动音效从输入帧里移出去。")}</span>
       </button>
       <button class="choice" type="button" data-copy-mobile-link>
         <small class="choice-meta" style="${routeStyle("control")}"><i>链</i>Alpha 5</small>

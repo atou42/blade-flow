@@ -6,7 +6,7 @@
 
 ## 当前接入状态
 
-v0.2.66 已接入 35 个正式 SFX 和 7 条当前 BGM，并把战斗必需音频、美术帧和动作节点加入开战前预热。正式文件放在：
+v0.2.67 已接入 35 个正式 SFX 和 7 条当前 BGM，并把战斗必需音频、美术帧和动作节点加入开战前预热。手机窄屏下，划动装饰音会跳过，非强制 SFX 会延后一帧播放，避免音频播放阻塞输入帧。正式文件放在：
 
 - `assets/audio/bgm/`
 - `assets/audio/sfx/combat/`
@@ -171,11 +171,12 @@ ffprobe -v error ... each assets/audio/*.mp3
 - 静音后强制 Boss 读招，确认不会加载新 SFX
 - 5 秒有声自动战斗，确认 `longTasks=0`，`lastError=""`
 
-当前 v0.2.66 验收记录见：
+当前 v0.2.67 验收记录见：
 
 - `docs/verification/v0264-sfx-integration.md`
 - `docs/verification/v0265-audio-plan-landing.md`
 - `docs/verification/v0266-right-swipe-stutter.md`
+- `docs/verification/v0267-unlocked-audio-swipe-jank.md`
 
 ## 后续扩展顺序
 
