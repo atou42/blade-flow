@@ -106,4 +106,5 @@ Live URL: https://games.atou.cc/combo-card-roguelike/versions/a/
 - `docs/verification/v0265-audio-plan-landing.md` records the v0.2.65 audio integration plan landing verification.
 - `docs/verification/v0266-right-swipe-stutter.md` records the v0.2.66 right-swipe stutter elimination verification.
 - `docs/verification/v0267-unlocked-audio-swipe-jank.md` records the v0.2.67 unlocked-audio swipe jank verification.
+- `docs/verification/v0268-card-selection-audio-assets.md` records the v0.2.68 card-selection UI audio asset trimming verification.
 - `docs/verification/art-asset-replacement-acceptance.md` defines the acceptance gate for fully replacing the live combat art.
