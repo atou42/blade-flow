@@ -235,6 +235,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.69",
+    title: "音效预解码",
+    date: "2026-05-09",
+    icon: "波",
+    color: "#d79f2b",
+    points: ["战斗 SFX 改用 Web Audio buffer", "开战前完成 29 个 SFX 解码", "划动时不再走 HTMLAudio 播放链路"],
+  },
+  {
     id: "v0.2.68",
     title: "手牌轻刷",
     date: "2026-05-09",
@@ -1845,7 +1853,44 @@ const audioState = {
 };
 
 const sfxPlayQueue = [];
+const sfxActiveSources = new Set();
 let sfxFlushScheduled = false;
+let sfxAudioContext = null;
+
+function ensureSfxContext() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  if (!sfxAudioContext) sfxAudioContext = new AudioContextClass();
+  return sfxAudioContext;
+}
+
+function resumeSfxContext() {
+  const context = ensureSfxContext();
+  if (context?.state === "suspended") {
+    void context.resume().catch((error) => {
+      audioState.lastError = error?.message ?? String(error);
+    });
+  }
+  return context;
+}
+
+function decodeSfxBuffer(context, arrayBuffer) {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const done = (value) => {
+      if (settled) return;
+      settled = true;
+      resolve(value);
+    };
+    const fail = (error) => {
+      if (settled) return;
+      settled = true;
+      reject(error);
+    };
+    const result = context.decodeAudioData(arrayBuffer.slice(0), done, fail);
+    if (result?.then) result.then(done).catch(fail);
+  });
+}
 
 function rememberSfxEvent(key) {
   audioState.sfxEvents.push({ key, at: Math.round(performance.now()) });
@@ -1877,6 +1922,30 @@ function playSfxNow(key, { volume = 1, force = false } = {}) {
   if (!track) return false;
   if (!force && (!audioState.enabled || !audioState.unlocked || document.visibilityState === "hidden")) return false;
   if (!force && isCompactMotionMode() && track.decorative) return false;
+  const context = track.buffer ? resumeSfxContext() : null;
+  if (context && track.buffer) {
+    try {
+      const source = context.createBufferSource();
+      const gain = context.createGain();
+      source.buffer = track.buffer;
+      gain.gain.value = clamp(track.volume * volume, 0, 1);
+      source.connect(gain);
+      gain.connect(context.destination);
+      sfxActiveSources.add(source);
+      source.onended = () => {
+        sfxActiveSources.delete(source);
+        source.disconnect();
+        gain.disconnect();
+      };
+      source.start(0);
+      audioState.lastError = "";
+      rememberSfxEvent(key);
+      return true;
+    } catch (error) {
+      audioState.lastError = error?.message ?? String(error);
+      return false;
+    }
+  }
   const audio = ensureSfxAudio(key, "auto");
   if (!audio) return false;
   try {
@@ -1929,6 +1998,14 @@ function playSfx(key, { volume = 1, force = false } = {}) {
 
 function pauseAllSfx() {
   sfxPlayQueue.length = 0;
+  sfxActiveSources.forEach((source) => {
+    try {
+      source.stop(0);
+    } catch {
+      // Already stopped sources are harmless; the onended cleanup removes them.
+    }
+  });
+  sfxActiveSources.clear();
   Object.values(sfxTracks).forEach((track) => {
     if (!track.audio) return;
     track.audio.pause();
@@ -2034,6 +2111,7 @@ function setAudioScene(scene) {
 function unlockAudio({ deferBgm = false } = {}) {
   if (audioState.unlocked) return;
   audioState.unlocked = true;
+  resumeSfxContext();
   if (!deferBgm) void playCurrentBgm();
 }
 
@@ -2248,19 +2326,29 @@ function withTimeout(promise, timeout, label) {
 async function warmSfx(key) {
   const track = sfxTracks[key];
   if (!track) return { key, ok: false, error: "missing track" };
-  if (!track.blobUrl) {
+  if (!track.arrayBuffer) {
     const fetched = await withTimeout(
       fetch(track.file, { cache: "force-cache" }).then((response) => {
         if (!response.ok) throw new Error(`sfx fetch failed: ${key} ${response.status}`);
-        return response.blob();
+        return response.arrayBuffer();
       }),
       4200,
       key,
     ).catch((error) => ({ error }));
     if (fetched?.timedOut) return { key, ok: false, timedOut: true };
     if (fetched?.error) return { key, ok: false, error: fetched.error?.message ?? String(fetched.error) };
-    track.blobUrl = URL.createObjectURL(fetched);
+    track.arrayBuffer = fetched;
   }
+  const context = ensureSfxContext();
+  if (context && !track.buffer) {
+    const decoded = await withTimeout(decodeSfxBuffer(context, track.arrayBuffer), 4200, key).catch((error) => ({ error }));
+    if (decoded?.timedOut) return { key, ok: false, timedOut: true };
+    if (decoded?.error) return { key, ok: false, error: decoded.error?.message ?? String(decoded.error) };
+    track.buffer = decoded;
+    return { key, ok: true, decoded: true };
+  }
+  if (track.buffer) return { key, ok: true, cached: true };
+  if (!track.blobUrl) track.blobUrl = URL.createObjectURL(new Blob([track.arrayBuffer], { type: "audio/mpeg" }));
   const audio = ensureSfxAudio(key, "auto");
   if (!audio) return { key, ok: false, error: "missing track" };
   if (audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) return { key, ok: true, cached: true };
@@ -5016,7 +5104,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.68",
+      version: "v0.2.69",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -5112,9 +5200,9 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>帧</i>当前 v0.2.68</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>波</i>当前 v0.2.69</small>
         <b>版本记录</b>
-        <span class="choice-effect">${effectTextMarkup("这版把出牌后的手牌重刷和状态刷新移出输入帧。")}</span>
+        <span class="choice-effect">${effectTextMarkup("这版把战斗音效改成预解码 buffer 播放。")}</span>
       </button>
       <button class="choice" type="button" data-copy-mobile-link>
         <small class="choice-meta" style="${routeStyle("control")}"><i>链</i>Alpha 5</small>
@@ -6756,7 +6844,8 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
           Object.entries(sfxTracks).map(([trackKey, item]) => [
             trackKey,
             {
-              loaded: Boolean(item.audio),
+              loaded: Boolean(item.audio || item.buffer),
+              decoded: Boolean(item.buffer),
               paused: item.audio ? item.audio.paused : true,
               currentTime: item.audio ? Number(item.audio.currentTime.toFixed(2)) : 0,
               src: item.audio ? item.audio.currentSrc || item.audio.src : item.file,
