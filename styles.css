@@ -1610,6 +1610,38 @@ h1 {
   z-index: -1;
 }
 
+.card-ghost-lite {
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--route-color, var(--bone)) 70%, rgba(17, 16, 13, 0.4));
+  border-radius: 4px;
+  background:
+    var(--ui-card) 50% 50% / cover no-repeat,
+    color-mix(in srgb, var(--route-color, var(--bone)) 18%, rgba(17, 16, 13, 0.86));
+  color: var(--paper);
+  box-shadow: inset 0 0 18px rgba(242, 234, 217, 0.15);
+}
+
+.card-ghost-lite i {
+  font-style: normal;
+  color: var(--route-color, var(--green));
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.card-ghost-lite b {
+  max-width: 88%;
+  overflow: hidden;
+  color: var(--paper);
+  font-size: 0.78rem;
+  line-height: 1.05;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .card-direction-burst {
   position: absolute;
   z-index: 10;

@@ -235,6 +235,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.66",
+    title: "右滑预热",
+    date: "2026-05-09",
+    icon: "滑",
+    color: "#a6d93a",
+    points: ["开战前预热战斗 SFX 和当前美术帧", "右滑路径复用音频、图片和动作节点", "补齐本地与线上右滑压测记录"],
+  },
+  {
     id: "v0.2.65",
     title: "音频方案落地",
     date: "2026-05-09",
@@ -1817,6 +1825,7 @@ const audioState = {
   activeKey: "menu",
   lastError: "",
   sfxEvents: [],
+  warmEvents: [],
 };
 
 function rememberSfxEvent(key) {
@@ -1824,9 +1833,24 @@ function rememberSfxEvent(key) {
   if (audioState.sfxEvents.length > 40) audioState.sfxEvents.shift();
 }
 
+function rememberWarmEvent(event) {
+  audioState.warmEvents.push({ ...event, at: Math.round(performance.now()) });
+  if (audioState.warmEvents.length > 40) audioState.warmEvents.shift();
+}
+
 function isExpectedAudioInterruption(error) {
   const message = error?.message ?? String(error ?? "");
   return error?.name === "AbortError" || /interrupted by a call to pause/i.test(message);
+}
+
+function ensureSfxAudio(key, preload = "auto") {
+  const track = sfxTracks[key];
+  if (!track) return null;
+  if (!track.audio) track.audio = new Audio(track.file);
+  if (track.blobUrl && track.audio.src !== track.blobUrl) track.audio.src = track.blobUrl;
+  track.audio.preload = preload;
+  track.audio.volume = track.volume;
+  return track.audio;
 }
 
 function playSfx(key, { volume = 1, force = false } = {}) {
@@ -1834,15 +1858,13 @@ function playSfx(key, { volume = 1, force = false } = {}) {
   if (!track) return false;
   if (!force && (!audioState.enabled || !audioState.unlocked || document.visibilityState === "hidden")) return false;
   if (!force && isLowPowerMode() && track.decorative) return false;
-  if (!track.audio) {
-    track.audio = new Audio(track.file);
-    track.audio.preload = "none";
-  }
+  const audio = ensureSfxAudio(key, "auto");
+  if (!audio) return false;
   try {
-    track.audio.pause();
-    track.audio.currentTime = 0;
-    track.audio.volume = clamp(track.volume * volume, 0, 1);
-    void track.audio.play()
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = clamp(track.volume * volume, 0, 1);
+    void audio.play()
       .then(() => {
         audioState.lastError = "";
       })
@@ -1909,15 +1931,7 @@ function routeChoiceSfx(choice) {
 
 function currentBgmKey() {
   if (audioState.scene === "menu") return "menu";
-  if (audioState.scene === "battle") {
-    const room = currentRoom();
-    if (room?.type === "boss") {
-      if (room.form === "storm" || room.name === "风暴队长") return "bossStorm";
-      if (room.form === "redline" || room.name === "赤线宿敌") return "bossRedline";
-      if (room.form === "mirror" || room.name === "无相刀影") return "bossNoForm";
-    }
-    return `act${clamp(state.actLevel || 1, 1, actMax)}`;
-  }
+  if (audioState.scene === "battle") return battleBgmKeyForEncounter(currentRoom());
   return null;
 }
 
@@ -1972,15 +1986,16 @@ function setAudioScene(scene) {
   void playCurrentBgm();
 }
 
-function unlockAudio() {
+function unlockAudio({ deferBgm = false } = {}) {
   if (audioState.unlocked) return;
   audioState.unlocked = true;
-  void playCurrentBgm();
+  if (!deferBgm) void playCurrentBgm();
 }
 
 function handleAudioPointerDown(event) {
   if (event.target?.closest?.("#musicButton, [data-toggle-menu-bgm]")) return;
-  unlockAudio();
+  const startsBattle = Boolean(event.target?.closest?.("[data-equipment], [data-start-daily], [data-mobile-run], [data-start-training], [data-training-again]"));
+  unlockAudio({ deferBgm: startsBattle });
 }
 
 function toggleMenuBgm() {
@@ -2066,9 +2081,13 @@ function isLowPowerMode() {
   return performanceProfile() <= 0;
 }
 
+function isCompactMotionMode() {
+  return isLowPowerMode() || window.innerWidth <= 430;
+}
+
 function applyPerformanceClass() {
   const profile = performanceProfile();
-  const label = profile <= 0 ? "save" : profile >= 2 ? "showcase" : "standard";
+  const label = profile <= 0 || window.innerWidth <= 430 ? "save" : profile >= 2 ? "showcase" : "standard";
   if (cachedValue(els.game, "performance") === label) return;
   els.game.dataset.performance = label;
   document.documentElement.classList.toggle("is-low-power", label === "save");
@@ -2096,11 +2115,60 @@ function defaultTuning() {
   return { ...tuningPresets.normal };
 }
 
+const imageWarmCache = new Map();
+const motionNodePool = {
+  ghost: [],
+  burst: [],
+  slash: [],
+};
+const cardMotionCache = new WeakMap();
+let gameMotionRect = null;
+
+const assetWarmState = {
+  active: false,
+  ready: false,
+  generation: 0,
+  lastStartedAt: 0,
+  lastFinishedAt: 0,
+  lastDuration: 0,
+  lastReason: "",
+  lastError: "",
+  bgmReady: [],
+  sfxReady: [],
+  imageReady: [],
+  timedOut: [],
+};
+
 function preloadImage(src) {
+  if (!src) return null;
+  const cached = imageWarmCache.get(src);
+  if (cached) return cached;
   const img = new Image();
   img.decoding = "async";
-  img.src = src;
-  img.decode?.().catch(() => {});
+  const entry = {
+    img,
+    ready: false,
+    error: "",
+    promise: null,
+  };
+  entry.promise = new Promise((resolve) => {
+    const done = () => {
+      entry.ready = true;
+      resolve(entry);
+    };
+    const fail = (error) => {
+      entry.error = error?.message ?? String(error ?? "image decode failed");
+      resolve(entry);
+    };
+    img.addEventListener("load", () => {
+      const decoded = img.decode ? img.decode() : Promise.resolve();
+      decoded.then(done).catch(fail);
+    }, { once: true });
+    img.addEventListener("error", () => fail(new Error(`image load failed: ${src}`)), { once: true });
+    img.src = src;
+  });
+  imageWarmCache.set(src, entry);
+  return entry;
 }
 
 const bossTimelineFrameAssets = [
@@ -2112,6 +2180,259 @@ const bossTimelineFrameAssets = [
 ];
 
 [...new Set([...Object.values(artAssets), ...Object.values(bossForms), ...Object.values(bossActionSprites), ...bossTimelineFrameAssets])].forEach(preloadImage);
+
+function withTimeout(promise, timeout, label) {
+  let timer = null;
+  const timeoutPromise = new Promise((resolve) => {
+    timer = window.setTimeout(() => resolve({ timedOut: true, label }), timeout);
+  });
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timer !== null) window.clearTimeout(timer);
+  });
+}
+
+async function warmSfx(key) {
+  const track = sfxTracks[key];
+  if (!track) return { key, ok: false, error: "missing track" };
+  if (!track.blobUrl) {
+    const fetched = await withTimeout(
+      fetch(track.file, { cache: "force-cache" }).then((response) => {
+        if (!response.ok) throw new Error(`sfx fetch failed: ${key} ${response.status}`);
+        return response.blob();
+      }),
+      4200,
+      key,
+    ).catch((error) => ({ error }));
+    if (fetched?.timedOut) return { key, ok: false, timedOut: true };
+    if (fetched?.error) return { key, ok: false, error: fetched.error?.message ?? String(fetched.error) };
+    track.blobUrl = URL.createObjectURL(fetched);
+  }
+  const audio = ensureSfxAudio(key, "auto");
+  if (!audio) return { key, ok: false, error: "missing track" };
+  if (audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) return { key, ok: true, cached: true };
+  const loaded = await withTimeout(
+    new Promise((resolve) => {
+      const cleanup = () => {
+        audio.removeEventListener("canplaythrough", onReady);
+        audio.removeEventListener("loadeddata", onReady);
+        audio.removeEventListener("error", onError);
+      };
+      const onReady = () => {
+        cleanup();
+        resolve({ key, ok: true });
+      };
+      const onError = () => {
+        cleanup();
+        resolve({ key, ok: false, error: audio.error?.message ?? `audio load failed: ${key}` });
+      };
+      audio.addEventListener("canplaythrough", onReady, { once: true });
+      audio.addEventListener("loadeddata", onReady, { once: true });
+      audio.addEventListener("error", onError, { once: true });
+      try {
+        audio.load();
+      } catch (error) {
+        cleanup();
+        resolve({ key, ok: false, error: error?.message ?? String(error) });
+      }
+    }),
+    2800,
+    key,
+  );
+  return loaded?.timedOut ? { key, ok: false, timedOut: true } : loaded;
+}
+
+async function warmBgm(key) {
+  const track = key ? bgmTracks[key] ?? null : null;
+  if (!track?.audio) return { key, ok: false, error: `missing bgm: ${key}` };
+  const audio = track.audio;
+  audio.preload = "auto";
+  audio.volume = track.volume;
+  if (!track.blobUrl) {
+    const fetched = await withTimeout(
+      fetch(track.file, { cache: "force-cache" }).then((response) => {
+        if (!response.ok) throw new Error(`bgm fetch failed: ${key} ${response.status}`);
+        return response.blob();
+      }),
+      6500,
+      key,
+    ).catch((error) => ({ error }));
+    if (fetched?.timedOut) return { key, ok: false, timedOut: true };
+    if (fetched?.error) return { key, ok: false, error: fetched.error?.message ?? String(fetched.error) };
+    track.blobUrl = URL.createObjectURL(fetched);
+    audio.src = track.blobUrl;
+    audio.loop = true;
+  }
+  if (track.blobUrl && audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) return { key, ok: true, cached: true };
+  const loaded = await withTimeout(
+    new Promise((resolve) => {
+      const cleanup = () => {
+        audio.removeEventListener("loadeddata", onReady);
+        audio.removeEventListener("canplaythrough", onReady);
+        audio.removeEventListener("progress", onReady);
+        audio.removeEventListener("error", onError);
+      };
+      const onReady = () => {
+        cleanup();
+        resolve({ key, ok: true });
+      };
+      const onError = () => {
+        cleanup();
+        resolve({ key, ok: false, error: audio.error?.message ?? `bgm load failed: ${key}` });
+      };
+      audio.addEventListener("loadeddata", onReady);
+      audio.addEventListener("canplaythrough", onReady);
+      audio.addEventListener("progress", onReady);
+      audio.addEventListener("error", onError, { once: true });
+      try {
+        audio.load();
+        onReady();
+      } catch (error) {
+        cleanup();
+        resolve({ key, ok: false, error: error?.message ?? String(error) });
+      }
+    }),
+    6500,
+    key,
+  );
+  return loaded?.timedOut ? { key, ok: false, timedOut: true } : loaded;
+}
+
+function warmImages(sources) {
+  return Promise.all(
+    [...new Set(sources.filter(Boolean))].map((src) => {
+      const entry = preloadImage(src);
+      if (!entry) return Promise.resolve({ src, ok: false, error: "missing image" });
+      if (entry.ready) return Promise.resolve({ src, ok: true, cached: true });
+      return withTimeout(entry.promise, 2800, src).then((result) => {
+        if (result?.timedOut) return { src, ok: false, timedOut: true };
+        return { src, ok: !entry.error, error: entry.error };
+      });
+    }),
+  );
+}
+
+function createMotionNode(kind) {
+  const node = document.createElement("span");
+  node.setAttribute("aria-hidden", "true");
+  node.dataset.motionKind = kind;
+  return node;
+}
+
+function warmMotionNodePool() {
+  while (motionNodePool.ghost.length < 6) motionNodePool.ghost.push(createMotionNode("ghost"));
+  while (motionNodePool.burst.length < 6) motionNodePool.burst.push(createMotionNode("burst"));
+  while (motionNodePool.slash.length < 8) motionNodePool.slash.push(createMotionNode("slash"));
+}
+
+function acquireMotionNode(kind) {
+  return motionNodePool[kind]?.pop() ?? createMotionNode(kind);
+}
+
+function releaseMotionNode(kind, node) {
+  node.remove();
+  node.className = "";
+  node.textContent = "";
+  node.removeAttribute("style");
+  node.removeAttribute("data-slot-key");
+  motionNodePool[kind]?.push(node);
+}
+
+function refreshCardMotionCache() {
+  if (!els.game || !els.hand) return;
+  const gameRect = els.game.getBoundingClientRect();
+  gameMotionRect = { left: gameRect.left, top: gameRect.top };
+  els.hand.querySelectorAll("button.card").forEach((card) => {
+    const rect = card.getBoundingClientRect();
+    cardMotionCache.set(card, {
+      left: rect.left - gameRect.left,
+      top: rect.top - gameRect.top,
+      width: rect.width,
+      height: rect.height,
+      color: card.style.getPropertyValue("--route-color") || routeMeta.neutral.color,
+      label: card.querySelector(".card-name")?.textContent?.trim() ?? "",
+      icon: card.querySelector(".card-sigil")?.textContent?.trim() ?? "◇",
+    });
+  });
+}
+
+function currentBattleImageWarmList(encounter = currentRoom()) {
+  const bossForm = encounter?.form ?? actMeta[state.actLevel]?.bossForm ?? "storm";
+  const frameSet = bossFrameSets[bossForm] ?? {};
+  return [
+    artAssets.playerIdle,
+    artAssets.playerLunge,
+    artAssets.playerHit,
+    artAssets.bossIdle,
+    artAssets.bossCharge,
+    artAssets.bossAttack,
+    artAssets.bossDamaged,
+    artAssets.vfxHitBurst,
+    artAssets.vfxWarningHalo,
+    artAssets.vfxTargetBeam,
+    artAssets.vfxDownStrike,
+    bossForms[bossForm],
+    ...Object.values(gradeMeta).map((meta) => meta.asset),
+    ...Object.values(routeStamps),
+    ...Object.values(frameSet),
+  ];
+}
+
+function battleBgmKeyForEncounter(encounter = currentRoom()) {
+  if (encounter?.type === "boss") {
+    if (encounter.form === "storm" || encounter.name === "风暴队长") return "bossStorm";
+    if (encounter.form === "redline" || encounter.name === "赤线宿敌") return "bossRedline";
+    if (encounter.form === "mirror" || encounter.name === "无相刀影") return "bossNoForm";
+  }
+  return `act${clamp(encounter?.act ?? (state.actLevel || 1), 1, actMax)}`;
+}
+
+function battleSfxWarmKeys() {
+  return Object.keys(sfxTracks).filter((key) => key.startsWith("player") || key.startsWith("weapon") || key.startsWith("boss") || key === "uiBattleStart");
+}
+
+async function warmBattleAssets(reason = "battle", encounter = currentRoom()) {
+  const generation = assetWarmState.generation + 1;
+  const started = performance.now();
+  Object.assign(assetWarmState, {
+    active: true,
+    ready: false,
+    generation,
+    lastStartedAt: Math.round(started),
+    lastReason: reason,
+    lastError: "",
+    bgmReady: [],
+    sfxReady: [],
+    imageReady: [],
+    timedOut: [],
+  });
+  warmMotionNodePool();
+  refreshCardMotionCache();
+  const [bgmResult, sfxResults, imageResults] = await Promise.all([
+    warmBgm(battleBgmKeyForEncounter(encounter)),
+    Promise.all(battleSfxWarmKeys().map(warmSfx)),
+    warmImages(currentBattleImageWarmList(encounter)),
+  ]);
+  if (generation !== assetWarmState.generation) return assetWarmState;
+  const failed = [bgmResult, ...sfxResults, ...imageResults].filter((item) => !item.ok);
+  const finished = performance.now();
+  assetWarmState.active = false;
+  assetWarmState.ready = failed.length === 0;
+  assetWarmState.lastFinishedAt = Math.round(finished);
+  assetWarmState.lastDuration = Number((finished - started).toFixed(2));
+  assetWarmState.bgmReady = bgmResult.ok ? [bgmResult.key] : [];
+  assetWarmState.sfxReady = sfxResults.filter((item) => item.ok).map((item) => item.key);
+  assetWarmState.imageReady = imageResults.filter((item) => item.ok).map((item) => item.src.split("/").slice(-2).join("/"));
+  assetWarmState.timedOut = failed.filter((item) => item.timedOut).map((item) => item.key ?? item.src);
+  assetWarmState.lastError = failed.map((item) => item.error || (item.timedOut ? `warm timeout: ${item.key ?? item.src}` : "")).filter(Boolean).join("; ");
+  rememberWarmEvent({
+    reason,
+    ready: assetWarmState.ready,
+    duration: assetWarmState.lastDuration,
+    failed: failed.length,
+  });
+  window.requestAnimationFrame(refreshCardMotionCache);
+  return assetWarmState;
+}
 
 function normalizeTuning(source = {}) {
   const base = defaultTuning();
@@ -2791,7 +3112,9 @@ function resetGame() {
   showEquipmentOverlay();
 }
 
-function startRun(equipment) {
+async function startRun(equipment) {
+  if (!equipment) return false;
+  await warmBattleAssets(`start:${equipment.id}`, encounters[0]);
   setAudioScene("battle");
   playSfx("uiBattleStart");
   state.trainingLesson = null;
@@ -2831,14 +3154,16 @@ function startRun(equipment) {
   enterCurrentRoom();
   wakeLoop(true);
   log(`${equipment.name} 已装备。今日种子 ${state.dailySeed} 开始。`);
+  return true;
 }
 
-function startDailyRun() {
+async function startDailyRun() {
   if (profileLocked()) return false;
   const seed = dailySeed();
   const plan = dailyPlanFor(seed);
   const equipment = equipmentById.get(plan.theme.equipmentId);
   if (!equipment) return false;
+  await warmBattleAssets(`daily:${equipment.id}`, encounters[0]);
   setAudioScene("battle");
   playSfx("uiBattleStart");
   state.trainingLesson = null;
@@ -2887,12 +3212,13 @@ function startDailyRun() {
   return true;
 }
 
-function startTrainingLesson(trainingId) {
+async function startTrainingLesson(trainingId) {
   if (profileLocked() || !state.profile.training?.[trainingId]) return false;
   const lesson = trainingCatalog.find((item) => item.id === trainingId);
   if (!lesson) return false;
   const equipment = equipmentById.get(lesson.equipmentId);
   if (!equipment) return false;
+  await warmBattleAssets(`training:${equipment.id}`, trainingEncounter(lesson));
   setAudioScene("battle");
   playSfx("uiBattleStart");
   state.trainingLesson = lesson;
@@ -3621,6 +3947,10 @@ function dominantRoute() {
 }
 
 function burstMovement(route, direction) {
+  if (isCompactMotionMode()) {
+    setCombatArt({ player: artAssets.playerLunge, lock: 180 });
+    return;
+  }
   const comboLift = Math.min(30, state.combo * 1.7);
   const playerX = direction === "right" ? 48 : direction === "left" ? -48 : route === "speed" ? 28 : 0;
   const playerY = direction === "up" ? -118 : direction === "down" ? -46 : -72 - comboLift;
@@ -3637,8 +3967,10 @@ function burstMovement(route, direction) {
 }
 
 function spawnSlash(route, direction) {
-  const slash = document.createElement("span");
-  slash.className = `slash is-${direction} ${isLowPowerMode() ? "is-lite" : ""}`;
+  if (isCompactMotionMode()) return;
+  const slash = acquireMotionNode("slash");
+  const compactMotion = isCompactMotionMode();
+  slash.className = `slash is-${direction} ${compactMotion ? "is-lite" : ""}`;
   slash.style.color = routeInfo(route).color;
   const angle = { tap: 8, up: 0, right: 64, left: -64, down: 180 }[direction] ?? 8;
   const placement =
@@ -3653,7 +3985,7 @@ function spawnSlash(route, direction) {
   slash.style.setProperty("--slash-top", placement[1]);
   slash.style.setProperty("--angle", `${angle}deg`);
   els.slashLayer.append(slash);
-  window.setTimeout(() => slash.remove(), isLowPowerMode() ? 360 : 560);
+  window.setTimeout(() => releaseMotionNode("slash", slash), compactMotion ? 360 : 560);
 }
 
 function comboRank() {
@@ -3667,7 +3999,7 @@ function comboRank() {
 }
 
 function spawnComboFeedback(route) {
-  if (isLowPowerMode() && state.combo > 1 && state.combo % 4 !== 0) return;
+  if (isCompactMotionMode()) return;
   const rank = comboRank();
   const pop = document.createElement("span");
   pop.className = "combo-pop";
@@ -3893,7 +4225,7 @@ function enemyAttack(kind = "进攻", damageScale = 1) {
 }
 
 function animateEnemyAttack(kind) {
-  if (isLowPowerMode()) {
+  if (isCompactMotionMode()) {
     const strike = document.createElement("span");
     strike.className = `impact-strike ${kind === "抢招" ? "is-riposte" : ""}`;
     const burst = document.createElement("span");
@@ -3949,6 +4281,7 @@ function animateEnemyDamage(route) {
   setStyleVar(els.enemyHealth, "--hit-color", routeInfo(route).color);
   playSfx("bossTakeHit");
   setCombatArt({ boss: currentBossArt("damaged"), bossAction: "damaged", lock: 320 });
+  if (isCompactMotionMode()) return;
   restartClass(els.enemy, "is-damaged");
   restartClass(els.enemyHealth, "is-damaged");
   window.setTimeout(() => {
@@ -4140,6 +4473,7 @@ function renderHand() {
   while (els.hand.children.length > nextChildren.length) {
     els.hand.lastElementChild.remove();
   }
+  window.requestAnimationFrame(refreshCardMotionCache);
 }
 
 function currentHandAffinityKey() {
@@ -4197,7 +4531,7 @@ function attachGesture(element, index) {
     } else {
       direction = dy > 0 ? "down" : "up";
     }
-    animateCardDirection(element, direction);
+    animateCardDirection(element, direction, { clientX: startX, clientY: startY });
     playCard(index, direction);
   });
 
@@ -4206,9 +4540,16 @@ function attachGesture(element, index) {
   });
 }
 
-function animateCardDirection(element, direction) {
-  const cardRect = element.getBoundingClientRect();
-  const gameRect = els.game.getBoundingClientRect();
+function animateCardDirection(element, direction, fallbackPoint = null) {
+  const cardRect = cardMotionCache.get(element) ?? {
+    left: Math.max(0, (fallbackPoint?.clientX ?? 0) - (gameMotionRect?.left ?? 0) - 42),
+    top: Math.max(0, (fallbackPoint?.clientY ?? 0) - (gameMotionRect?.top ?? 0) - 62),
+    width: 84,
+    height: 124,
+    color: element.style.getPropertyValue("--route-color") || routeMeta.neutral.color,
+    label: element.querySelector(".card-name")?.textContent?.trim() ?? "",
+    icon: element.querySelector(".card-sigil")?.textContent?.trim() ?? "◇",
+  };
   const vector = {
     tap: { x: 0, y: -92, rotate: -4, glyph: "✦" },
     up: { x: 0, y: -230, rotate: -3, glyph: "↟" },
@@ -4217,34 +4558,23 @@ function animateCardDirection(element, direction) {
     down: { x: 0, y: 178, rotate: 5, glyph: "◆" },
   }[direction] ?? { x: 0, y: -92, rotate: -4, glyph: "✦" };
 
-  const ghost = element.cloneNode(true);
-  ghost.classList.add("card-ghost");
-  ghost.classList.remove("is-pressing");
-  ghost.setAttribute("aria-hidden", "true");
-  ghost.style.left = `${cardRect.left - gameRect.left}px`;
-  ghost.style.top = `${cardRect.top - gameRect.top}px`;
+  if (isCompactMotionMode()) return;
+
+  const ghost = acquireMotionNode("ghost");
+  ghost.className = "card-ghost card-ghost-lite";
+  ghost.innerHTML = `<i>${escapeHtml(cardRect.icon)}</i><b>${escapeHtml(cardRect.label)}</b>`;
+  ghost.style.left = `${cardRect.left}px`;
+  ghost.style.top = `${cardRect.top}px`;
   ghost.style.width = `${cardRect.width}px`;
   ghost.style.height = `${cardRect.height}px`;
+  ghost.style.setProperty("--route-color", cardRect.color);
 
-  const burst = document.createElement("span");
+  const burst = acquireMotionNode("burst");
   burst.className = "card-direction-burst";
   burst.textContent = vector.glyph;
-  burst.style.left = `${cardRect.left - gameRect.left + cardRect.width / 2}px`;
-  burst.style.top = `${cardRect.top - gameRect.top + cardRect.height / 2}px`;
-  burst.style.color = getComputedStyle(element).getPropertyValue("--route-color") || routeMeta.neutral.color;
-
-  if (isLowPowerMode()) {
-    els.game.append(burst);
-    burst.animate(
-      [
-        { opacity: 0, transform: "translate(-50%, -50%) scale(0.55)" },
-        { opacity: 1, transform: `translate(calc(-50% + ${vector.x * 0.1}px), calc(-50% + ${vector.y * 0.1}px)) scale(1.08)`, offset: 0.38 },
-        { opacity: 0, transform: `translate(calc(-50% + ${vector.x * 0.28}px), calc(-50% + ${vector.y * 0.28}px)) scale(0.82)` },
-      ],
-      { duration: 240, easing: "ease-out" },
-    ).finished.finally(() => burst.remove());
-    return;
-  }
+  burst.style.left = `${cardRect.left + cardRect.width / 2}px`;
+  burst.style.top = `${cardRect.top + cardRect.height / 2}px`;
+  burst.style.color = cardRect.color;
 
   els.game.append(ghost, burst);
   ghost.animate(
@@ -4254,7 +4584,7 @@ function animateCardDirection(element, direction) {
       { opacity: 0, transform: `translate(${vector.x}px, ${vector.y}px) rotate(${vector.rotate}deg) scale(0.82)` },
     ],
     { duration: 360, easing: "cubic-bezier(0.16, 1, 0.3, 1)" },
-  ).finished.finally(() => ghost.remove());
+  ).finished.finally(() => releaseMotionNode("ghost", ghost));
 
   burst.animate(
     [
@@ -4263,7 +4593,7 @@ function animateCardDirection(element, direction) {
       { opacity: 0, transform: `translate(calc(-50% + ${vector.x * 0.48}px), calc(-50% + ${vector.y * 0.48}px)) scale(0.9)` },
     ],
     { duration: 380, easing: "cubic-bezier(0.16, 1, 0.3, 1)" },
-  ).finished.finally(() => burst.remove());
+  ).finished.finally(() => releaseMotionNode("burst", burst));
 }
 
 function log(message) {
@@ -4337,7 +4667,7 @@ function showTrainingOverlay(won) {
   overlay.querySelector("[data-training-again]").addEventListener("click", () => {
     const id = lesson?.id;
     overlay.remove();
-    if (id) startTrainingLesson(id);
+    if (id) void startTrainingLesson(id);
   });
   overlay.querySelector("[data-training-close]").addEventListener("click", () => {
     state.trainingLesson = null;
@@ -4620,7 +4950,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.65",
+      version: "v0.2.66",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -4716,9 +5046,9 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>音</i>当前 v0.2.65</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>滑</i>当前 v0.2.66</small>
         <b>版本记录</b>
-        <span class="choice-effect">${effectTextMarkup("这版把玩家动作、兵器、Boss 和 UI 音效接到真实触发。")}</span>
+        <span class="choice-effect">${effectTextMarkup("这版把右滑所需音频、美术和动作节点提前预热。")}</span>
       </button>
       <button class="choice" type="button" data-copy-mobile-link>
         <small class="choice-meta" style="${routeStyle("control")}"><i>链</i>Alpha 5</small>
@@ -4779,12 +5109,12 @@ function showEquipmentOverlay() {
     }
   });
   overlay.querySelector("[data-start-daily]").addEventListener("click", () => {
-    startDailyRun();
+    void startDailyRun();
   });
   overlay.querySelectorAll("[data-equipment]").forEach((button) => {
     button.addEventListener("click", () => {
       const equipment = equipmentPool.find((item) => item.id === button.dataset.equipment);
-      startRun(equipment);
+      void startRun(equipment);
     });
   });
   els.game.append(overlay);
@@ -5324,14 +5654,14 @@ function bindSaveOverlay(overlay) {
       overlay.remove();
       state.saveOpen = false;
       state.saveReturnPhase = null;
-      startTrainingLesson(button.dataset.startTraining);
+      void startTrainingLesson(button.dataset.startTraining);
     });
   });
   overlay.querySelector("[data-start-daily-profile]")?.addEventListener("click", () => {
     overlay.remove();
     state.saveOpen = false;
     state.saveReturnPhase = null;
-    startDailyRun();
+    void startDailyRun();
   });
   overlay.querySelectorAll("[data-save-slot]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -6114,7 +6444,7 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
       } catch {
         observer = null;
       }
-      if (!state.runStarted) startRun(equipmentPool[0]);
+      if (!state.runStarted) await startRun(equipmentPool[0]);
       const directions = ["right", "left", "down", "up", "tap"];
       const started = performance.now();
       let actions = 0;
@@ -6169,6 +6499,74 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
         encounterIndex: state.encounterIndex,
         ended: state.ended,
         ...perf,
+      };
+    },
+    async runRightSwipeProbe(options = {}) {
+      const count = clamp(Math.round(Number(options.count ?? 1)), 1, 24);
+      const interval = clamp(Number(options.interval ?? 140), 40, 600);
+      const profile = options.profile === undefined ? null : clamp(Math.round(Number(options.profile)), 0, 2);
+      if (profile !== null) {
+        state.tuning.performanceProfile = profile;
+        applyPerformanceClass();
+      }
+      if (options.reset || !state.runStarted) {
+        const wasUnlocked = audioState.unlocked;
+        audioState.unlocked = false;
+        resetGame();
+        audioState.unlocked = wasUnlocked;
+        await startRun(equipmentPool[0]);
+      }
+      await warmBattleAssets("right-swipe-probe", currentRoom());
+      await new Promise((resolve) => window.requestAnimationFrame(resolve));
+      refreshCardMotionCache();
+      performance.clearResourceTimings();
+      const longTasks = [];
+      let observer = null;
+      try {
+        observer = new PerformanceObserver((list) => {
+          list.getEntries().forEach((entry) => longTasks.push(Number(entry.duration.toFixed(2))));
+        });
+        observer.observe({ entryTypes: ["longtask"] });
+      } catch {
+        observer = null;
+      }
+      const dispatchDurations = [];
+      let swipes = 0;
+      for (let i = 0; i < count; i += 1) {
+        const card = els.hand.querySelector("button.card:not(.card-empty)");
+        if (!card || state.ended) break;
+        const rect = cardMotionCache.get(card);
+        const clientX = (gameMotionRect?.left ?? 0) + (rect?.left ?? 90) + (rect?.width ?? 84) * 0.45;
+        const clientY = (gameMotionRect?.top ?? 0) + (rect?.top ?? 660) + (rect?.height ?? 124) * 0.55;
+        const before = performance.now();
+        card.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerId: 3000 + i, clientX, clientY }));
+        card.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 3000 + i, clientX: clientX + 120, clientY }));
+        dispatchDurations.push(Number((performance.now() - before).toFixed(2)));
+        swipes += 1;
+        await new Promise((resolve) => window.setTimeout(resolve, interval));
+      }
+      await new Promise((resolve) => window.setTimeout(resolve, 900));
+      observer?.disconnect();
+      const resources = performance.getEntriesByType("resource")
+        .filter((entry) => /assets\/audio|assets\/art|r2\.dev|webp|mp3/.test(entry.name))
+        .map((entry) => ({
+          name: entry.name.split("/").slice(-3).join("/"),
+          initiatorType: entry.initiatorType,
+          startTime: Math.round(entry.startTime),
+          duration: Number(entry.duration.toFixed(2)),
+          transferSize: entry.transferSize,
+        }));
+      return {
+        swipes,
+        dispatchDurations,
+        maxDispatchDuration: dispatchDurations.length ? Math.max(...dispatchDurations) : 0,
+        longTasks: longTasks.length,
+        longTaskDuration: Number(longTasks.reduce((sum, value) => sum + value, 0).toFixed(2)),
+        resources,
+        resourceCount: resources.length,
+        warmState: this.assetWarmState(),
+        audio: this.audioState(),
+        performance: this.performanceState(),
       };
     },
     async runMobileAcceptanceProbe(options = {}) {
@@ -6300,7 +6698,19 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
           ]),
         ),
         recentSfx: audioState.sfxEvents.slice(-16),
+        warmEvents: audioState.warmEvents.slice(-16),
         lastError: audioState.lastError,
+      };
+    },
+    assetWarmState() {
+      return {
+        ...assetWarmState,
+        motionPool: {
+          ghost: motionNodePool.ghost.length,
+          burst: motionNodePool.burst.length,
+          slash: motionNodePool.slash.length,
+        },
+        imageCacheSize: imageWarmCache.size,
       };
     },
     debugUnlockAllProfile() {

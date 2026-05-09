@@ -6,7 +6,7 @@
 
 ## 当前接入状态
 
-v0.2.65 已接入 35 个正式 SFX 和 7 条当前 BGM。正式文件放在：
+v0.2.66 已接入 35 个正式 SFX 和 7 条当前 BGM，并把战斗必需音频、美术帧和动作节点加入开战前预热。正式文件放在：
 
 - `assets/audio/bgm/`
 - `assets/audio/sfx/combat/`
@@ -26,7 +26,9 @@ v0.2.65 已接入 35 个正式 SFX 和 7 条当前 BGM。正式文件放在：
 
 BGM 在启动时创建 `Audio` 对象。主菜单曲 `preload=auto`，其他曲 `preload=metadata`，避免首屏被音频拖慢。
 
-SFX 不在首屏预加载。第一次触发某个 SFX 时创建对应 `Audio` 对象，之后复用同一个对象。高频动作音每次播放前会重置 `currentTime`，避免连续出牌时排队堆积。
+SFX 不在首屏预加载。玩家进入战斗前，当前战斗所需的玩家动作音、兵器签名音、Boss 音和开始战斗音会创建可复用 `Audio` 对象并触发浏览器预加载。非战斗 UI 音仍可按需创建。高频动作音每次播放前会重置 `currentTime`，避免连续出牌时排队堆积。
+
+战斗手势路径不能做首次资源请求、首次音频对象创建、首次图片解码、首次动作节点创建或高成本布局读取。开战前会预热当前 Boss、玩家动作和场景所需图片，保留解码缓存，建立右滑动画节点池，并刷新卡牌位置缓存。调试探针必须能证明右滑期间 `resourceCount=0`、`longTasks=0`、`lastError=""`。
 
 所有声音都必须等玩家第一次点击、滑动或点静音按钮后解锁。未解锁前不播放 SFX，只允许 BGM 进入待播放状态。
 
@@ -169,10 +171,11 @@ ffprobe -v error ... each assets/audio/*.mp3
 - 静音后强制 Boss 读招，确认不会加载新 SFX
 - 5 秒有声自动战斗，确认 `longTasks=0`，`lastError=""`
 
-当前 v0.2.65 验收记录见：
+当前 v0.2.66 验收记录见：
 
 - `docs/verification/v0264-sfx-integration.md`
 - `docs/verification/v0265-audio-plan-landing.md`
+- `docs/verification/v0266-right-swipe-stutter.md`
 
 ## 后续扩展顺序
 
