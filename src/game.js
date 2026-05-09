@@ -235,6 +235,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.64",
+    title: "音效接入",
+    date: "2026-05-09",
+    icon: "音",
+    color: "#d79f2b",
+    points: ["35 个 SFX 正式接入战斗、Boss 和 UI 触发", "六把武器加入签名动作音", "低功耗模式跳过高频装饰音"],
+  },
+  {
     id: "v0.2.63",
     title: "R2 图片外置",
     date: "2026-05-09",
@@ -1749,6 +1757,44 @@ const bgmTracks = {
   bossNoForm: { label: "无相刀影", file: "./assets/audio/bgm/blade-flow-boss-no-form-shadow.mp3", volume: 0.45 },
 };
 
+const sfxTracks = {
+  playerCardPress: { file: "./assets/audio/sfx/combat/sfx-player-card-press-01.mp3", volume: 0.3, decorative: true },
+  playerCardRelease: { file: "./assets/audio/sfx/combat/sfx-player-card-release-01.mp3", volume: 0.32 },
+  playerTap: { file: "./assets/audio/sfx/combat/sfx-player-tap-basic-slash-01.mp3", volume: 0.42 },
+  playerFlickUp: { file: "./assets/audio/sfx/combat/sfx-player-flick-up-launcher-01.mp3", volume: 0.42 },
+  playerFlickRight: { file: "./assets/audio/sfx/combat/sfx-player-flick-right-chase-01.mp3", volume: 0.43 },
+  playerFlickLeft: { file: "./assets/audio/sfx/combat/sfx-player-flick-left-dodge-01.mp3", volume: 0.4 },
+  playerFlickDown: { file: "./assets/audio/sfx/combat/sfx-player-flick-down-heavy-01.mp3", volume: 0.45 },
+  playerPerfectCounter: { file: "./assets/audio/sfx/combat/sfx-player-perfect-counter-01.mp3", volume: 0.48 },
+  playerCritical: { file: "./assets/audio/sfx/combat/sfx-player-critical-01.mp3", volume: 0.42 },
+  playerStanceBreak: { file: "./assets/audio/sfx/combat/sfx-player-stance-break-01.mp3", volume: 0.44 },
+  playerComboBreak: { file: "./assets/audio/sfx/combat/sfx-player-combo-break-01.mp3", volume: 0.44 },
+  weaponStormKatana: { file: "./assets/audio/sfx/combat/sfx-weapon-storm-katana-chase-01.mp3", volume: 0.42 },
+  weaponMirrorFan: { file: "./assets/audio/sfx/combat/sfx-weapon-mirror-fan-counter-01.mp3", volume: 0.42 },
+  weaponExecutioner: { file: "./assets/audio/sfx/combat/sfx-weapon-executioner-down-01.mp3", volume: 0.45 },
+  weaponGravityHammer: { file: "./assets/audio/sfx/combat/sfx-weapon-gravity-hammer-smash-01.mp3", volume: 0.44 },
+  weaponGunblade: { file: "./assets/audio/sfx/combat/sfx-weapon-gunblade-suppress-01.mp3", volume: 0.4 },
+  weaponDuelScabbard: { file: "./assets/audio/sfx/combat/sfx-weapon-duel-scabbard-draw-01.mp3", volume: 0.4 },
+  bossFastTell: { file: "./assets/audio/sfx/boss/sfx-boss-fast-attack-tell-01.mp3", volume: 0.45 },
+  bossSlowTell: { file: "./assets/audio/sfx/boss/sfx-boss-slow-attack-tell-01.mp3", volume: 0.45 },
+  bossFeintTell: { file: "./assets/audio/sfx/boss/sfx-boss-feint-tell-01.mp3", volume: 0.44 },
+  bossRetreatTell: { file: "./assets/audio/sfx/boss/sfx-boss-retreat-slash-tell-01.mp3", volume: 0.44 },
+  bossGroundGrabTell: { file: "./assets/audio/sfx/boss/sfx-boss-ground-grab-tell-01.mp3", volume: 0.45 },
+  bossHitPlayer: { file: "./assets/audio/sfx/boss/sfx-boss-hit-player-01.mp3", volume: 0.48 },
+  bossTakeHit: { file: "./assets/audio/sfx/boss/sfx-boss-take-hit-01.mp3", volume: 0.34, decorative: true },
+  bossBlocked: { file: "./assets/audio/sfx/boss/sfx-boss-blocked-01.mp3", volume: 0.46 },
+  bossEvade: { file: "./assets/audio/sfx/boss/sfx-boss-evade-01.mp3", volume: 0.36, decorative: true },
+  bossStanceBreak: { file: "./assets/audio/sfx/boss/sfx-boss-stance-break-01.mp3", volume: 0.5 },
+  bossDeath: { file: "./assets/audio/sfx/boss/sfx-boss-death-01.mp3", volume: 0.52 },
+  uiBattleStart: { file: "./assets/audio/sfx/ui/sfx-ui-battle-start-01.mp3", volume: 0.36 },
+  uiRewardSelect: { file: "./assets/audio/sfx/ui/sfx-ui-reward-select-01.mp3", volume: 0.34 },
+  uiRouteStable: { file: "./assets/audio/sfx/ui/sfx-ui-route-stable-01.mp3", volume: 0.34 },
+  uiRouteDanger: { file: "./assets/audio/sfx/ui/sfx-ui-route-danger-01.mp3", volume: 0.38 },
+  uiRouteMapBranch: { file: "./assets/audio/sfx/ui/sfx-ui-route-map-branch-01.mp3", volume: 0.34 },
+  uiBossPreview: { file: "./assets/audio/sfx/ui/sfx-ui-boss-preview-01.mp3", volume: 0.38 },
+  uiMuteToggle: { file: "./assets/audio/sfx/ui/sfx-ui-mute-toggle-01.mp3", volume: 0.32 },
+};
+
 Object.values(bgmTracks).forEach((track) => {
   track.audio = new Audio(track.file);
   track.audio.loop = true;
@@ -1762,7 +1808,96 @@ const audioState = {
   scene: "menu",
   activeKey: "menu",
   lastError: "",
+  sfxEvents: [],
 };
+
+function rememberSfxEvent(key) {
+  audioState.sfxEvents.push({ key, at: Math.round(performance.now()) });
+  if (audioState.sfxEvents.length > 40) audioState.sfxEvents.shift();
+}
+
+function isExpectedAudioInterruption(error) {
+  const message = error?.message ?? String(error ?? "");
+  return error?.name === "AbortError" || /interrupted by a call to pause/i.test(message);
+}
+
+function playSfx(key, { volume = 1, force = false } = {}) {
+  const track = sfxTracks[key];
+  if (!track) return false;
+  if (!force && (!audioState.enabled || !audioState.unlocked || document.visibilityState === "hidden")) return false;
+  if (!force && isLowPowerMode() && track.decorative) return false;
+  if (!track.audio) {
+    track.audio = new Audio(track.file);
+    track.audio.preload = "none";
+  }
+  try {
+    track.audio.pause();
+    track.audio.currentTime = 0;
+    track.audio.volume = clamp(track.volume * volume, 0, 1);
+    void track.audio.play()
+      .then(() => {
+        audioState.lastError = "";
+      })
+      .catch((error) => {
+        if (isExpectedAudioInterruption(error)) {
+          audioState.lastError = "";
+          return;
+        }
+        audioState.lastError = error?.message ?? String(error);
+      });
+    rememberSfxEvent(key);
+    return true;
+  } catch (error) {
+    audioState.lastError = error?.message ?? String(error);
+    return false;
+  }
+}
+
+function pauseAllSfx() {
+  Object.values(sfxTracks).forEach((track) => {
+    if (!track.audio) return;
+    track.audio.pause();
+    track.audio.currentTime = 0;
+  });
+}
+
+function playerActionSfx(direction) {
+  return {
+    tap: "playerTap",
+    up: "playerFlickUp",
+    right: "playerFlickRight",
+    left: "playerFlickLeft",
+    down: "playerFlickDown",
+  }[direction] ?? "playerTap";
+}
+
+function weaponActionSfx(card, direction, route) {
+  const equipmentId = state.equipment?.id;
+  if (equipmentId === "storm-katana" && direction === "right") return "weaponStormKatana";
+  if (equipmentId === "mirror-fan" && direction === "left") return "weaponMirrorFan";
+  if (equipmentId === "executioner" && direction === "down") return "weaponExecutioner";
+  if (equipmentId === "gravity-hammer" && (direction === "up" || direction === "down")) return "weaponGravityHammer";
+  if (equipmentId === "gunblade" && (direction === "tap" || route === "damage")) return "weaponGunblade";
+  if (equipmentId === "duelist-scabbard" && (direction === "left" || card.id === "guard" || card.id === "shadow-step")) return "weaponDuelScabbard";
+  return null;
+}
+
+function bossTellSfx(action) {
+  return {
+    fast: "bossFastTell",
+    heavy: "bossSlowTell",
+    feint: "bossFeintTell",
+    backstep: "bossRetreatTell",
+    "ground-grab": "bossGroundGrabTell",
+  }[action] ?? null;
+}
+
+function routeChoiceSfx(choice) {
+  const kind = pathChoiceKind(choice);
+  if (kind.className.includes("danger")) return "uiRouteDanger";
+  if (kind.className.includes("atlas")) return "uiRouteMapBranch";
+  return "uiRouteStable";
+}
 
 function currentBgmKey() {
   if (audioState.scene === "menu") return "menu";
@@ -1846,6 +1981,7 @@ function toggleMenuBgm() {
     updateMusicButton();
     return;
   }
+  playSfx("uiMuteToggle", { force: true });
   audioState.enabled = !audioState.enabled;
   localStorage.setItem("blade-flow-menu-bgm-muted-v1", audioState.enabled ? "0" : "1");
   if (audioState.enabled) {
@@ -1853,6 +1989,7 @@ function toggleMenuBgm() {
     void playCurrentBgm();
   } else {
     pauseAllBgm();
+    pauseAllSfx();
   }
   updateMusicButton();
 }
@@ -2652,6 +2789,7 @@ function resetGame() {
 
 function startRun(equipment) {
   setAudioScene("battle");
+  playSfx("uiBattleStart");
   state.trainingLesson = null;
   state.dailyRun = null;
   state.runStarted = true;
@@ -3276,6 +3414,10 @@ function playCard(index, direction = "tap") {
   const variant = direction === "tap" ? [card.tap, card.route] : card.variants[direction];
   const actionName = variant[0];
   const route = variant[1];
+  playSfx("playerCardRelease");
+  playSfx(playerActionSfx(direction));
+  const weaponSfx = weaponActionSfx(card, direction, route);
+  if (weaponSfx) playSfx(weaponSfx, { volume: 0.9 });
   const now = performance.now();
   const quick = now - state.lastActionAt < state.tuning.comboWindow;
   const danger = state.intentTime < state.tuning.perfectWindow;
@@ -3318,8 +3460,10 @@ function playCard(index, direction = "tap") {
     const label = masteryLabel(mastery);
     log(`${actionName}: ${label}，连击读招成立。`);
     spawnMasteryFeedback(mastery.recipe.route, label);
+    playSfx("playerCritical");
   } else if (mastery.result === "flaw") {
     log(`${actionName}: 错读，被 Boss 看穿。`);
+    playSfx("bossEvade");
   } else if (perfect) {
     state.fightReads += 1;
     state.evidence.scout += state.bossMove?.key === "feint" ? 1 : 0;
@@ -3328,6 +3472,8 @@ function playCard(index, direction = "tap") {
     state.combo += 2;
     state.routeScores.counter += 3;
     log(`${actionName}: 完美闪反，连击不断。`);
+    playSfx("playerPerfectCounter");
+    playSfx("bossBlocked");
   } else {
     log(`${actionName}: ${routeLabel(route)} +${baseDamage}`);
   }
@@ -3344,6 +3490,8 @@ function playCard(index, direction = "tap") {
     state.fightBreaks += 1;
     state.evidence.break += 1;
     state.pressure = Math.max(0, state.pressure - state.tuning.breakPressure * 0.42);
+    playSfx("playerStanceBreak");
+    playSfx("bossStanceBreak");
   }
 
   spawnComboFeedback(route);
@@ -3415,6 +3563,7 @@ function scheduleVictory() {
   state.intentName = "击破";
   state.pressure = 0;
   if (state.combo >= 8 || state.maxCombo >= 12) state.evidence.finisher += 1;
+  playSfx("bossDeath");
   toggleClass(els.enemy, "is-attacking", false);
   toggleClass(els.enemy, "is-charging", false);
   toggleClass(els.enemy, "is-damaged", false);
@@ -3584,6 +3733,8 @@ function playBossTimeline(action, force = false) {
   if (!force && els.enemy.dataset.timeline === timelineKey) return;
   clearBossTimeline();
   els.enemy.dataset.timeline = timelineKey;
+  const tell = bossTellSfx(action);
+  if (tell) playSfx(tell);
   const token = bossTimelineToken;
   const step = (index) => {
     if (token !== bossTimelineToken) return;
@@ -3718,6 +3869,8 @@ function enemyAttack(kind = "进攻", damageScale = 1) {
   state.comboCharge = Math.min(state.comboCharge, 24);
   const line = kind === "抢招" ? "抢招命中" : kind === "破绽" ? "抓住破绽" : `${kind} 命中你`;
   log(`${encounter.name} ${line}，连击碎了。${state.bossMove?.hint ?? "危险临近时左划或用格挡。"}`);
+  playSfx("bossHitPlayer");
+  playSfx("playerComboBreak");
   animateEnemyAttack(kind);
   els.game.animate(
     [
@@ -3788,6 +3941,7 @@ function animateEnemyAttack(kind) {
 function animateEnemyDamage(route) {
   setStyleVar(els.enemy, "--hit-color", routeInfo(route).color);
   setStyleVar(els.enemyHealth, "--hit-color", routeInfo(route).color);
+  playSfx("bossTakeHit");
   setCombatArt({ boss: currentBossArt("damaged"), bossAction: "damaged", lock: 320 });
   restartClass(els.enemy, "is-damaged");
   restartClass(els.enemyHealth, "is-damaged");
@@ -4011,6 +4165,8 @@ function attachGesture(element, index) {
   let startY = 0;
 
   element.addEventListener("pointerdown", (event) => {
+    unlockAudio();
+    playSfx("playerCardPress");
     startX = event.clientX;
     startY = event.clientY;
     try {
@@ -4458,7 +4614,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.63",
+      version: "v0.2.64",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -4554,9 +4710,9 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>图</i>当前 v0.2.63</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>音</i>当前 v0.2.64</small>
         <b>版本记录</b>
-        <span class="choice-effect">${effectTextMarkup("这版把运行时图片外置到 Cloudflare R2，仓库更轻。")}</span>
+        <span class="choice-effect">${effectTextMarkup("这版把玩家动作、兵器、Boss 和 UI 音效接到真实触发。")}</span>
       </button>
       <button class="choice" type="button" data-copy-mobile-link>
         <small class="choice-meta" style="${routeStyle("control")}"><i>链</i>Alpha 5</small>
@@ -4660,6 +4816,7 @@ function showRewardOverlay() {
   overlay.querySelectorAll("[data-reward]").forEach((button) => {
     button.addEventListener("click", () => {
       const reward = choices.find((item) => item.id === button.dataset.reward);
+      playSfx("uiRewardSelect");
       state.pendingRewardIds = null;
       applyReward(reward);
       advanceRoom();
@@ -4700,6 +4857,7 @@ function showPathChoiceOverlay() {
   overlay.querySelectorAll("[data-path-choice]").forEach((button) => {
     button.addEventListener("click", () => {
       const choice = choices.find((item) => item.id === button.dataset.pathChoice);
+      playSfx(routeChoiceSfx(choice));
       applyPathChoice(choice);
       overlay.remove();
       enterCurrentRoom();
@@ -5449,6 +5607,7 @@ function showNodeOverlay(room) {
 function showBossPreviewOverlay(room) {
   document.querySelector(".overlay")?.remove();
   refreshBossMark();
+  playSfx("uiBossPreview");
   const markRoute = dominantMarkRoute();
   const overlay = document.createElement("div");
   overlay.className = "overlay";
@@ -5466,6 +5625,7 @@ function showBossPreviewOverlay(room) {
   overlay.querySelector("[data-start-boss]").addEventListener("click", () => {
     state.bossPreviewed = true;
     overlay.remove();
+    playSfx("uiBattleStart");
     startEncounter(room);
   });
   els.game.append(overlay);
@@ -6122,6 +6282,18 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
             },
           ]),
         ),
+        sfx: Object.fromEntries(
+          Object.entries(sfxTracks).map(([trackKey, item]) => [
+            trackKey,
+            {
+              loaded: Boolean(item.audio),
+              paused: item.audio ? item.audio.paused : true,
+              currentTime: item.audio ? Number(item.audio.currentTime.toFixed(2)) : 0,
+              src: item.audio ? item.audio.currentSrc || item.audio.src : item.file,
+            },
+          ]),
+        ),
+        recentSfx: audioState.sfxEvents.slice(-16),
         lastError: audioState.lastError,
       };
     },
