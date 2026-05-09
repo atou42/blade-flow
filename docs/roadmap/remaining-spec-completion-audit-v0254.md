@@ -1,0 +1,45 @@
+# v0.2.54 剩余 Spec 完成审计
+
+后续用户已在 2026-05-09 明确将最后实体手机 JSON 要求降级为模拟验收。新的完成审计见 `docs/roadmap/remaining-spec-completion-audit-v0255-simulated-acceptance.md`。本文仍保留为降级前的真实手机标准审计记录。
+
+审计对象：`docs/roadmap/remaining-spec-high-standard-goal.md`
+
+审计结论：不能标记 complete。线上版本已推进到 `v0.2.54 设备校验`，真机记录入口、保存、复制、直达、系统分享、保存后自动分享、最终 JSON 校验器、页面内保存门槛、旧记录导出复查、真机链接复制和自动设备信息校验都已完成并部署，但仍缺真实手机浏览器跑完 60 秒后实际发回的 JSON。
+
+## 已复核证据
+
+| 要求 | 当前证据 | 状态 |
+| --- | --- | --- |
+| 线上正式入口可打开 | `https://games.atou.cc/combo-card-roguelike/versions/a/?v=054-curl-live` 返回 `v0.2.54 设备校验` | 已验收 |
+| Games Hub 版本已更新 | `https://games.atou.cc/data/games-hub.json?v=054-curl-live` 返回 `score: v0.2.54`、`title: v0.2.54 设备校验` | 已验收 |
+| 真机长测可直达 | `?mobileQa=1` 在手机视口显示长测面板和 `跑 60 秒` 按钮 | 已验收 |
+| 真机链接可复制 | `docs/verification/v0253-mobile-acceptance-link-copy.md` | 已验收 |
+| 真机记录可复制和系统分享 | `docs/verification/v0247-mobile-acceptance-export.md`、`docs/verification/v0249-mobile-acceptance-share.md` | 已验收 |
+| 保存后自动分享 | `docs/verification/v0250-mobile-acceptance-save-share.md` | 已验收 |
+| 页面内保存门槛 | `docs/verification/v0251-mobile-acceptance-save-gates.md` | 已验收 |
+| 旧记录导出复查 | `docs/verification/v0252-mobile-acceptance-stale-record-gates.md` | 已验收 |
+| 自动设备信息校验 | `docs/verification/v0254-mobile-client-validation.md` 记录缺 client、桌面 UA 会被拒绝，iPhone UA 会通过 | 已验收 |
+| 最终 JSON 有可执行校验和文档生成门 | `tools/validate-mobile-acceptance.mjs` 和 `docs/verification/mobile-acceptance-validator.md` | 已验收 |
+| 真实手机 60 秒发热和手感记录 | 降级前尚未收到真实手机导出的 JSON，`docs/verification/final-mobile-acceptance-record.md` 当时不存在 | 缺失 |
+
+## 实际检查过的状态
+
+`node --check src/game.js` 通过。
+
+`node --check tools/validate-mobile-acceptance.mjs` 通过。
+
+公开目录同步后 `node --check public/combo-card-roguelike/versions/a/src/game.js` 通过。
+
+`npm run check-games` 通过。
+
+线上 Playwright 手机视口验收显示，v0.2.54 记录缺少 `client` 时不能分享；记录带 Mac 桌面 UA 和 0 触控点时不能分享；记录带 iPhone UA、5 触控点和 390x844 视口时可以分享 `v0.2.54` JSON。
+
+公开运行目录清理后重新部署，Cloudflare Version ID 为 `5deff7e3-920a-4262-af96-54b074a3f7b8`。
+
+## 不能完成的原因
+
+最后缺口仍是物理设备证据。当前环境可以证明线上流程、保存门槛、分享 payload、旧记录导出复查、链接复制、自动设备信息、fallback、最终校验器和最终验收 Markdown 生成，但不能产生真实手机的发热、手感、手机浏览器长期运行和用户实际分享记录。必须拿到真实手机跑完 60 秒后发回的 JSON，才能把 active goal 标记完成。
+
+## 完成前最后一步
+
+用真实手机打开 `https://games.atou.cc/combo-card-roguelike/versions/a/?mobileQa=1`，跑完 60 秒，填写真实设备，点 `保存并分享`，把系统分享发出的 JSON 回传。拿到这条记录后，运行 `node tools/validate-mobile-acceptance.mjs <json-file> --markdown-out docs/verification/final-mobile-acceptance-record.md`，再重跑最终审计。

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Blade Flow 竖屏连击卡牌</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23d83b24' d='M32 3l26 18-10 35H16L6 21z'/%3E%3Cpath fill='%23f2ead9' d='M34 10L16 38h13l-3 16 22-30H35z'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell" aria-label="竖屏连击卡牌游戏原型">
+      <section class="game" id="game">
+        <header class="hud">
+          <div class="brand">
+            <span class="brand-mark"></span>
+            <div>
+              <button class="version-link" id="versionButton" type="button" aria-label="打开版本记录">v0.2.63 R2 图片外置</button>
+              <h1>Blade Flow</h1>
+            </div>
+          </div>
+          <div class="hud-actions">
+            <button class="icon-button" id="musicButton" type="button" aria-label="开启游戏音乐">♪</button>
+            <button class="icon-button" id="tunerButton" type="button" aria-label="打开调配器">⚙</button>
+            <button class="icon-button" id="saveButton" type="button" aria-label="打开存档">存</button>
+            <button class="icon-button" id="notebookButton" type="button" aria-label="打开连击笔记">?</button>
+            <button class="icon-button" id="resetButton" type="button" aria-label="重新开始">↻</button>
+          </div>
+        </header>
+
+        <section class="status-grid" aria-label="战斗状态">
+          <div class="meter-panel">
+            <div class="meter-label">
+              <span>连击</span>
+              <strong id="comboCount">0</strong>
+            </div>
+            <div class="combo-bar"><span id="comboBar"></span></div>
+            <div class="stance-label">
+              <span>架势</span>
+              <strong id="stanceValue">100</strong>
+            </div>
+            <div class="stance-bar"><span id="stanceBar"></span></div>
+          </div>
+          <div class="route-panel" id="routePanel">
+            <span id="routeName">待势</span>
+            <small id="routeHint">点击或滑动卡牌</small>
+          </div>
+        </section>
+
+        <section class="run-strip" aria-label="进度">
+          <span id="runStage">选武器</span>
+          <strong id="equipmentName">未选武器</strong>
+          <span id="rewardStack">还没有奖励</span>
+        </section>
+
+        <section class="blade-map" id="bladeMap" aria-label="上行刀路"></section>
+
+        <section class="arena" id="arena" aria-label="战斗场地">
+          <div class="intent" id="intent">
+            <span id="intentName">观察中</span>
+            <i id="intentBar"></i>
+          </div>
+          <div class="pressure" id="pressureMeter">
+            <span id="pressureName">抢招压力</span>
+            <i><em id="pressureBar"></em></i>
+          </div>
+          <div class="style-rank" id="styleRank" aria-label="连击风格">
+            <span>D</span>
+            <b>0 HIT</b>
+          </div>
+          <div class="fighter player" id="player">
+            <img class="fighter-art player-art" src="https://pub-de6823af3a394765b91428a3cb3ee2d7.r2.dev/blade-flow/v0.2.62/assets/art/stage-layout-v1/player-idle.webp" alt="" aria-hidden="true" />
+            <span class="blade"></span>
+          </div>
+          <div class="fighter enemy" id="enemy">
+            <img class="fighter-art boss-art" src="https://pub-de6823af3a394765b91428a3cb3ee2d7.r2.dev/blade-flow/v0.2.62/assets/art/boss-forms-v1/blade-guard.webp" alt="" aria-hidden="true" />
+            <span class="boss-halo"></span>
+            <span class="boss-weapon"></span>
+            <span class="enemy-core"></span>
+          </div>
+          <div class="combo-layer" id="comboLayer"></div>
+          <div class="impact-layer" id="impactLayer"></div>
+          <div class="slash-layer" id="slashLayer"></div>
+          <div class="health enemy-health">
+            <span id="enemyName">宿敌</span>
+            <b id="enemyHpText">220</b>
+            <i><em id="enemyHp"></em></i>
+          </div>
+          <div class="health player-health">
+            <span>专注</span>
+            <b id="playerHpText">100</b>
+            <i><em id="playerHp"></em></i>
+          </div>
+        </section>
+
+        <section class="combat-log" id="combatLog" aria-live="polite">
+          从卡牌滑动出招。上划挑空，右划追击，左划闪反，下划爆发。
+        </section>
+
+        <section class="hand" id="hand" aria-label="行动卡牌"></section>
+
+        <section class="draw-queue" aria-label="补牌进度">
+          <span>补牌</span>
+          <i><em id="drawBar"></em></i>
+          <b id="drawText">满手</b>
+        </section>
+
+        <section class="legend" aria-label="操作">
+          <span>↟ 挑空</span>
+          <span>➤ 追击</span>
+          <span>↺ 闪反</span>
+          <span>◆ 爆发</span>
+        </section>
+      </section>
+    </main>
+    <script src="./src/game.js"></script>
+  </body>
+</html>

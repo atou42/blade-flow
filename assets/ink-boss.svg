@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 150" role="img" aria-label="ink oni boss">
+  <defs>
+    <radialGradient id="core" cx="50%" cy="42%" r="58%">
+      <stop offset="0" stop-color="#f2ead9"/>
+      <stop offset="0.38" stop-color="#d83b24"/>
+      <stop offset="1" stop-color="#35110d"/>
+    </radialGradient>
+    <linearGradient id="cloak" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#27120f"/>
+      <stop offset="0.62" stop-color="#11100d"/>
+      <stop offset="1" stop-color="#050403"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#d83b24" stop-opacity="0"/>
+      <stop offset="0.18" stop-color="#d83b24"/>
+      <stop offset="0.5" stop-color="#f2ead9"/>
+      <stop offset="0.82" stop-color="#d83b24"/>
+      <stop offset="1" stop-color="#d83b24" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="ink" x="-20%" y="-25%" width="140%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" seed="17"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+  </defs>
+  <path d="M25 132 C33 85 54 57 88 49 C122 58 147 86 157 134 C122 123 93 121 56 136 C43 138 34 137 25 132Z" fill="url(#cloak)" filter="url(#ink)"/>
+  <path d="M45 48 C31 42 22 31 19 16 C38 22 53 34 62 49Z" fill="#11100d"/>
+  <path d="M119 49 C129 33 143 22 162 16 C158 34 149 45 134 50Z" fill="#11100d"/>
+  <path d="M57 58 C63 31 113 31 123 58 C122 85 109 103 90 105 C70 103 58 84 57 58Z" fill="url(#core)" filter="url(#ink)"/>
+  <path d="M72 63 L85 70 L72 75 Z" fill="#f2ead9"/>
+  <path d="M108 63 L95 70 L108 75 Z" fill="#f2ead9"/>
+  <path d="M76 87 C84 94 96 94 105 87 C101 103 81 103 76 87Z" fill="#11100d"/>
+  <path d="M68 51 C78 41 103 40 114 51 C99 49 84 49 68 51Z" fill="#f2ead9" opacity=".72"/>
+  <path d="M13 87 C52 76 95 70 167 58" fill="none" stroke="url(#edge)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M16 90 C55 80 96 73 166 62" fill="none" stroke="#f2ead9" stroke-width="1.8" stroke-linecap="round" opacity=".86"/>
+  <g fill="#d83b24" opacity=".58">
+    <circle cx="38" cy="73" r="4"/>
+    <circle cx="142" cy="38" r="3"/>
+    <circle cx="155" cy="106" r="5"/>
+    <circle cx="25" cy="116" r="2.8"/>
+  </g>
+</svg>
