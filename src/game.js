@@ -235,6 +235,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.65",
+    title: "音频方案落地",
+    date: "2026-05-09",
+    icon: "验",
+    color: "#4bbda8",
+    points: ["静音按钮首次点击也按真正开关处理", "普通、每日和训练开战统一触发开始战斗音", "补齐音频接入验收记录"],
+  },
+  {
     id: "v0.2.64",
     title: "音效接入",
     date: "2026-05-09",
@@ -1976,11 +1984,7 @@ function handleAudioPointerDown(event) {
 }
 
 function toggleMenuBgm() {
-  if (audioState.enabled && !audioState.unlocked) {
-    unlockAudio();
-    updateMusicButton();
-    return;
-  }
+  if (!audioState.unlocked) audioState.unlocked = true;
   playSfx("uiMuteToggle", { force: true });
   audioState.enabled = !audioState.enabled;
   localStorage.setItem("blade-flow-menu-bgm-muted-v1", audioState.enabled ? "0" : "1");
@@ -2836,6 +2840,7 @@ function startDailyRun() {
   const equipment = equipmentById.get(plan.theme.equipmentId);
   if (!equipment) return false;
   setAudioScene("battle");
+  playSfx("uiBattleStart");
   state.trainingLesson = null;
   state.dailyRun = { seed, themeId: plan.theme.id, label: plan.theme.label };
   state.dailySeed = seed;
@@ -2889,6 +2894,7 @@ function startTrainingLesson(trainingId) {
   const equipment = equipmentById.get(lesson.equipmentId);
   if (!equipment) return false;
   setAudioScene("battle");
+  playSfx("uiBattleStart");
   state.trainingLesson = lesson;
   state.dailyRun = null;
   state.runStarted = true;
@@ -4614,7 +4620,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.64",
+      version: "v0.2.65",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -4710,7 +4716,7 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>音</i>当前 v0.2.64</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>音</i>当前 v0.2.65</small>
         <b>版本记录</b>
         <span class="choice-effect">${effectTextMarkup("这版把玩家动作、兵器、Boss 和 UI 音效接到真实触发。")}</span>
       </button>

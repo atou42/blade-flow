@@ -6,7 +6,7 @@
 
 ## 当前接入状态
 
-v0.2.64 已接入 35 个正式 SFX 和 7 条当前 BGM。正式文件放在：
+v0.2.65 已接入 35 个正式 SFX 和 7 条当前 BGM。正式文件放在：
 
 - `assets/audio/bgm/`
 - `assets/audio/sfx/combat/`
@@ -54,7 +54,7 @@ SFX 不在首屏预加载。第一次触发某个 SFX 时创建对应 `Audio` �
 - 结算斩字
 - 2 条旧关卡 BGM 备选
 
-这些先作为素材储备。后续做动态音乐时再接，不在 v0.2.64 里强行叠层。
+这些先作为素材储备。后续做动态音乐时再接，不在当前版本里强行叠层。
 
 ### 玩家动作 SFX
 
@@ -169,9 +169,10 @@ ffprobe -v error ... each assets/audio/*.mp3
 - 静音后强制 Boss 读招，确认不会加载新 SFX
 - 5 秒有声自动战斗，确认 `longTasks=0`，`lastError=""`
 
-当前 v0.2.64 验收记录见：
+当前 v0.2.65 验收记录见：
 
 - `docs/verification/v0264-sfx-integration.md`
+- `docs/verification/v0265-audio-plan-landing.md`
 
 ## 后续扩展顺序
 
