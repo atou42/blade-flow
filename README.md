@@ -6,7 +6,7 @@ The game looks like a card game, but it should feel like a fast combo action gam
 
 The current main direction is a three-act roguelike. The first build should prove the combat feel before expanding the content pool.
 
-Current playable version: v0.2.69, combat SFX now preload as decoded Web Audio buffers before battle, so card swipes no longer use the HTMLAudio playback path. It includes v0.2.68 hand-slot render slimming, v0.2.67 audio-path scheduling, and v0.2.66 right-swipe asset prewarming. Unlocked-audio mobile trace now verifies right-swipe input with no resource loads, no long tasks, and no audio errors.
+Current playable version: v0.2.70, mobile combat layout compresses the top chrome, keeps card bottoms aligned, hides the confusing Boss read helper point/line on phone viewports, and reserves more space below the hand for upward swipes. It includes v0.2.69 Web Audio SFX predecode, v0.2.68 hand-slot render slimming, v0.2.67 audio-path scheduling, and v0.2.66 right-swipe asset prewarming.
 
 Live URL: https://games.atou.cc/combo-card-roguelike/versions/a/
 
@@ -108,5 +108,6 @@ Live URL: https://games.atou.cc/combo-card-roguelike/versions/a/
 - `docs/verification/v0267-unlocked-audio-swipe-jank.md` records the v0.2.67 unlocked-audio swipe jank verification.
 - `docs/verification/v0268-hand-slot-render-jank.md` records the v0.2.68 hand-slot render jank verification.
 - `docs/verification/v0269-webaudio-sfx-buffer.md` records the v0.2.69 Web Audio SFX buffer verification.
+- `docs/verification/v0270-mobile-combat-layout.md` records the v0.2.70 mobile combat layout verification.
 - `docs/verification/v0268-card-selection-audio-assets.md` records the v0.2.68 card-selection UI audio asset trimming verification.
 - `docs/verification/art-asset-replacement-acceptance.md` defines the acceptance gate for fully replacing the live combat art.

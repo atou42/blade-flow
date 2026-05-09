@@ -235,6 +235,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.70",
+    title: "手机战斗留白",
+    date: "2026-05-09",
+    icon: "距",
+    color: "#4bbda8",
+    points: ["手机顶部信息压缩", "手牌底部操作区对齐", "隐藏遮挡 Boss 的读招辅助点线"],
+  },
+  {
     id: "v0.2.69",
     title: "音效预解码",
     date: "2026-05-09",
@@ -4598,7 +4606,7 @@ function renderHand() {
         <span class="card-grade" aria-label="${grade.label}阶">${"◆".repeat(grade.pips)}</span>
         <strong class="card-name">${card.name}</strong>
         <span class="card-action">${card.tap}</span>
-        ${affinityText ? `<span class="card-affinity">${affinityText}</span>` : ""}
+        <span class="card-affinity ${affinityText ? "" : "is-empty"}">${affinityText}</span>
         <span class="card-arrows" aria-hidden="true">
           ${affinity.directions
             .map(
@@ -5104,7 +5112,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.69",
+      version: "v0.2.70",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -5200,9 +5208,9 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>波</i>当前 v0.2.69</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>距</i>当前 v0.2.70</small>
         <b>版本记录</b>
-        <span class="choice-effect">${effectTextMarkup("这版把战斗音效改成预解码 buffer 播放。")}</span>
+        <span class="choice-effect">${effectTextMarkup("这版压缩手机顶部信息，并给底部上划留出安全距离。")}</span>
       </button>
       <button class="choice" type="button" data-copy-mobile-link>
         <small class="choice-meta" style="${routeStyle("control")}"><i>链</i>Alpha 5</small>
