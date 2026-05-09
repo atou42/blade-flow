@@ -2,7 +2,7 @@
 
 日期：2026-05-09
 
-本文定义 Blade Flow 的音频接入方式。`audio-design-spec.md` 负责声音风格和素材标准，本文负责运行时怎么加载、什么时候播放、怎么验收。
+本文定义 Blade Flow 的音频接入方式。`audio-design-spec.md` 负责声音风格和素材标准，本文负责运行时怎么加载、什么时候播放、怎么验收。下一阶段的动作后摇、Boss 真确认、假抬手诱骗、左划成功/空挥和反制读招音效需求见 `docs/design/action-recovery-audio-spec.md`。
 
 ## 当前接入状态
 
