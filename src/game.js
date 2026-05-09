@@ -235,6 +235,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.68",
+    title: "手牌轻刷",
+    date: "2026-05-09",
+    icon: "帧",
+    color: "#a6d93a",
+    points: ["出牌后只替换当前手牌槽", "战斗状态刷新移到下一帧", "有声手机 trace 右滑压到 5ms 内"],
+  },
+  {
     id: "v0.2.67",
     title: "划动降卡",
     date: "2026-05-09",
@@ -2058,6 +2066,7 @@ els.rankHits = els.styleRank.querySelector("b");
 
 const renderCache = new WeakMap();
 let frameHandle = null;
+let renderFrameHandle = null;
 let lowPowerTimer = null;
 let bossTimelineTimer = null;
 let bossTimelineToken = 0;
@@ -2129,6 +2138,14 @@ function applyPerformanceClass() {
   els.game.dataset.performance = label;
   document.documentElement.classList.toggle("is-low-power", label === "save");
   setCachedValue(els.game, "performance", label);
+}
+
+function scheduleRender() {
+  if (renderFrameHandle !== null) return;
+  renderFrameHandle = window.requestAnimationFrame(() => {
+    renderFrameHandle = null;
+    render();
+  });
 }
 
 function restartClass(el, name) {
@@ -3769,10 +3786,39 @@ function drawCard() {
   }
 }
 
+function createEmptyHandCard(index) {
+  const emptyEl = document.createElement("div");
+  emptyEl.className = "card card-empty";
+  emptyEl.dataset.slotKey = `empty-${index}`;
+  emptyEl.style.setProperty("--route-color", routeInfo("neutral").color);
+  emptyEl.style.setProperty("--route-shape", routeInfo("neutral").shape);
+  emptyEl.style.setProperty("--route-stamp", `url(${routeInfo("neutral").stamp})`);
+  emptyEl.style.setProperty("--grade-card", `url(${gradeMeta.common.asset})`);
+  emptyEl.style.setProperty("--grade-color", gradeMeta.common.color);
+  emptyEl.innerHTML = `
+    <span class="card-sigil">◇</span>
+    <span class="card-route"><i>◇</i>补牌中</span>
+    <strong class="card-name">蓄牌</strong>
+    <span class="card-action">下一张正在进入手牌。</span>
+    <span class="card-arrows" aria-hidden="true">
+      <span>·</span><span>·</span><span>·</span><span>·</span>
+    </span>
+  `;
+  return emptyEl;
+}
+
+function renderEmptyHandSlot(index) {
+  const emptyEl = createEmptyHandCard(index);
+  const current = els.hand.children[index];
+  if (current) current.replaceWith(emptyEl);
+  else els.hand.append(emptyEl);
+  window.requestAnimationFrame(refreshCardMotionCache);
+}
+
 function replaceCard(index) {
   state.hand[index] = null;
   queueDrawIfNeeded();
-  renderHand();
+  renderEmptyHandSlot(index);
 }
 
 function playCard(index, direction = "tap") {
@@ -3875,7 +3921,7 @@ function playCard(index, direction = "tap") {
   }
 
   applyActionPressure(card, route, direction, perfect);
-  render();
+  scheduleRender();
 }
 
 function damageFor(card, route, direction, perfect) {
@@ -4430,24 +4476,7 @@ function renderHand() {
   const slots = Array.from({ length: handLimit() }, (_, index) => state.hand[index] ?? null);
   const nextChildren = slots.map((card, index) => {
       if (!card) {
-        const emptyEl = document.createElement("div");
-        emptyEl.className = "card card-empty";
-        emptyEl.dataset.slotKey = `empty-${index}`;
-        emptyEl.style.setProperty("--route-color", routeInfo("neutral").color);
-        emptyEl.style.setProperty("--route-shape", routeInfo("neutral").shape);
-        emptyEl.style.setProperty("--route-stamp", `url(${routeInfo("neutral").stamp})`);
-        emptyEl.style.setProperty("--grade-card", `url(${gradeMeta.common.asset})`);
-        emptyEl.style.setProperty("--grade-color", gradeMeta.common.color);
-        emptyEl.innerHTML = `
-          <span class="card-sigil">◇</span>
-          <span class="card-route"><i>◇</i>补牌中</span>
-          <strong class="card-name">蓄牌</strong>
-          <span class="card-action">下一张正在进入手牌。</span>
-          <span class="card-arrows" aria-hidden="true">
-            <span>·</span><span>·</span><span>·</span><span>·</span>
-          </span>
-        `;
-        return emptyEl;
+        return createEmptyHandCard(index);
       }
       const cardEl = document.createElement("button");
       const route = routeInfo(card.route);
@@ -4987,7 +5016,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.67",
+      version: "v0.2.68",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -5083,9 +5112,9 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>稳</i>当前 v0.2.67</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>帧</i>当前 v0.2.68</small>
         <b>版本记录</b>
-        <span class="choice-effect">${effectTextMarkup("这版把手机划动音效从输入帧里移出去。")}</span>
+        <span class="choice-effect">${effectTextMarkup("这版把出牌后的手牌重刷和状态刷新移出输入帧。")}</span>
       </button>
       <button class="choice" type="button" data-copy-mobile-link>
         <small class="choice-meta" style="${routeStyle("control")}"><i>链</i>Alpha 5</small>
