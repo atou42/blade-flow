@@ -25,6 +25,7 @@ Live URL: https://games.atou.cc/combo-card-roguelike/versions/a/
 - `docs/design/content-asset-spec.md` defines the Phase 1 Boss, enemy, equipment, relic, contract, and route-map asset requirements.
 - `docs/design/audio-design-spec.md` defines BGM, weapon sound identity, Boss audio, hit materials, UI sounds, mixing, and audio acceptance criteria.
 - `docs/design/audio-integration-plan.md` defines runtime loading, trigger mapping, low-power behavior, debug hooks, and acceptance checks for audio.
+- `docs/design/card-selection-audio-spec.md` defines card-selection UI sounds, trigger rules, warmup/cache requirements, and anti-stutter acceptance.
 - `docs/design/full-design-spec.md` keeps the complete working spec before splitting.
 - `docs/design/visual-language-principles.md` records the color, icon, and shape rules for readable routes and builds.
 - `docs/design/style-unification-spec.md` defines the unified guohua ink style rules for Bosses, enemies, equipment, rewards, map nodes, cards, UI, and VFX.
