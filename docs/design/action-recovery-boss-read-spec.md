@@ -4,7 +4,7 @@
 
 本文定义下一阶段玩法改动：动作后摇、左划三结果、Boss 读招矩阵、错读反馈和第一批成长属性。目标是把 Blade Flow 从“等进度条然后左划”推进到“看 Boss、听确认点、选择正确招式，并承担出手后摇”。
 
-这份 spec 只定义下一版可落地切片，不重写完整肉鸽结构。音效素材需求见 `docs/design/action-recovery-audio-spec.md`。
+这份 spec 只定义下一版可落地切片，不重写完整肉鸽结构。音效素材需求和已生成文件见 `docs/design/action-recovery-audio-spec.md`。
 
 ## 目标
 
@@ -126,7 +126,7 @@ Boss 后续可以记录玩家方向倾向。连续左划多，Boss 提高假抬�
 
 ## 音频和视觉反馈
 
-声音需求按 `docs/design/action-recovery-audio-spec.md` 执行。关键声音是普通左划、完美左划、空左划、后摇取消、后摇拖尾、Boss 真确认、假抬手诱骗和 Boss 看穿。
+声音需求按 `docs/design/action-recovery-audio-spec.md` 执行。15 个正式 SFX 已在 `assets/audio/sfx/` 下可用，原始变体保留在 `assets/generated/audio/v0.2/`。关键声音是普通左划、完美左划、空左划、后摇取消、后摇拖尾、Boss 真确认、假抬手诱骗和 Boss 看穿。
 
 视觉反馈保持克制。完美左划给紫色反震、Boss 小硬直、卡牌方向箭头短亮。空左划给角色后撤残影断掉、卡牌短暗、Boss 压迫推进。重招空挥给重刃拖尾落空，不给破势爆点。
 

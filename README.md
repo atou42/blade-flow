@@ -38,6 +38,7 @@ Live URL: https://games.atou.cc/combo-card-roguelike/versions/a/
 - `docs/roadmap/phase-1-roguelike-vertical-slice.md` defines the first roguelike slice.
 - `docs/roadmap/phase-2-content-alpha.md` defines the larger content alpha.
 - `docs/roadmap/phase-3-steam-release.md` defines the Steam-ready release target.
+- `docs/roadmap/action-recovery-boss-read-goal.md` defines the ready goal for the next action-recovery and Boss-read implementation pass.
 - `docs/roadmap/remaining-spec-high-standard-goal.md` consolidates the unfinished specs into the next high-standard alpha goal.
 - `docs/verification/phase0-adversarial.md` records the first combat prototype verification.
 - `docs/verification/phase1-adversarial.md` records the roguelike slice verification.

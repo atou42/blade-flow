@@ -26,6 +26,38 @@ Boss 假抬手和真出手必须可听地区分。假抬手可以诱人，但不
 
 ## 新增音效清单
 
+当前状态：本阶段 15 个正式 SFX 已生成并放入正式目录。所有文件时长都在 180ms 到 420ms 范围内。原始 A/B 变体保留在 `assets/generated/audio/v0.2/` 下。
+
+玩家动作正式文件在 `assets/audio/sfx/combat/`：
+
+| 运行时 key | 文件 | 时长 | 语义 |
+| --- | --- | ---: | --- |
+| `playerLeftSidestep` | `sfx-player-left-sidestep-01.mp3` | 200ms | 普通左划侧退 |
+| `playerLeftPerfectCounter` | `sfx-player-left-perfect-counter-02.mp3` | 300ms | 读中真攻击的完美闪反 |
+| `playerLeftWhiff` | `sfx-player-left-whiff-01.mp3` | 350ms | 空闪/被假抬手骗 |
+| `playerRecoveryCancel` | `sfx-player-recovery-cancel-01.mp3` | 200ms | 正确读招取消后摇 |
+| `playerRecoveryDrag` | `sfx-player-recovery-drag-01.mp3` | 400ms | 长后摇开始 |
+| `playerHeavyWhiff` | `sfx-player-heavy-whiff-01.mp3` | 380ms | 重击空挥 |
+
+Boss 读招正式文件在 `assets/audio/sfx/boss/`：
+
+| 运行时 key | 文件 | 时长 | 语义 |
+| --- | --- | ---: | --- |
+| `bossTrueConfirm` | `sfx-boss-true-confirm-01.mp3` | 220ms | 真攻击确认点 |
+| `bossFeintFakeTell` | `sfx-boss-feint-fake-tell-01.mp3` | 300ms | 假抬手诱导 |
+| `bossFeintTrueTell` | `sfx-boss-feint-true-tell-01.mp3` | 220ms | 假抬手后真攻击 |
+| `bossBackstepOpen` | `sfx-boss-backstep-open-01.mp3` | 350ms | 后撤露出追击窗口 |
+| `bossGroundGrabSuction` | `sfx-boss-ground-grab-suction-01.mp3` | 380ms | 地裂抓取启动 |
+| `bossAdaptRead` | `sfx-boss-adapt-read-01.mp3` | 250ms | Boss 看穿重复方向 |
+| `bossPunishStart` | `sfx-boss-punish-start-01.mp3` | 300ms | 长后摇期间 Boss 抢招 |
+
+教学 UI 正式文件在 `assets/audio/sfx/ui/`：
+
+| 运行时 key | 文件 | 时长 | 语义 |
+| --- | --- | ---: | --- |
+| `uiReadCorrect` | `sfx-ui-read-correct-01.mp3` | 200ms | 训练读招正确 |
+| `uiReadWrong` | `sfx-ui-read-wrong-01.mp3` | 220ms | 训练读招错误 |
+
 ### 玩家动作结果
 
 `playerLeftSidestep`
@@ -198,41 +230,9 @@ Boss 假抬手和真出手必须可听地区分。假抬手可以诱人，但不
 
 重复同方向会触发 `bossAdaptRead`。这个声音只在反制真正形成时播放，不在每次重复出牌时播放。
 
-## 文件命名建议
+## 文件与原始变体
 
-正式文件放入现有目录。
-
-玩家动作结果放在 `assets/audio/sfx/combat/`：
-
-```text
-sfx-player-left-sidestep-01.mp3
-sfx-player-left-perfect-counter-02.mp3
-sfx-player-left-whiff-01.mp3
-sfx-player-recovery-cancel-01.mp3
-sfx-player-recovery-drag-01.mp3
-sfx-player-heavy-whiff-01.mp3
-```
-
-Boss 读招与反制放在 `assets/audio/sfx/boss/`：
-
-```text
-sfx-boss-true-confirm-01.mp3
-sfx-boss-feint-fake-tell-01.mp3
-sfx-boss-feint-true-tell-01.mp3
-sfx-boss-backstep-open-01.mp3
-sfx-boss-ground-grab-suction-01.mp3
-sfx-boss-adapt-read-01.mp3
-sfx-boss-punish-start-01.mp3
-```
-
-教学反馈放在 `assets/audio/sfx/ui/`：
-
-```text
-sfx-ui-read-correct-01.mp3
-sfx-ui-read-wrong-01.mp3
-```
-
-原始生成文件保留在 `assets/generated/audio/v0.2/action-recovery-raw/`、`boss-read-raw/`、`ui-read-raw/`。
+正式接入时使用上方已生成文件。原始生成文件保留在 `assets/generated/audio/v0.2/action-recovery-raw/`、`assets/generated/audio/v0.2/boss-read-raw/`、`assets/generated/audio/v0.2/ui-read-raw/`。
 
 ## 生成提示方向
 
