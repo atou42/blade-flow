@@ -16,6 +16,7 @@ Live URL: https://games.atou.cc/combo-card-roguelike/versions/a/
 - `docs/research/subagent-synthesis.md` records the multi-agent ideation passes and filtering rules.
 - `docs/design/core-combat.md` defines input, combo flow, route rewards, and first playable goals.
 - `docs/design/archetype-card-affinity-spec.md` defines how builds care about specific card-direction pairs, blade stance, card anchors, visual lighting, and Boss counterplay.
+- `docs/design/action-recovery-boss-read-spec.md` defines the next-stage action recovery, left-flick outcomes, Boss read matrix, and learning feedback.
 - `docs/design/meta-progression-spec.md` defines long-term out-of-run growth through forge recipes, weapon schools, route map unlocks, profiles, and non-stat progression.
 - `docs/design/starter-deck.md` defines the first twelve cards and their directional variants.
 - `docs/design/roguelike-structure.md` defines run shape, rewards, long-term systems, and the three-act structure.
