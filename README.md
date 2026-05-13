@@ -1,128 +1,113 @@
-# Combo Card Roguelike
+# Blade Flow
 
-This is a portrait mobile roguelike action-card game concept.
+一款竖屏动作卡牌 Roguelike 原型。
 
-The game looks like a card game, but it should feel like a fast combo action game. The player reads a flowing four-card hand, taps or flicks cards as attacks, and tries to keep a stylish combo alive under pressure.
+它看起来像卡牌游戏，但目标手感更接近动作游戏。玩家在手机上通过划动卡牌出招，观察 Boss 的读招提示，在后摇、连击、破招、追击和撤身之间做选择。
 
-The current main direction is a three-act roguelike. The first build should prove the combat feel before expanding the content pool.
+当前线上版本是 `v0.2.81 四向意图`。
 
-Current playable version: v0.2.81, adds the first four-direction combat intent pass: up-chase, left-break, right-heavy, and down-retreat now align across cards, Boss reads, recovery, feedback, and debug probes.
+试玩地址：https://games.atou.cc/combo-card-roguelike/versions/a/
 
-Live URL: https://games.atou.cc/combo-card-roguelike/versions/a/
+内部 Gitea 仓库：https://git.talesofai.com/atou/blade-flow
 
-## Document Map
+## 当前玩法
 
-- `docs/research/reference-games.md` records the main reference games and what to borrow.
-- `docs/research/subagent-synthesis.md` records the multi-agent ideation passes and filtering rules.
-- `docs/design/core-combat.md` defines input, combo flow, route rewards, and first playable goals.
-- `docs/design/archetype-card-affinity-spec.md` defines how builds care about specific card-direction pairs, blade stance, card anchors, visual lighting, and Boss counterplay.
-- `docs/design/action-recovery-boss-read-spec.md` defines the next-stage action recovery, left-flick outcomes, Boss read matrix, and learning feedback.
-- `docs/design/boss-readability-action-commitment-spec.md` defines the next-stage Boss visual read grammar, mistake feedback, and stronger action commitment targets.
-- `docs/design/poise-vulnerability-spec.md` defines the next-stage slow-armored Boss poise break, vulnerability window, and instant reward draw rules.
-- `docs/design/meta-progression-spec.md` defines long-term out-of-run growth through forge recipes, weapon schools, route map unlocks, profiles, and non-stat progression.
-- `docs/design/starter-deck.md` defines the first twelve cards and their directional variants.
-- `docs/design/roguelike-structure.md` defines run shape, rewards, long-term systems, and the three-act structure.
-- `docs/design/relic-pool.md` records the screened relic pool.
-- `docs/design/talent-pool.md` records the screened talent pool.
-- `docs/design/equipment-pool.md` records the screened equipment pool.
-- `docs/design/content-asset-spec.md` defines the Phase 1 Boss, enemy, equipment, relic, contract, and route-map asset requirements.
-- `docs/design/audio-design-spec.md` defines BGM, weapon sound identity, Boss audio, hit materials, UI sounds, mixing, and audio acceptance criteria.
-- `docs/design/audio-integration-plan.md` defines runtime loading, trigger mapping, low-power behavior, debug hooks, and acceptance checks for audio.
-- `docs/design/card-selection-audio-spec.md` defines card-selection UI sounds, trigger rules, warmup/cache requirements, and anti-stutter acceptance.
-- `docs/design/action-recovery-audio-spec.md` defines the next-stage SFX needs for action recovery, Boss read confirms, and left-flick success/whiff feedback.
-- `docs/design/full-design-spec.md` keeps the complete working spec before splitting.
-- `docs/design/visual-language-principles.md` records the color, icon, and shape rules for readable routes and builds.
-- `docs/design/style-unification-spec.md` defines the unified guohua ink style rules for Bosses, enemies, equipment, rewards, map nodes, cards, UI, and VFX.
-- `docs/design/art-direction-ink-blade.md` records the first water-ink blade art direction and asset rules.
-- `docs/design/art-asset-replacement-spec.md` defines the approved stage-layout art replacement scope.
-- `docs/performance/mobile-thermal-audit-v1.md` records the v0.2.18 mobile thermal performance audit and optimization result.
-- `docs/roadmap/phase-0-combat-prototype.md` defines the first playable combat prototype.
-- `docs/roadmap/phase-1-roguelike-vertical-slice.md` defines the first roguelike slice.
-- `docs/roadmap/phase-2-content-alpha.md` defines the larger content alpha.
-- `docs/roadmap/phase-3-steam-release.md` defines the Steam-ready release target.
-- `docs/roadmap/action-recovery-boss-read-goal.md` defines the ready goal for the next action-recovery and Boss-read implementation pass.
-- `docs/roadmap/remaining-spec-high-standard-goal.md` consolidates the unfinished specs into the next high-standard alpha goal.
-- `docs/verification/phase0-adversarial.md` records the first combat prototype verification.
-- `docs/verification/phase1-adversarial.md` records the roguelike slice verification.
-- `docs/verification/phase2-adversarial.md` records the content alpha verification.
-- `docs/verification/deployment-adversarial.md` records the live `games.atou.cc` deployment verification.
-- `docs/verification/v021-notebook-adversarial.md` records the Combo Notebook verification.
-- `docs/verification/v027-visual-versioning-adversarial.md` records the visual changelog and route identity verification.
-- `docs/verification/v028-hit-feedback-adversarial.md` records the fighter readability and hit feedback verification.
-- `docs/verification/v029-combo-stage-adversarial.md` records the combat-stage spacing and combo feedback verification.
-- `docs/verification/v0210-card-direction-adversarial.md` records the directional card exit verification.
-- `docs/verification/v0211-ink-art-assets-adversarial.md` records the ink blade asset verification.
-- `docs/verification/v0212-stage-art-replacement.md` records the approved stage art replacement verification.
-- `docs/verification/v0213-ui-style-unification.md` records the clean ink UI style unification verification.
-- `docs/verification/v0214-image2-ui-assets.md` records the image2-generated UI asset verification.
-- `docs/verification/v0215-guohua-card-ui.md` records the guohua card-grade and route-stamp verification.
-- `docs/verification/v0216-readable-boss-forms.md` records the readability and boss-form verification.
-- `docs/verification/v0218-mobile-performance.md` records the v0.2.18 mobile performance verification.
-- `docs/verification/v0219-blade-path-roguelike.md` records the v0.2.19 上行刀路 implementation and performance verification.
-- `docs/verification/v0220-numeric-readability.md` records the v0.2.20 numeric effect readability verification.
-- `docs/verification/v0221-rarity-stamps.md` records the v0.2.21 reward rarity stamp verification.
-- `docs/verification/v0222-type-card-faces.md` records the v0.2.22 reward type card-face verification.
-- `docs/verification/v0223-local-save-slots.md` records the v0.2.23 browser local save-slot verification.
-- `docs/verification/v0224-forge-profile.md` records the v0.2.24 forge recipe and profile progression verification.
-- `docs/verification/v0226-construction-anchor.md` records the v0.2.26 three-slot reward, construction anchor, draw preview, and path-choice verification.
-- `docs/verification/v0227-boss-action-reads.md` records the v0.2.27 Boss action-read verification.
-- `docs/verification/v0228-six-starting-weapons.md` records the v0.2.28 six starting weapon verification.
-- `docs/verification/v0229-reward-pool.md` records the v0.2.29 relic, talent, contract, and numeric reward-pool verification.
-- `docs/verification/v0230-bad-save-locking.md` records the v0.2.30 bad save-slot and profile locking verification.
-- `docs/verification/v0231-three-act-roster.md` records the v0.2.31 three-act enemy, elite, Boss, and map-roster verification.
-- `docs/verification/v0231-three-act-clear-record.md` records the v0.2.31 local and live full three-act clear-flow verification under custom clear-test tuning.
-- `docs/verification/v0232-low-power-performance.md` records the v0.2.32 low-power performance profile and tuner-parameter verification.
-- `docs/verification/v0233-meta-atlas-profile.md` records the v0.2.33 weapon-school, training, route-atlas, debug-profile, and meta-progression verification.
-- `docs/verification/v0234-training-lessons.md` records the v0.2.34 training-lesson combat, fixed Boss action, and no-material reward verification.
-- `docs/verification/v0235-daily-blade-path.md` records the v0.2.35 daily fixed-seed short-route challenge and no-material profile score verification.
-- `docs/verification/v0236-bad-data-matrix.md` records the v0.2.36 profile and run-slot bad-data matrix verification.
-- `docs/verification/v0237-school-recipes.md` records the v0.2.37 expanded forge recipe, weapon-school node, and card-window verification.
-- `docs/verification/v0238-daily-contracts.md` records the v0.2.38 daily special contract-pool verification.
-- `docs/verification/v0239-three-archetype-normal-clear.md` records the v0.2.39 normal-difficulty three-archetype consecutive clear verification.
-- `docs/verification/v0240-boss-action-atlas.md` records the v0.2.40 Boss action image-state verification.
-- `docs/verification/v0241-route-atlas-branches.md` records the v0.2.41 route-atlas long-term branch verification.
-- `docs/verification/v0242-mobile-long-run-probe.md` records the v0.2.42 mobile long-run probe verification.
-- `docs/verification/v0243-boss-frame-sequence.md` records the v0.2.43 Boss action frame-sequence verification.
-- `docs/verification/v0244-storm-boss-sprite-sheet.md` records the v0.2.44 image2-generated Storm Captain sprite-sheet verification.
-- `docs/verification/v0245-boss-sprite-sheet-coverage.md` records the v0.2.45 image2-generated Redline, Mirror, and Shield Boss sprite-sheet verification.
-- `docs/verification/v0246-mobile-acceptance-panel.md` records the v0.2.46 phone acceptance panel verification.
-- `docs/verification/v0247-mobile-acceptance-export.md` records the v0.2.47 phone acceptance export verification.
-- `docs/verification/v0248-mobile-acceptance-direct-link.md` records the v0.2.48 direct phone-acceptance URL verification.
-- `docs/verification/v0249-mobile-acceptance-share.md` records the v0.2.49 native phone-acceptance share verification.
-- `docs/verification/v0250-mobile-acceptance-save-share.md` records the v0.2.50 save-and-share phone-acceptance verification.
-- `docs/verification/mobile-acceptance-validator.md` records the final real-phone JSON validation gate.
-- `docs/verification/final-mobile-acceptance-record.md` records the final mobile acceptance result under the explicit simulated-mobile downgrade.
-- `docs/verification/final-mobile-simulated-acceptance-record.md` records the explicit simulated-mobile downgrade for the final mobile acceptance gate.
-- `docs/roadmap/remaining-spec-completion-audit-v0255-simulated-acceptance.md` records the completion audit after that downgrade.
-- `docs/verification/v0251-mobile-acceptance-save-gates.md` records the v0.2.51 in-page save gate verification.
-- `docs/verification/v0252-mobile-acceptance-stale-record-gates.md` records the v0.2.52 stale invalid record export gates.
-- `docs/verification/v0253-mobile-acceptance-link-copy.md` records the v0.2.53 real-phone acceptance link-copy verification.
-- `docs/verification/v0254-mobile-client-validation.md` records the v0.2.54 automatic mobile client validation verification.
-- `docs/verification/v0255-mobile-cutout-safe-area.md` records the v0.2.55 Boss sprite cutout and short mobile viewport verification.
-- `docs/verification/v0256-route-choice-visual-cues.md` records the v0.2.56 route-choice visual cue verification.
-- `docs/verification/v0257-main-menu-bgm.md` records the v0.2.57 main-menu BGM verification.
-- `docs/verification/v0258-act-bgm.md` records the v0.2.58 three-act BGM verification.
-- `docs/verification/v0259-tuner-readability.md` records the v0.2.59 tuner readability verification.
-- `docs/verification/v0260-boss-bgm.md` records the v0.2.60 Boss-specific BGM verification.
-- `docs/verification/v0261-act-bgm-distinction.md` records the v0.2.61 second- and third-act BGM distinction verification.
-- `docs/verification/v0262-boss-hp-pressure.md` records the v0.2.62 default Boss HP pressure verification.
-- `docs/verification/v0263-r2-image-hosting.md` records the v0.2.63 Cloudflare R2 WebP hosting verification.
-- `docs/verification/v0264-sfx-integration.md` records the v0.2.64 SFX integration verification.
-- `docs/verification/v0265-audio-plan-landing.md` records the v0.2.65 audio integration plan landing verification.
-- `docs/verification/v0266-right-swipe-stutter.md` records the v0.2.66 right-swipe stutter elimination verification.
-- `docs/verification/v0267-unlocked-audio-swipe-jank.md` records the v0.2.67 unlocked-audio swipe jank verification.
-- `docs/verification/v0268-hand-slot-render-jank.md` records the v0.2.68 hand-slot render jank verification.
-- `docs/verification/v0269-webaudio-sfx-buffer.md` records the v0.2.69 Web Audio SFX buffer verification.
-- `docs/verification/v0270-mobile-combat-layout.md` records the v0.2.70 mobile combat layout verification.
-- `docs/verification/v0271-action-recovery-boss-read.md` records the v0.2.71 action recovery, Boss read windows, SFX predecode, and local browser probe verification.
-- `docs/verification/v0272-recovery-cache-fix.md` records the v0.2.72 mobile cache-bust, helper-line hiding, and right-flick recovery enforcement verification.
-- `docs/verification/v0273-action-commitment.md` records the v0.2.73 normal-action recovery lock and four-card burst probe verification.
-- `docs/verification/v0274-boss-readability-action-commitment.md` records the v0.2.74 Boss telegraph, mistake feedback, action commitment, and local browser verification.
-- `docs/verification/v0279-poise-break-timing.md` records the v0.2.79 heavy Boss poise-break timing verification.
-- `docs/verification/v0278-fast-three-stage-intercept.md` records the v0.2.78 fast Boss three-stage left-intercept verification.
-- `docs/verification/v0277-fast-window.md` records the v0.2.77 fast Boss intercept-window verification.
-- `docs/verification/v0276-fast-read-clarity.md` records the v0.2.76 fast-read prompt and player blade-glint removal verification.
-- `docs/verification/v0275-poise-vulnerability.md` records the v0.2.75 poise break, vulnerability, immediate draw, action commitment, and mobile browser verification.
-- `docs/verification/v0268-card-selection-audio-assets.md` records the v0.2.68 card-selection UI audio asset trimming verification.
-- `docs/verification/v0281-four-direction-combat-intent.md` records the v0.2.81 four-direction combat intent verification.
-- `docs/verification/art-asset-replacement-acceptance.md` defines the acceptance gate for fully replacing the live combat art.
+战斗的核心是四个方向。
+
+上划是追身。Boss 露出破绽、后撤、跳空或拉开距离时，上划可以追上去保住连击。
+
+左划是快刀破招。它适合抢快招、截断 Boss 真出手，但伤害不高，主要价值是打断节奏。
+
+右划是重刀。它伤害高，能兑现易伤和破势收益，但后摇大，乱用会被 Boss 抢招。
+
+下划是撤身回手。它更安全，适合躲危险和保命，但会断连击，输出收益低。
+
+这套方向不是简单 QTE。每个 Boss 局面都应该至少有一个高收益选择和一个安全选择，玩家要根据当前手牌、Boss 动作、自己的后摇和连击价值判断怎么出手。
+
+## 游戏状态
+
+当前版本已经有完整的三幕结构、路线选择、武器选择、Boss 战、音效和 BGM、手机安全区处理、调试入口、地图选择测试入口，以及一套持续迭代的设计文档。
+
+最新阶段重点是把方向语义统一起来。卡牌、Boss 提示、反馈日志、后摇代价、音效触发和调试探针已经统一到上追、左破、右重、下退这套规则上。
+
+项目还处在原型期。它已经能玩，也能部署到 `games.atou.cc`，但数值、Boss 动作表现、关卡节奏和长期成长还在继续打磨。
+
+## 项目结构
+
+`index.html` 是游戏入口。
+
+`src/game.js` 是主要游戏逻辑，包含战斗、卡牌、Boss 行为、路线、奖励、音频触发和调试接口。
+
+`styles.css` 是竖屏手机 UI 和战斗视觉样式。
+
+`assets/audio/` 放正式接入游戏的 BGM 和音效。
+
+`assets/art/world-map-v1/` 放正式接入的地图 webp 图。
+
+`assets/generated/` 放生成过程记录和原始素材，便于以后回看、重选和再加工。
+
+`docs/design/` 放玩法、音频、美术、世界观、地图流和阶段设计 spec。
+
+`docs/verification/` 放每个版本的验收记录。
+
+## 重要文档
+
+如果只想理解当前游戏，先看 `docs/design/four-direction-combat-intent-spec.md`、`docs/design/world-map-flow-spec.md`、`docs/design/world-bible.md`。
+
+如果想看最新实现是否验过，先看 `docs/verification/v0281-four-direction-combat-intent.md`。
+
+如果要继续做音频和动作反馈，先看 `docs/design/audio-design-spec.md`、`docs/design/audio-integration-plan.md`、`docs/design/action-recovery-audio-spec.md`。
+
+如果要继续做地图和世界观，先看 `docs/design/world-map-flow-spec.md` 和 `docs/design/world-bible.md`。
+
+## 本地运行
+
+这个项目不需要构建。进入项目目录后起一个静态服务器即可。
+
+```bash
+python3 -m http.server 4173
+```
+
+然后打开：
+
+```text
+http://localhost:4173/
+```
+
+调试入口可以加 `?debug=1`。
+
+```text
+http://localhost:4173/?debug=1
+```
+
+## 发布方式
+
+线上站点由 `/Users/atou/games/study/steam-gameplay-reports/pattern-atlas-site` 里的 `games.atou.cc` hub 发布。
+
+正常流程是先把当前项目同步到 hub 的 playable 目录，再更新 hub 的游戏数据，然后跑发布脚本。不要直接手改 hub 里的生成文件。
+
+```bash
+npm run publish-games
+```
+
+## 当前资产
+
+正式游戏资产已经放在项目里。
+
+地图图在 `assets/art/world-map-v1/`。
+
+BGM 在 `assets/audio/bgm/`。
+
+战斗、Boss 和 UI 音效在 `assets/audio/sfx/`。
+
+原始生成记录和备选素材在 `assets/generated/`。
+
+这些资产已经推到内部 Gitea，方便团队成员查看和复用。
+
+## 版本记录
+
+当前版本是 `v0.2.81 四向意图`。
+
+这一版把上划、左划、右划、下划重新定义为四种明确战斗意图，并同步改了卡牌方向、Boss 提示、后摇反馈和调试验收。
+
+更完整的版本验收记录在 `docs/verification/`。
