@@ -4,5 +4,4 @@ output/
 .DS_Store
 node_modules/
 *.log
-assets/art/
 assets/generated/v*/

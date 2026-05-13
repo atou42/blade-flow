@@ -6,7 +6,7 @@ The game looks like a card game, but it should feel like a fast combo action gam
 
 The current main direction is a three-act roguelike. The first build should prove the combat feel before expanding the content pool.
 
-Current playable version: v0.2.70, mobile combat layout compresses the top chrome, keeps card bottoms aligned, hides the confusing Boss read helper point/line on phone viewports, and reserves more space below the hand for upward swipes. It includes v0.2.69 Web Audio SFX predecode, v0.2.68 hand-slot render slimming, v0.2.67 audio-path scheduling, and v0.2.66 right-swipe asset prewarming.
+Current playable version: v0.2.81, adds the first four-direction combat intent pass: up-chase, left-break, right-heavy, and down-retreat now align across cards, Boss reads, recovery, feedback, and debug probes.
 
 Live URL: https://games.atou.cc/combo-card-roguelike/versions/a/
 
@@ -17,6 +17,8 @@ Live URL: https://games.atou.cc/combo-card-roguelike/versions/a/
 - `docs/design/core-combat.md` defines input, combo flow, route rewards, and first playable goals.
 - `docs/design/archetype-card-affinity-spec.md` defines how builds care about specific card-direction pairs, blade stance, card anchors, visual lighting, and Boss counterplay.
 - `docs/design/action-recovery-boss-read-spec.md` defines the next-stage action recovery, left-flick outcomes, Boss read matrix, and learning feedback.
+- `docs/design/boss-readability-action-commitment-spec.md` defines the next-stage Boss visual read grammar, mistake feedback, and stronger action commitment targets.
+- `docs/design/poise-vulnerability-spec.md` defines the next-stage slow-armored Boss poise break, vulnerability window, and instant reward draw rules.
 - `docs/design/meta-progression-spec.md` defines long-term out-of-run growth through forge recipes, weapon schools, route map unlocks, profiles, and non-stat progression.
 - `docs/design/starter-deck.md` defines the first twelve cards and their directional variants.
 - `docs/design/roguelike-structure.md` defines run shape, rewards, long-term systems, and the three-act structure.
@@ -112,5 +114,15 @@ Live URL: https://games.atou.cc/combo-card-roguelike/versions/a/
 - `docs/verification/v0268-hand-slot-render-jank.md` records the v0.2.68 hand-slot render jank verification.
 - `docs/verification/v0269-webaudio-sfx-buffer.md` records the v0.2.69 Web Audio SFX buffer verification.
 - `docs/verification/v0270-mobile-combat-layout.md` records the v0.2.70 mobile combat layout verification.
+- `docs/verification/v0271-action-recovery-boss-read.md` records the v0.2.71 action recovery, Boss read windows, SFX predecode, and local browser probe verification.
+- `docs/verification/v0272-recovery-cache-fix.md` records the v0.2.72 mobile cache-bust, helper-line hiding, and right-flick recovery enforcement verification.
+- `docs/verification/v0273-action-commitment.md` records the v0.2.73 normal-action recovery lock and four-card burst probe verification.
+- `docs/verification/v0274-boss-readability-action-commitment.md` records the v0.2.74 Boss telegraph, mistake feedback, action commitment, and local browser verification.
+- `docs/verification/v0279-poise-break-timing.md` records the v0.2.79 heavy Boss poise-break timing verification.
+- `docs/verification/v0278-fast-three-stage-intercept.md` records the v0.2.78 fast Boss three-stage left-intercept verification.
+- `docs/verification/v0277-fast-window.md` records the v0.2.77 fast Boss intercept-window verification.
+- `docs/verification/v0276-fast-read-clarity.md` records the v0.2.76 fast-read prompt and player blade-glint removal verification.
+- `docs/verification/v0275-poise-vulnerability.md` records the v0.2.75 poise break, vulnerability, immediate draw, action commitment, and mobile browser verification.
 - `docs/verification/v0268-card-selection-audio-assets.md` records the v0.2.68 card-selection UI audio asset trimming verification.
+- `docs/verification/v0281-four-direction-combat-intent.md` records the v0.2.81 four-direction combat intent verification.
 - `docs/verification/art-asset-replacement-acceptance.md` defines the acceptance gate for fully replacing the live combat art.

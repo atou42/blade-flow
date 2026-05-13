@@ -1,75 +1,75 @@
 const cards = [
   makeCard("quick-slash", "快斩", "damage", "快速斩击", {
-    up: ["上挑快斩", "control"],
-    right: ["追身快斩", "speed"],
-    left: ["退步快斩", "counter"],
-    down: ["压身快斩", "burst"],
+    up: ["追身快斩", "speed"],
+    right: ["重压快斩", "burst"],
+    left: ["破招快斩", "counter"],
+    down: ["撤步快斩", "control"],
   }),
   makeCard("thrust", "突刺", "damage", "直线突刺", {
-    up: ["挑刺", "control"],
-    right: ["冲刺突刺", "speed"],
-    left: ["退步突刺", "counter"],
-    down: ["深刺", "burst"],
+    up: ["追身突刺", "speed"],
+    right: ["重贯突刺", "burst"],
+    left: ["截手突刺", "counter"],
+    down: ["回手突刺", "control"],
   }),
-  makeCard("launcher", "挑斩", "control", "上挑斩", {
-    up: ["高挑空", "control"],
-    right: ["空中追击", "speed"],
-    left: ["重整步", "counter"],
-    down: ["坠击准备", "burst"],
+  makeCard("launcher", "挑斩", "speed", "上挑斩", {
+    up: ["挑身追击", "speed"],
+    right: ["挑后重砸", "burst"],
+    left: ["挑前截手", "counter"],
+    down: ["挑后撤身", "control"],
   }),
   makeCard("chase-cut", "追身斩", "speed", "前压斩", {
-    up: ["升空追击", "control"],
-    right: ["二段追击", "speed"],
-    left: ["错身斩", "counter"],
-    down: ["压进斩", "burst"],
+    up: ["二段追身", "speed"],
+    right: ["追后重斩", "burst"],
+    left: ["错身破招", "counter"],
+    down: ["撤身回斩", "control"],
   }),
   makeCard("spin-cut", "旋斩", "damage", "圆弧斩", {
-    up: ["升旋斩", "control"],
-    right: ["前旋斩", "speed"],
-    left: ["闪身旋斩", "counter"],
-    down: ["压地旋斩", "burst"],
+    up: ["追身旋斩", "speed"],
+    right: ["压地旋斩", "burst"],
+    left: ["切线旋斩", "counter"],
+    down: ["撤身旋斩", "control"],
   }),
   makeCard("shadow-step", "影步", "counter", "短闪避", {
-    up: ["穿身上步", "control"],
-    right: ["追击步", "speed"],
-    left: ["后撤步", "counter"],
-    down: ["低身滑步", "counter"],
+    up: ["穿身追步", "speed"],
+    right: ["蓄势重返", "burst"],
+    left: ["切线破招", "counter"],
+    down: ["低身撤步", "control"],
   }),
   makeCard("guard", "格挡", "counter", "短格挡", {
-    up: ["格挡挑破", "control"],
-    right: ["格挡前压", "speed"],
-    left: ["招架后撤", "counter"],
-    down: ["重反击", "burst"],
+    up: ["格挡追步", "speed"],
+    right: ["格挡重返", "burst"],
+    left: ["招架破招", "counter"],
+    down: ["架刀撤身", "control"],
   }),
   makeCard("breaker", "破甲", "burst", "破防击", {
-    up: ["破甲上挑", "control"],
-    right: ["破甲冲击", "speed"],
-    left: ["佯破", "counter"],
-    down: ["粉碎击", "burst"],
+    up: ["破甲追击", "speed"],
+    right: ["粉碎击", "burst"],
+    left: ["佯破截手", "counter"],
+    down: ["破甲回手", "control"],
   }),
   makeCard("flying-blade", "飞刃", "speed", "远距斩", {
-    up: ["升飞刃", "control"],
-    right: ["贯穿飞刃", "speed"],
-    left: ["回旋飞刃", "counter"],
-    down: ["落刃", "burst"],
+    up: ["追身飞刃", "speed"],
+    right: ["重落飞刃", "burst"],
+    left: ["截线飞刃", "counter"],
+    down: ["回旋飞刃", "control"],
   }),
   makeCard("heavy-cleave", "重劈", "burst", "重击", {
-    up: ["重挑", "control"],
-    right: ["肩撞重劈", "speed"],
-    left: ["护身后撤", "counter"],
-    down: ["下劈", "burst"],
+    up: ["重步追身", "speed"],
+    right: ["下劈", "burst"],
+    left: ["重刀截手", "counter"],
+    down: ["护身后撤", "control"],
   }),
   makeCard("execute", "处决", "burst", "终结技", {
-    up: ["空中处决", "control"],
-    right: ["追身处决", "speed"],
-    left: ["反击处决", "counter"],
-    down: ["爆发处决", "burst"],
+    up: ["追身处决", "speed"],
+    right: ["爆发处决", "burst"],
+    left: ["破招处决", "counter"],
+    down: ["回手处决", "control"],
   }),
   makeCard("overdrive", "超载", "speed", "路线爆发", {
-    up: ["挑空超载", "control"],
-    right: ["追击超载", "speed"],
-    left: ["闪反超载", "counter"],
-    down: ["爆发超载", "burst"],
+    up: ["追击超载", "speed"],
+    right: ["重刀超载", "burst"],
+    left: ["破招超载", "counter"],
+    down: ["撤身超载", "control"],
   }),
 ];
 
@@ -126,16 +126,27 @@ const cardGradeMap = {
 
 const routeMeta = {
   neutral: { label: "待势", short: "待", icon: "◇", hint: "点击或滑动卡牌", color: "#f2ead9", shape: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)", stamp: routeStamps.neutral },
-  speed: { label: "疾 · 追击", short: "追", icon: "➤", hint: "右划横切追身", color: "#a6d93a", shape: "polygon(0 18%, 70% 18%, 100% 50%, 70% 82%, 0 82%)", stamp: routeStamps.speed },
-  control: { label: "空 · 挑空", short: "空", icon: "↟", hint: "上划冲向 Boss 并挑起", color: "#4bbda8", shape: "polygon(50% 0, 86% 46%, 64% 46%, 64% 100%, 36% 100%, 36% 46%, 14% 46%)", stamp: routeStamps.control },
-  counter: { label: "逆 · 闪反", short: "返", icon: "↺", hint: "左划侧退反击", color: "#9f72c8", shape: "circle(45% at 50% 50%)", stamp: routeStamps.counter },
-  burst: { label: "杀 · 爆发", short: "爆", icon: "◆", hint: "下划蓄势重斩", color: "#d79f2b", shape: "polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%)", stamp: routeStamps.burst },
+  speed: { label: "追 · 追身", short: "追", icon: "↟", hint: "上划追身保连", color: "#a6d93a", shape: "polygon(50% 0, 86% 46%, 64% 46%, 64% 100%, 36% 100%, 36% 46%, 14% 46%)", stamp: routeStamps.speed },
+  control: { label: "退 · 回手", short: "退", icon: "↧", hint: "下划撤身回手，安全但断连", color: "#7f8aa8", shape: "polygon(14% 54%, 36% 54%, 36% 0, 64% 0, 64% 54%, 86% 54%, 50% 100%)", stamp: routeStamps.control },
+  counter: { label: "破 · 快刀", short: "破", icon: "↺", hint: "左划快刀破招", color: "#d8cbb4", shape: "circle(45% at 50% 50%)", stamp: routeStamps.counter },
+  burst: { label: "砸 · 重刀", short: "砸", icon: "◆", hint: "右划重刀兑现，高伤高后摇", color: "#d79f2b", shape: "polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%)", stamp: routeStamps.burst },
   damage: { label: "斩 · 压制", short: "斩", icon: "✦", hint: "连续出招压低血线", color: "#d83b24", shape: "polygon(44% 0, 70% 0, 56% 42%, 96% 42%, 40% 100%, 52% 58%, 6% 58%)", stamp: routeStamps.damage },
 };
 
 const artPath = `${visualAssetBase}/assets/art/stage-layout-v1/`;
 const bossFormPath = `${visualAssetBase}/assets/art/boss-forms-v1/`;
 const bossSpritePath = `${visualAssetBase}/assets/art/boss-sprites-v1/`;
+const worldMapPath = "./assets/art/world-map-v1/";
+const worldMapAssets = {
+  overview: `${worldMapPath}world-overview.webp`,
+  act1: `${worldMapPath}act1-storm-gate.webp`,
+  act1Bridge: `${worldMapPath}act1-sky-bridge.webp`,
+  act2: `${worldMapPath}act2-redline-hunter-city.webp`,
+  mirrorCorridor: `${worldMapPath}act2-mirror-corridor.webp`,
+  act3: `${worldMapPath}act3-black-moon-citadel.webp`,
+  forge: `${worldMapPath}forge-mountain-gate.webp`,
+  inn: `${worldMapPath}lower-road-inn.webp`,
+};
 const artAssets = {
   playerIdle: `${artPath}player-idle.webp`,
   playerLunge: `${artPath}player-lunge.webp`,
@@ -234,6 +245,94 @@ const bossActionTimelines = {
 };
 
 const versionHistory = [
+  {
+    id: "v0.2.81",
+    title: "四向意图",
+    date: "2026-05-13",
+    icon: "向",
+    color: "#d79f2b",
+    points: ["上追、左破、右砸、下退改成一致语义", "Boss 白裂、金裂、露空、脚下提示对应方向", "重刀高伤高后摇，下退安全断连回手"],
+  },
+  {
+    id: "v0.2.80",
+    title: "上行图谱",
+    date: "2026-05-13",
+    icon: "图",
+    color: "#a6d93a",
+    points: ["选武器后进入上行图谱", "三幕章节图与调试直达接入", "奖励、路线和 Boss 预告使用当前地图背景"],
+  },
+  {
+    id: "v0.2.79",
+    title: "护势可破",
+    date: "2026-05-12",
+    icon: "破",
+    color: "#d79f2b",
+    points: ["Boss 真重击蓄势时间加长", "下划打裂护势后摇大幅缩短", "普通下划两次即可打碎三层护势"],
+  },
+  {
+    id: "v0.2.78",
+    title: "三段截手",
+    date: "2026-05-11",
+    icon: "截",
+    color: "#9f73d6",
+    points: ["快刀左划改成预读、完美、险截三段收益", "完美窗回收但前后都可打断", "错过时机改成低收益救场而非直接失败"],
+  },
+  {
+    id: "v0.2.77",
+    title: "快刀可反",
+    date: "2026-05-11",
+    icon: "窗",
+    color: "#4bbda8",
+    points: ["快刀左划拦截窗从 240ms 放宽到 520ms", "命中段略加长让早晚反馈更稳定", "调试读数显示 Boss 时间窗"],
+  },
+  {
+    id: "v0.2.76",
+    title: "快刀提示",
+    date: "2026-05-11",
+    icon: "快",
+    color: "#d83b24",
+    points: ["快出招确认段改成左划拦截提示", "假招转真招改成真招左划", "移除玩家身上的误导斜光"],
+  },
+  {
+    id: "v0.2.75",
+    title: "护势易伤",
+    date: "2026-05-10",
+    icon: "裂",
+    color: "#d79f2b",
+    points: ["慢霸体 Boss 出现临时护势裂纹", "打碎护势进入 2 秒易伤爆发", "易伤开始立刻补一张牌"],
+  },
+  {
+    id: "v0.2.74",
+    title: "读招成形",
+    date: "2026-05-10",
+    icon: "识",
+    color: "#4bbda8",
+    points: ["五类 Boss 招式改用场地读招语法", "普通动作后摇显著加重", "错读反馈说明早晚和方向"],
+  },
+  {
+    id: "v0.2.73",
+    title: "出手承诺",
+    date: "2026-05-10",
+    icon: "锁",
+    color: "#d83b24",
+    points: ["普通出牌后摇不再缓存输入", "四张连划只能先出一张", "妙手仍保留短接招窗口"],
+  },
+  {
+    id: "v0.2.72",
+    title: "后摇实装",
+    date: "2026-05-10",
+    icon: "收",
+    color: "#d79f2b",
+    points: ["手机资源加版本号避免旧版缓存", "收窄轻动作输入缓存", "右划后摇更容易被感知"],
+  },
+  {
+    id: "v0.2.71",
+    title: "后摇读招",
+    date: "2026-05-10",
+    icon: "读",
+    color: "#9f73d6",
+    points: ["左划拆成侧退、闪反和空闪", "Boss 动作加入确认与收招窗口", "15 个读招 SFX 开战前预解码"],
+  },
   {
     id: "v0.2.70",
     title: "手机战斗留白",
@@ -810,7 +909,7 @@ const equipmentPool = [
     name: "风暴太刀",
     sigil: "➤",
     route: "speed",
-    pitch: "开局追击值 +2；右划后保连充能 +6。Boss 获得后撤横切烙印 +1。",
+    pitch: "开局追击值 +2；上划追身后保连充能 +6。Boss 获得后撤横切烙印 +1。",
     mark: "追击烙印",
     mods: { speed: 2 },
     contract: { route: "speed", bossMark: "backstep" },
@@ -820,8 +919,8 @@ const equipmentPool = [
     name: "镜扇",
     sigil: "↺",
     route: "counter",
-    pitch: "开局闪反值 +2；左划/完美闪反伤害 +10。Boss 获得假抬手烙印 +1。",
-    mark: "闪反烙印",
+    pitch: "开局破招值 +2；左划破招伤害 +10。Boss 获得假抬手烙印 +1。",
+    mark: "破招烙印",
     mods: { counter: 2 },
     contract: { route: "counter", bossMark: "feint" },
   },
@@ -830,18 +929,18 @@ const equipmentPool = [
     name: "处刑者",
     sigil: "◆",
     route: "burst",
-    pitch: "开局爆发值 +3、压制值 +1；下划伤害 +15。Boss 获得地裂抓取烙印 +1。",
-    mark: "爆发烙印",
+    pitch: "开局重刀值 +3、压制值 +1；右划伤害 +15。Boss 获得地裂抓取烙印 +1。",
+    mark: "重刀烙印",
     mods: { burst: 3, damage: 1 },
     contract: { route: "burst", bossMark: "ground-grab" },
   },
   {
     id: "gravity-hammer",
     name: "重力战锤",
-    sigil: "↟",
+    sigil: "↧",
     route: "control",
-    pitch: "开局挑空值 +3、爆发值 +1；上划按挑空值拖延 Boss 抬手。Boss 获得地裂抓取烙印 +1。",
-    mark: "挑空烙印",
+    pitch: "开局回手值 +3、重刀值 +1；下划更安全但会断连。Boss 获得地裂抓取烙印 +1。",
+    mark: "回手烙印",
     mods: { control: 3, burst: 1 },
     contract: { route: "control", bossMark: "ground-grab" },
   },
@@ -860,7 +959,7 @@ const equipmentPool = [
     name: "决斗刀鞘",
     sigil: "◇",
     route: "counter",
-    pitch: "开局闪反值 +2、全路线 +1；四向出招都有基础收益。Boss 获得假抬手烙印 +1。",
+    pitch: "开局破招值 +2、全路线 +1；四向出招都有基础收益。Boss 获得假抬手烙印 +1。",
     mark: "决斗烙印",
     mods: { counter: 2, any: 1 },
     contract: { route: "counter", bossMark: "feint" },
@@ -868,11 +967,11 @@ const equipmentPool = [
 ];
 
 const encounters = [
-  { act: 1, type: "fight", nodeIcon: "小", name: "刀信使", hp: 145, speed: 3100, route: "speed", form: "blade", damage: 13, note: "HP 145，伤害 13，基础抬手 3100ms。右划保连充能 +3，左划可完美闪反。" },
+  { act: 1, type: "fight", nodeIcon: "小", name: "刀信使", hp: 145, speed: 3100, route: "speed", form: "blade", damage: 13, note: "HP 145，伤害 13，基础抬手 3100ms。上划保连充能 +3，左划可快刀破招。" },
   { act: 1, type: "scout", nodeIcon: "眼", name: "风暴斥候", route: "counter", note: "获得侦察 +1。风暴队长快刀红核提前 +1 级。" },
-  { act: 1, type: "fight", nodeIcon: "盾", name: "铃盾卒", hp: 175, speed: 3300, route: "burst", form: "shield", damage: 14, note: "HP 175，伤害 14，基础抬手 3300ms。下划破势后破势证据 +1。" },
+  { act: 1, type: "fight", nodeIcon: "盾", name: "铃盾卒", hp: 175, speed: 3300, route: "burst", form: "shield", damage: 14, note: "HP 175，伤害 14，基础抬手 3300ms。右划破势后破势证据 +1。" },
   { act: 1, type: "forge", nodeIcon: "锻", name: "锻刃炉", route: "any", note: "选择 1 条刻印：路线值 +1，同时给 Boss 烙印 +1。" },
-  { act: 1, type: "fight", nodeIcon: "羽", name: "灰羽弓手", hp: 160, speed: 3000, route: "speed", form: "blade", damage: 12, note: "HP 160，伤害 12，基础抬手 3000ms。右划和飞刃保连充能 +3。" },
+  { act: 1, type: "fight", nodeIcon: "羽", name: "灰羽弓手", hp: 160, speed: 3000, route: "speed", form: "blade", damage: 12, note: "HP 160，伤害 12，基础抬手 3000ms。上划和飞刃保连充能 +3。" },
   { act: 1, type: "elite", nodeIcon: "镜", name: "镜侍", hp: 240, speed: 2500, route: "counter", form: "mirror", damage: 17, note: "HP 240，伤害 17，基础抬手 2500ms。错读假抬手时 Boss 压力 +9。" },
   { act: 1, type: "market", nodeIcon: "裂", name: "黑市契约", route: "any", note: "契约给路线值 +3，同时让 Boss 出手提前 80-100ms。" },
   { act: 1, type: "boss", nodeIcon: "首", name: "风暴队长", hp: 340, speed: 2200, route: "burst", form: "storm", damage: 19, note: "HP 340，伤害 19，基础抬手 2200ms。开战继承全部 Boss 烙印。" },
@@ -880,22 +979,22 @@ const encounters = [
 
 const actEncounterVariants = {
   2: {
-    0: { nodeIcon: "追", name: "赤线追兵", hp: 170, speed: 2700, route: "speed", form: "redline", damage: 15, lesson: "追身反制。右划太早会被后撤横切，等 Boss 空挥再追。" },
+    0: { nodeIcon: "追", name: "赤线追兵", hp: 170, speed: 2700, route: "speed", form: "redline", damage: 15, lesson: "追身反制。上划太早会被后撤横切，等 Boss 空挥再追。" },
     1: { type: "scout", nodeIcon: "镜", name: "镜廊侦者", route: "counter", form: "mirror", lesson: "假抬手预告。侦察会让假抬手红核提前露出 +1 级。" },
-    2: { nodeIcon: "盾", name: "裂盾徒", hp: 210, speed: 2850, route: "burst", form: "shield", damage: 17, lesson: "破势窗口。盾面亮金裂时下划收益最高，贪追击会涨压力。" },
+    2: { nodeIcon: "盾", name: "裂盾徒", hp: 210, speed: 2850, route: "burst", form: "shield", damage: 17, lesson: "破势窗口。盾面亮金裂时右划收益最高，贪追击会涨压力。" },
     3: { type: "forge", nodeIcon: "赤", name: "赤炉刻印", route: "damage", lesson: "装备调校。拿刻印会给路线值 +1，也会喂 Boss 一个反制烙印。" },
     4: { nodeIcon: "弦", name: "灰羽双弦", hp: 185, speed: 2500, route: "damage", form: "blade", damage: 16, lesson: "远程压迫。点击和右划能压低血线，等牌太久会被连续射击。" },
     5: { type: "elite", nodeIcon: "影", name: "镜廊祭司", hp: 285, speed: 2150, route: "counter", form: "mirror", damage: 21, lesson: "真假读招。左划要等真红核，错读假抬手会让 Boss 压力 +9。" },
     6: { type: "market", nodeIcon: "契", name: "红线黑市", route: "any", lesson: "高风险契约。契约给路线值 +3，同时让 Boss 出手提前 80-120ms。" },
-    7: { type: "boss", nodeIcon: "宿", name: "赤线宿敌", hp: 430, speed: 1850, route: "counter", form: "redline", damage: 25, lesson: "距离锁定。它会惩罚重复方向，必须混合追击、闪反和破势。" },
+    7: { type: "boss", nodeIcon: "宿", name: "赤线宿敌", hp: 430, speed: 1850, route: "counter", form: "redline", damage: 25, lesson: "距离锁定。它会惩罚重复方向，必须混合追击、破招和重刀。" },
   },
   3: {
     0: { nodeIcon: "相", name: "无相刃影", hp: 205, speed: 2350, route: "counter", form: "mirror", damage: 18, lesson: "延迟刀。先等身体前倾，再左划或格挡。" },
     1: { type: "scout", nodeIcon: "眼", name: "黑月观星", route: "any", form: "mirror", lesson: "终局情报。侦察会暴露本幕 Boss 的主烙印和下一次假抬手。" },
-    2: { nodeIcon: "钟", name: "墨盾钟卫", hp: 260, speed: 2500, route: "burst", form: "shield", damage: 20, lesson: "霸体压迫。下划打断慢蓄力，空下划会被地裂抓取惩罚。" },
-    3: { type: "forge", nodeIcon: "无", name: "无相炉", route: "control", lesson: "挑空调校。锻造会强化上划拖延，同时提高 Boss 反空风险。" },
-    4: { nodeIcon: "铳", name: "赤羽铳师", hp: 225, speed: 2200, route: "damage", form: "redline", damage: 19, lesson: "压制换拍。点击能稳定压血，右划只在 Boss 后退后收益最高。" },
-    5: { type: "elite", nodeIcon: "鼓", name: "黑鼓力士", hp: 340, speed: 2050, route: "burst", form: "shield", damage: 26, lesson: "慢刀贪刀。慢蓄力期间可抢破势，过早下划会被反震。" },
+    2: { nodeIcon: "钟", name: "墨盾钟卫", hp: 260, speed: 2500, route: "burst", form: "shield", damage: 20, lesson: "霸体压迫。右划打断慢蓄力，贪右划会被地裂抓取惩罚。" },
+    3: { type: "forge", nodeIcon: "无", name: "无相炉", route: "control", lesson: "回手调校。锻造会强化下划撤身，同时让 Boss 更会压脚下。" },
+    4: { nodeIcon: "铳", name: "赤羽铳师", hp: 225, speed: 2200, route: "damage", form: "redline", damage: 19, lesson: "压制换拍。点击能稳定压血，上划只在 Boss 后退后收益最高。" },
+    5: { type: "elite", nodeIcon: "鼓", name: "黑鼓力士", hp: 340, speed: 2050, route: "burst", form: "shield", damage: 26, lesson: "慢刀贪刀。慢蓄力期间可抢破势，过早右划会被反震。" },
     6: { type: "market", nodeIcon: "日", name: "黑日契约", route: "any", lesson: "终局赌命。稀有契约会给全路线 +2，但 Boss 出手提前 120ms。" },
     7: { type: "boss", nodeIcon: "终", name: "无相刀影", hp: 560, speed: 1650, route: "speed", form: "mirror", damage: 31, lesson: "混合读招。快刀、慢刀、假抬手和后撤横切会按你的最强路线组合。" },
   },
@@ -928,11 +1027,11 @@ const pathChoiceCatalog = [
   },
   {
     id: "counter-risk",
-    label: "闪反险路",
-    icon: "返",
+    label: "破招险路",
+    icon: "破",
     route: "counter",
     risk: "danger",
-    text: "下一战 Boss 出手提前 100ms、假抬手权重 +1；闪反构筑奖励权重 +2，真读证据掉落 +1。",
+    text: "下一战 Boss 出手提前 100ms、假抬手权重 +1；破招构筑奖励权重 +2，真读证据掉落 +1。",
     speedDelta: 100,
     damageDelta: 1,
     routeMark: "counter",
@@ -1001,7 +1100,7 @@ const pathChoiceCatalog = [
     risk: "danger",
     atlasId: "branch-mirror",
     minAct: 2,
-    text: "图谱分支。下一战混入假抬手，Boss 出手提前 130ms；真读证据 +2，闪反奖励权重 +3。",
+    text: "图谱分支。下一战混入假抬手，Boss 出手提前 130ms；真读证据 +2，破招奖励权重 +3。",
     speedDelta: 130,
     damageDelta: 2,
     routeMark: "counter",
@@ -1031,9 +1130,9 @@ const pathChoiceCatalog = [
 
 const actMax = 3;
 const actMeta = {
-  1: { label: "一幕", prefix: "", hp: 1, damage: 1, speed: 0, bossName: "风暴队长", bossForm: "storm", bossRoute: "burst", bossMark: null },
-  2: { label: "二幕", prefix: "赤线", hp: 1.42, damage: 1.22, speed: 260, bossName: "赤线宿敌", bossForm: "redline", bossRoute: "counter", bossMark: "feint" },
-  3: { label: "三幕", prefix: "无相", hp: 1.86, damage: 1.48, speed: 460, bossName: "无相刀影", bossForm: "mirror", bossRoute: "speed", bossMark: "backstep" },
+  1: { label: "一幕", placeName: "风暴门", factionName: "风暴军", prefix: "", hp: 1, damage: 1, speed: 0, bossName: "风暴队长", bossForm: "storm", bossRoute: "burst", bossMark: null, mapImage: worldMapAssets.act1, tagline: "风暴压下来了，别贪第二刀。", lesson: "学会出手与停手。" },
+  2: { label: "二幕", placeName: "赤线猎场", factionName: "赤线与镜廊", prefix: "赤线", hp: 1.42, damage: 1.22, speed: 260, bossName: "赤线宿敌", bossForm: "redline", bossRoute: "counter", bossMark: "feint", mapImage: worldMapAssets.act2, tagline: "赤线记住了你的左手。", lesson: "过去的习惯开始追你。" },
+  3: { label: "三幕", placeName: "无相高路", factionName: "黑月与无相门", prefix: "无相", hp: 1.86, damage: 1.48, speed: 460, bossName: "无相刀影", bossForm: "mirror", bossRoute: "speed", bossMark: "backstep", mapImage: worldMapAssets.act3, tagline: "你赢得太像昨天了。", lesson: "你的胜法会反过来成为考题。" },
 };
 
 const bossDefaultHpScale = 1.38;
@@ -1041,46 +1140,46 @@ const bossDefaultHpScale = 1.38;
 const rewards = [
   { id: "redline-scabbard", kind: "Relic", rarity: "Common", name: "红线刀鞘", route: "speed", text: "追击值 +2；补牌冷却按追击值缩短。", mods: { speed: 2 } },
   { id: "comet-sheath", kind: "Relic", rarity: "Uncommon", name: "彗星鞘影", route: "speed", text: "追击值 +3；补牌冷却按追击值缩短。", mods: { speed: 3 } },
-  { id: "borrowed-edge", kind: "Relic", rarity: "Uncommon", name: "借刃", route: "counter", text: "闪反值 +2；左划伤害 +10。", mods: { counter: 2 } },
-  { id: "mirror-scar", kind: "Relic", rarity: "Rare", name: "镜痕", route: "counter", text: "闪反值 +3；左划伤害 +15。", mods: { counter: 3 } },
-  { id: "drop-hammer", kind: "Relic", rarity: "Common", name: "坠锤", route: "burst", text: "爆发值 +2；下划伤害 +10。", mods: { burst: 2 } },
-  { id: "execution-drum", kind: "Relic", rarity: "Rare", name: "处刑鼓", route: "burst", text: "爆发值 +3；下划伤害 +15。", mods: { burst: 3 } },
+  { id: "borrowed-edge", kind: "Relic", rarity: "Uncommon", name: "借刃", route: "counter", text: "破招值 +2；左划伤害 +10。", mods: { counter: 2 } },
+  { id: "mirror-scar", kind: "Relic", rarity: "Rare", name: "镜痕", route: "counter", text: "破招值 +3；左划伤害 +15。", mods: { counter: 3 } },
+  { id: "drop-hammer", kind: "Relic", rarity: "Common", name: "坠锤", route: "burst", text: "重刀值 +2；右划伤害 +10。", mods: { burst: 2 } },
+  { id: "execution-drum", kind: "Relic", rarity: "Rare", name: "处刑鼓", route: "burst", text: "重刀值 +3；右划伤害 +15。", mods: { burst: 3 } },
   { id: "right-inscription", kind: "Inscription", rarity: "Common", name: "追击刻印", route: "speed", text: "追击值 +1；Boss 后撤横切烙印 +1。", mods: { speed: 1 }, mark: "backstep" },
-  { id: "left-inscription", kind: "Inscription", rarity: "Common", name: "闪反刻印", route: "counter", text: "闪反值 +1；Boss 假抬手烙印 +1。", mods: { counter: 1 }, mark: "feint" },
-  { id: "down-inscription", kind: "Inscription", rarity: "Common", name: "处决刻印", route: "burst", text: "爆发值 +1；Boss 地裂抓取烙印 +1。", mods: { burst: 1 }, mark: "ground-grab" },
+  { id: "left-inscription", kind: "Inscription", rarity: "Common", name: "破招刻印", route: "counter", text: "破招值 +1；Boss 假抬手烙印 +1。", mods: { counter: 1 }, mark: "feint" },
+  { id: "down-inscription", kind: "Inscription", rarity: "Common", name: "重刀刻印", route: "burst", text: "重刀值 +1；Boss 地裂抓取烙印 +1。", mods: { burst: 1 }, mark: "ground-grab" },
   { id: "redline-pursuit", kind: "Contract", rarity: "Uncommon", name: "追击契约", route: "speed", text: "追击值 +3，Boss 出手提前 90ms，后撤横切烙印 +1。", mods: { speed: 3 }, mark: "backstep", oathPressure: 90 },
-  { id: "mirror-oath", kind: "Contract", rarity: "Uncommon", name: "镜面契约", route: "counter", text: "闪反值 +3，Boss 出手提前 80ms，假抬手烙印 +1。", mods: { counter: 3 }, mark: "feint", oathPressure: 80 },
-  { id: "black-drum", kind: "Contract", rarity: "Uncommon", name: "黑鼓契约", route: "burst", text: "爆发值 +3，Boss 出手提前 100ms，地裂抓取烙印 +1。", mods: { burst: 3 }, mark: "ground-grab", oathPressure: 100 },
-  { id: "windup-rubbing", kind: "Evidence", rarity: "Common", name: "抬手拓本", route: "counter", text: "Boss 抬手提示提前 +1 级；闪反值 +1。", mods: { counter: 1 }, scout: 1 },
-  { id: "broken-armor", kind: "Evidence", rarity: "Uncommon", name: "破势碎甲", route: "burst", text: "破势证据 +1；爆发值 +1。", mods: { burst: 1 }, breakEvidence: 1 },
+  { id: "mirror-oath", kind: "Contract", rarity: "Uncommon", name: "镜面契约", route: "counter", text: "破招值 +3，Boss 出手提前 80ms，假抬手烙印 +1。", mods: { counter: 3 }, mark: "feint", oathPressure: 80 },
+  { id: "black-drum", kind: "Contract", rarity: "Uncommon", name: "黑鼓契约", route: "burst", text: "重刀值 +3，Boss 出手提前 100ms，地裂抓取烙印 +1。", mods: { burst: 3 }, mark: "ground-grab", oathPressure: 100 },
+  { id: "windup-rubbing", kind: "Evidence", rarity: "Common", name: "抬手拓本", route: "counter", text: "Boss 抬手提示提前 +1 级；破招值 +1。", mods: { counter: 1 }, scout: 1 },
+  { id: "broken-armor", kind: "Evidence", rarity: "Uncommon", name: "破势碎甲", route: "burst", text: "破势证据 +1；重刀值 +1。", mods: { burst: 1 }, breakEvidence: 1 },
   { id: "finisher-shard", kind: "Evidence", rarity: "Rare", name: "终结残片", route: "speed", text: "高连击收尾后，奖励路线 +1；追击值 +1。", mods: { speed: 1 }, finisherEvidence: 1 },
   { id: "quick-slash-ex", kind: "Upgrade", rarity: "Common", name: "快斩 EX", route: "damage", text: "点击基础招伤害 +2；压制值 +1。", mods: { damage: 1 } },
-  { id: "shadow-step-ex", kind: "Upgrade", rarity: "Uncommon", name: "影步 EX", route: "counter", text: "左划伤害 +5；闪反值 +1。", mods: { counter: 1 } },
-  { id: "execute-ex", kind: "Upgrade", rarity: "Rare", name: "处决 EX", route: "burst", text: "下划伤害 +5；爆发值 +1。", mods: { burst: 1 } },
-  { id: "high-hand-sigil", kind: "Relic", rarity: "Common", name: "高手印", route: "control", text: "挑空值 +2；上划按挑空值拖延 Boss 抬手。", mods: { control: 2 } },
-  { id: "floating-point", kind: "Relic", rarity: "Uncommon", name: "悬空点", route: "control", text: "挑空值 +3；专注 +10。", mods: { control: 3 }, heal: 10 },
+  { id: "shadow-step-ex", kind: "Upgrade", rarity: "Uncommon", name: "影步 EX", route: "counter", text: "左划伤害 +5；破招值 +1。", mods: { counter: 1 } },
+  { id: "execute-ex", kind: "Upgrade", rarity: "Rare", name: "处决 EX", route: "burst", text: "右划伤害 +5；重刀值 +1。", mods: { burst: 1 } },
+  { id: "high-hand-sigil", kind: "Relic", rarity: "Common", name: "回手印", route: "control", text: "回手值 +2；下划撤身更能稳住压力。", mods: { control: 2 } },
+  { id: "floating-point", kind: "Relic", rarity: "Uncommon", name: "回身点", route: "control", text: "回手值 +3；专注 +10。", mods: { control: 3 }, heal: 10 },
   { id: "split-tip-spear", kind: "Relic", rarity: "Common", name: "裂尖枪", route: "damage", text: "压制值 +2；点击基础招伤害 +4。", mods: { damage: 2 } },
   { id: "crown-of-cuts", kind: "Relic", rarity: "Rare", name: "百斩冠", route: "damage", text: "压制值 +3、追击值 +1；点击基础招伤害 +6。", mods: { damage: 3, speed: 1 } },
   { id: "combo-lantern", kind: "Relic", rarity: "Uncommon", name: "连击灯", route: "any", text: "全路线 +2；所有动作伤害 +2。", mods: { any: 2 } },
-  { id: "grave-palm", kind: "Relic", rarity: "Rare", name: "墓掌", route: "burst", text: "爆发值 +2、挑空值 +1；下划伤害 +10。", mods: { burst: 2, control: 1 } },
+  { id: "grave-palm", kind: "Relic", rarity: "Rare", name: "墓掌", route: "burst", text: "重刀值 +2、回手值 +1；右划伤害 +10。", mods: { burst: 2, control: 1 } },
   { id: "speed-draft", kind: "Talent", rarity: "Common", name: "追击草图", route: "speed", text: "追击值 +2；后续奖励偏向追击。", mods: { speed: 2 } },
-  { id: "air-marshal", kind: "Talent", rarity: "Common", name: "空场教范", route: "control", text: "挑空值 +2；后续奖励偏向挑空。", mods: { control: 2 } },
-  { id: "counter-doctrine", kind: "Talent", rarity: "Common", name: "闪反教义", route: "counter", text: "闪反值 +2；后续奖励偏向闪反。", mods: { counter: 2 } },
-  { id: "break-doctrine", kind: "Talent", rarity: "Common", name: "破势教义", route: "burst", text: "爆发值 +2；后续奖励偏向爆发。", mods: { burst: 2 } },
+  { id: "air-marshal", kind: "Talent", rarity: "Common", name: "回手教范", route: "control", text: "回手值 +2；后续奖励偏向回手。", mods: { control: 2 } },
+  { id: "counter-doctrine", kind: "Talent", rarity: "Common", name: "破招教义", route: "counter", text: "破招值 +2；后续奖励偏向破招。", mods: { counter: 2 } },
+  { id: "break-doctrine", kind: "Talent", rarity: "Common", name: "重刀教义", route: "burst", text: "重刀值 +2；后续奖励偏向重刀。", mods: { burst: 2 } },
   { id: "sharp-basics", kind: "Talent", rarity: "Uncommon", name: "利刃基础", route: "damage", text: "压制值 +2；后续奖励偏向压制。", mods: { damage: 2 } },
   { id: "form-commitment", kind: "Talent", rarity: "Rare", name: "定式承诺", route: "any", text: "全路线 +2；所有动作伤害 +2。", mods: { any: 2 } },
-  { id: "skyhook-oath", kind: "Contract", rarity: "Uncommon", name: "天钩契约", route: "control", text: "挑空值 +3，Boss 出手提前 85ms，地裂抓取烙印 +1。", mods: { control: 3 }, mark: "ground-grab", oathPressure: 85 },
+  { id: "skyhook-oath", kind: "Contract", rarity: "Uncommon", name: "回手契约", route: "control", text: "回手值 +3，Boss 出手提前 85ms，地裂抓取烙印 +1。", mods: { control: 3 }, mark: "ground-grab", oathPressure: 85 },
   { id: "ash-gunline", kind: "Contract", rarity: "Uncommon", name: "灰铳契约", route: "damage", text: "压制值 +3，Boss 出手提前 95ms，后撤横切烙印 +1。", mods: { damage: 3 }, mark: "backstep", oathPressure: 95 },
   { id: "full-compass-vow", kind: "Contract", rarity: "Rare", name: "全向誓约", route: "any", text: "全路线 +2，Boss 出手提前 120ms，假抬手烙印 +1。", mods: { any: 2 }, mark: "feint", oathPressure: 120 },
-  { id: "thin-blade-vow", kind: "Contract", rarity: "Rare", name: "薄刃誓约", route: "speed", text: "追击值 +2、闪反值 +2，Boss 出手提前 105ms，假抬手烙印 +1。", mods: { speed: 2, counter: 2 }, mark: "feint", oathPressure: 105 },
+  { id: "thin-blade-vow", kind: "Contract", rarity: "Rare", name: "薄刃誓约", route: "speed", text: "追击值 +2、破招值 +2，Boss 出手提前 105ms，假抬手烙印 +1。", mods: { speed: 2, counter: 2 }, mark: "feint", oathPressure: 105 },
   { id: "route-scout", kind: "Evidence", rarity: "Common", name: "路线侦察", route: "any", text: "侦察 +1；后续奖励跟随当前路线。", mods: { any: 1 }, scout: 1 },
   { id: "boss-fragment", kind: "Evidence", rarity: "Rare", name: "Boss 残片", route: "any", text: "终结残片 +1、破势证据 +1；全路线 +1。", mods: { any: 1 }, finisherEvidence: 1, breakEvidence: 1 },
 ];
 
 const eventChoices = [
-  { id: "scout-fast", kind: "Evidence", name: "快刀拓本", route: "counter", text: "风暴队长快刀红核提前 +1 级；闪反值 +1。", mods: { counter: 1 }, scout: 1 },
+  { id: "scout-fast", kind: "Evidence", name: "快刀拓本", route: "counter", text: "风暴队长快刀白裂提前 +1 级；破招值 +1。", mods: { counter: 1 }, scout: 1 },
   { id: "forge-chase", kind: "Inscription", name: "追身锻刃", route: "speed", text: "追击值 +1；Boss 后撤横切烙印 +1。", mods: { speed: 1 }, mark: "backstep" },
-  { id: "forge-break", kind: "Inscription", name: "破势锻刃", route: "burst", text: "爆发值 +1；Boss 地裂抓取烙印 +1。", mods: { burst: 1 }, mark: "ground-grab" },
+  { id: "forge-break", kind: "Inscription", name: "破势锻刃", route: "burst", text: "重刀值 +1；Boss 地裂抓取烙印 +1。", mods: { burst: 1 }, mark: "ground-grab" },
   { id: "repair-focus", kind: "Rest", name: "修复专注", route: "any", text: "专注 +30；当前 Boss 烙印保留。", heal: 30 },
 ];
 
@@ -1097,11 +1196,11 @@ const recipeCatalog = [
     route: "speed",
     equipmentId: "storm-katana",
     cardId: "chase-cut",
-    direction: "right",
+    direction: "up",
     evidence: "backstepIntercept",
     cost: { bladeInk: 4, backstepIntercept: 1 },
     reward: { speed: 2 },
-    text: "追身斩右划命中后撤横切时，追击值 +2，下一张追击牌提前进入手牌。",
+    text: "追身斩上划命中后撤露空时，追击值 +2，下一张追击牌提前进入手牌。",
   },
   {
     id: "quick-pressure",
@@ -1109,11 +1208,11 @@ const recipeCatalog = [
     route: "speed",
     equipmentId: "storm-katana",
     cardId: "quick-slash",
-    direction: "right",
+    direction: "up",
     evidence: "backstepIntercept",
     cost: { bladeInk: 3, backstepIntercept: 1 },
     reward: { speed: 1, damage: 1 },
-    text: "快斩右划接在追击链后，追击值 +1、压制值 +1，补牌提前 35%。",
+    text: "快斩上划接在追击链后，追击值 +1、压制值 +1，补牌提前 35%。",
   },
   {
     id: "flying-pursuit",
@@ -1121,11 +1220,11 @@ const recipeCatalog = [
     route: "speed",
     equipmentId: "storm-katana",
     cardId: "flying-blade",
-    direction: "right",
+    direction: "up",
     evidence: "backstepIntercept",
     cost: { bladeInk: 5, backstepIntercept: 2 },
     reward: { speed: 2, any: 1 },
-    text: "飞刃右划命中后撤或远距窗口时，追击值 +2、全路线 +1，下一张追击牌提前进入手牌。",
+    text: "飞刃上划命中后撤或远距窗口时，追击值 +2、全路线 +1，下一张追击牌提前进入手牌。",
   },
   {
     id: "guard-mirror",
@@ -1137,7 +1236,7 @@ const recipeCatalog = [
     evidence: "trueRead",
     cost: { bladeInk: 4, trueRead: 1 },
     reward: { counter: 2 },
-    text: "格挡左划接住真抬手时，闪反值 +2，专注 +8。",
+    text: "格挡左划接住真抬手时，破招值 +2，专注 +8。",
   },
   {
     id: "shadow-return",
@@ -1149,7 +1248,7 @@ const recipeCatalog = [
     evidence: "trueRead",
     cost: { bladeInk: 3, trueRead: 1 },
     reward: { counter: 1, speed: 1 },
-    text: "影步左划避开真抬手时，闪反值 +1、追击值 +1，专注 +6。",
+    text: "影步左划截住真抬手时，破招值 +1、追击值 +1，专注 +6。",
   },
   {
     id: "spin-afterimage",
@@ -1161,7 +1260,7 @@ const recipeCatalog = [
     evidence: "trueRead",
     cost: { bladeInk: 5, trueRead: 2 },
     reward: { counter: 2, damage: 1 },
-    text: "旋斩左划等真红核后反打，闪反值 +2、压制值 +1，Boss 压力下降。",
+    text: "旋斩左划等真红核后破招，破招值 +2、压制值 +1，Boss 压力下降。",
   },
   {
     id: "breaker-shatter",
@@ -1169,11 +1268,11 @@ const recipeCatalog = [
     route: "burst",
     equipmentId: "executioner",
     cardId: "breaker",
-    direction: "down",
+    direction: "right",
     evidence: "shatterExecute",
     cost: { bladeInk: 4, shatterExecute: 1 },
     reward: { burst: 2 },
-    text: "破甲下划打断慢刀或地裂时，爆发值 +2，下划伤害 +8。",
+    text: "破甲右划打断慢刀或地裂时，重刀值 +2，右划伤害 +8。",
   },
   {
     id: "heavy-break",
@@ -1181,11 +1280,11 @@ const recipeCatalog = [
     route: "burst",
     equipmentId: "executioner",
     cardId: "heavy-cleave",
-    direction: "down",
+    direction: "right",
     evidence: "shatterExecute",
     cost: { bladeInk: 3, shatterExecute: 1 },
     reward: { burst: 1, control: 1 },
-    text: "重劈下划命中慢刀蓄势时，爆发值 +1、挑空值 +1，下划伤害 +6。",
+    text: "重劈右划命中慢刀蓄势时，重刀值 +1、回手值 +1，右划伤害 +6。",
   },
   {
     id: "execute-fall",
@@ -1193,11 +1292,11 @@ const recipeCatalog = [
     route: "burst",
     equipmentId: "executioner",
     cardId: "execute",
-    direction: "down",
+    direction: "right",
     evidence: "shatterExecute",
     cost: { bladeInk: 5, shatterExecute: 2 },
     reward: { burst: 2, any: 1 },
-    text: "处决下划在破势后兑现，爆发值 +2、全路线 +1，终结残片更容易出现。",
+    text: "处决右划在破势后兑现，重刀值 +2、全路线 +1，终结残片更容易出现。",
   },
 ];
 
@@ -1209,8 +1308,8 @@ const schoolCatalog = [
     nodes: [
       { id: "first", label: "起势", text: "追击起手开放", default: true },
       { id: "chase-intercept", label: "截退谱", text: "追身截后撤入池", recipeId: "chase-intercept" },
-      { id: "quick-pressure", label: "续压谱", text: "快斩右划入池", recipeId: "quick-pressure" },
-      { id: "flying-pursuit", label: "飞刃谱", text: "飞刃右划入池", recipeId: "flying-pursuit" },
+      { id: "quick-pressure", label: "续压谱", text: "快斩上划入池", recipeId: "quick-pressure" },
+      { id: "flying-pursuit", label: "飞刃谱", text: "飞刃上划入池", recipeId: "flying-pursuit" },
       { id: "training-chase", label: "追击训练", text: "后撤横切训练开放", trainingId: "training-chase" },
     ],
   },
@@ -1219,11 +1318,11 @@ const schoolCatalog = [
     name: "镜扇",
     route: "counter",
     nodes: [
-      { id: "first", label: "起势", text: "闪反起手开放", default: true },
+      { id: "first", label: "起势", text: "快刀破招起手开放", default: true },
       { id: "guard-mirror", label: "镜返谱", text: "真读招架入池", recipeId: "guard-mirror" },
       { id: "shadow-return", label: "影步谱", text: "影步左划入池", recipeId: "shadow-return" },
       { id: "spin-afterimage", label: "残影谱", text: "旋斩左划入池", recipeId: "spin-afterimage" },
-      { id: "training-mirror", label: "闪反训练", text: "快慢真招训练开放", trainingId: "training-mirror" },
+      { id: "training-mirror", label: "破招训练", text: "快慢真招训练开放", trainingId: "training-mirror" },
     ],
   },
   {
@@ -1233,17 +1332,17 @@ const schoolCatalog = [
     nodes: [
       { id: "first", label: "起势", text: "破势起手开放", default: true },
       { id: "breaker-shatter", label: "碎甲谱", text: "破势处决入池", recipeId: "breaker-shatter" },
-      { id: "heavy-break", label: "裂盾谱", text: "重劈下划入池", recipeId: "heavy-break" },
-      { id: "execute-fall", label: "坠落谱", text: "处决下划入池", recipeId: "execute-fall" },
+      { id: "heavy-break", label: "裂盾谱", text: "重劈右划入池", recipeId: "heavy-break" },
+      { id: "execute-fall", label: "坠落谱", text: "处决右划入池", recipeId: "execute-fall" },
       { id: "training-shatter", label: "处决训练", text: "慢刀破势训练开放", trainingId: "training-shatter" },
     ],
   },
 ];
 
 const trainingCatalog = [
-  { id: "training-chase", label: "后撤横切训练", route: "speed", equipmentId: "storm-katana", moveKey: "backstep", bossMark: "backstep", evidence: "backstepIntercept", text: "练右划追身截住 Boss 后撤。" },
-  { id: "training-mirror", label: "真招闪反训练", route: "counter", equipmentId: "mirror-fan", moveKey: "feint", bossMark: "feint", evidence: "trueRead", text: "练左划等真核亮起后反打。" },
-  { id: "training-shatter", label: "裂盾处决训练", route: "burst", equipmentId: "executioner", moveKey: "ground-grab", bossMark: "ground-grab", evidence: "shatterExecute", text: "练下划破慢刀和地裂窗口。" },
+  { id: "training-chase", label: "后撤横切训练", route: "speed", equipmentId: "storm-katana", moveKey: "backstep", bossMark: "backstep", evidence: "backstepIntercept", text: "练上划追身截住 Boss 后撤露空。" },
+  { id: "training-mirror", label: "真招破招训练", route: "counter", equipmentId: "mirror-fan", moveKey: "feint", bossMark: "feint", evidence: "trueRead", text: "练左划等真核亮起后破招。" },
+  { id: "training-shatter", label: "裂盾重刀训练", route: "burst", equipmentId: "executioner", moveKey: "ground-grab", bossMark: "ground-grab", evidence: "shatterExecute", text: "练右划破慢刀和地裂窗口。" },
 ];
 
 const atlasCatalog = [
@@ -1266,16 +1365,16 @@ const dailyThemes = [
     equipmentId: "storm-katana",
     bossMark: "backstep",
     routeMods: { speed: 2 },
-    text: "固定风暴太刀，右划追身窗口更多；Boss 会更频繁后撤横切。",
+    text: "固定风暴太刀，上划追身窗口更多；Boss 会更频繁后撤横切。",
   },
   {
     id: "daily-counter",
-    label: "闪反日课",
+    label: "破招日课",
     route: "counter",
     equipmentId: "mirror-fan",
     bossMark: "feint",
     routeMods: { counter: 2 },
-    text: "固定镜扇，左划读招收益更高；Boss 会混入假抬手。",
+    text: "固定镜扇，左划破招收益更高；Boss 会混入假抬手。",
   },
   {
     id: "daily-burst",
@@ -1284,7 +1383,7 @@ const dailyThemes = [
     equipmentId: "executioner",
     bossMark: "ground-grab",
     routeMods: { burst: 2 },
-    text: "固定处刑者，下划破势和处决更重要；Boss 会用地裂抓取惩罚空下划。",
+    text: "固定处刑者，右划破势和处决更重要；Boss 会用地裂抓取惩罚贪重刀。",
   },
 ];
 
@@ -1308,7 +1407,7 @@ const dailyContractPool = [
     name: "日课·镜债",
     route: "counter",
     dailyTheme: "daily-counter",
-    text: "闪反值 +4，Boss 出手提前 120ms，假抬手烙印 +1。",
+    text: "破招值 +4，Boss 出手提前 120ms，假抬手烙印 +1。",
     mods: { counter: 4 },
     mark: "feint",
     oathPressure: 120,
@@ -1320,7 +1419,7 @@ const dailyContractPool = [
     name: "日课·裂鼓处刑",
     route: "burst",
     dailyTheme: "daily-burst",
-    text: "爆发值 +4，Boss 出手提前 145ms，地裂抓取烙印 +1。",
+    text: "重刀值 +4，Boss 出手提前 145ms，地裂抓取烙印 +1。",
     mods: { burst: 4 },
     mark: "ground-grab",
     oathPressure: 145,
@@ -1352,22 +1451,28 @@ const recipeRewards = recipeCatalog.map((recipe) => ({
 
 const anchorMatrix = {
   speed: {
-    "chase-cut:right": { name: "追身核心", tier: "core" },
-    "quick-slash:right": { name: "快斩桥接", tier: "bridge" },
-    "thrust:right": { name: "突刺续压", tier: "bridge" },
-    "flying-blade:right": { name: "远距追刀", tier: "bridge" },
+    "chase-cut:up": { name: "追身核心", tier: "core" },
+    "quick-slash:up": { name: "快斩桥接", tier: "bridge" },
+    "thrust:up": { name: "突刺续压", tier: "bridge" },
+    "flying-blade:up": { name: "远距追刀", tier: "bridge" },
   },
   counter: {
-    "guard:left": { name: "格挡核心", tier: "core" },
+    "guard:left": { name: "格挡破招", tier: "core" },
     "shadow-step:left": { name: "影步桥接", tier: "bridge" },
     "spin-cut:left": { name: "旋身反打", tier: "bridge" },
-    "quick-slash:left": { name: "退斩稳手", tier: "normal" },
+    "quick-slash:left": { name: "快斩截手", tier: "normal" },
   },
   burst: {
-    "breaker:down": { name: "破势核心", tier: "core" },
-    "execute:down": { name: "处决兑现", tier: "core" },
-    "heavy-cleave:down": { name: "重劈桥接", tier: "bridge" },
-    "launcher:up": { name: "挑空起手", tier: "bridge" },
+    "breaker:right": { name: "破势核心", tier: "core" },
+    "execute:right": { name: "处决兑现", tier: "core" },
+    "heavy-cleave:right": { name: "重劈桥接", tier: "bridge" },
+    "launcher:right": { name: "挑后重砸", tier: "bridge" },
+  },
+  control: {
+    "shadow-step:down": { name: "撤身核心", tier: "core" },
+    "guard:down": { name: "架刀回手", tier: "bridge" },
+    "flying-blade:down": { name: "远距回手", tier: "bridge" },
+    "quick-slash:down": { name: "撤斩稳手", tier: "normal" },
   },
 };
 
@@ -1385,6 +1490,38 @@ const equipmentById = new Map(equipmentPool.map((equipment) => [equipment.id, eq
 const recipeById = new Map(recipeCatalog.map((recipe) => [recipe.id, recipe]));
 const rewardById = new Map([...rewards, ...dailyContractPool, ...eventChoices, ...recipeRewards].map((choice) => [choice.id, choice]));
 let lastMobileAcceptanceProbe = null;
+
+const actionRecoveryMs = {
+  tap: 340,
+  right: 920,
+  rightMistake: 1240,
+  up: 560,
+  left: 660,
+  leftPerfect: 210,
+  leftWhiff: 920,
+  down: 520,
+  downWhiff: 760,
+  cancel: 190,
+};
+const inputBufferMs = 120;
+const recentDirectionLimit = 5;
+const poiseConfig = {
+  vulnerabilityMs: 2000,
+  getupMs: 300,
+  damageScale: 1.45,
+  normalRecoveryScale: 0.35,
+  heavyRecoveryScale: 0.45,
+  normalRecoveryMin: 100,
+  heavyRecoveryMin: 140,
+};
+
+const bossMoveTimelines = {
+  fast: { confirm: 360, hit: 160, recover: 220 },
+  heavy: { confirm: 900, hit: 160, recover: 320 },
+  backstep: { confirm: 300, hit: 120, recover: 260 },
+  feint: { fake: 260, gap: 200, confirm: 300, hit: 120, recover: 240 },
+  "ground-grab": { confirm: 420, hit: 150, recover: 250 },
+};
 
 const tuningPresets = {
   easy: {
@@ -1646,11 +1783,11 @@ const tuningControls = [
   { group: "抢招压力", key: "pressureLimit", label: "抢招阈值", min: 45, max: 180, step: 1, suffix: "" },
   { group: "抢招压力", key: "pressureDecay", label: "压力自然消退", min: 0, max: 0.08, step: 0.001, suffix: "" },
   { group: "抢招压力", key: "riposteDamage", label: "抢招伤害倍率", min: 0.2, max: 1.35, step: 0.01, suffix: "x" },
-  { group: "出招窗口", key: "perfectWindow", label: "完美闪反窗口", min: 360, max: 1300, step: 10, suffix: "ms" },
-  { group: "出招窗口", key: "counterRelief", label: "闪反降压", min: 0, max: 80, step: 1, suffix: "" },
-  { group: "出招窗口", key: "controlRelief", label: "挑空降压", min: 0, max: 48, step: 1, suffix: "" },
-  { group: "出招窗口", key: "controlDelay", label: "挑空拖延", min: 0, max: 220, step: 5, suffix: "ms" },
-  { group: "出招窗口", key: "burstRisk", label: "下划风险", min: 0, max: 32, step: 1, suffix: "" },
+  { group: "出招窗口", key: "perfectWindow", label: "完美破招窗口", min: 360, max: 1300, step: 10, suffix: "ms" },
+  { group: "出招窗口", key: "counterRelief", label: "破招降压", min: 0, max: 80, step: 1, suffix: "" },
+  { group: "出招窗口", key: "controlRelief", label: "回手降压", min: 0, max: 48, step: 1, suffix: "" },
+  { group: "出招窗口", key: "controlDelay", label: "回手拖延", min: 0, max: 220, step: 5, suffix: "ms" },
+  { group: "出招窗口", key: "burstRisk", label: "右划风险", min: 0, max: 32, step: 1, suffix: "" },
   { group: "玩家与连击", key: "playerFocus", label: "专注上限", min: 55, max: 180, step: 5, suffix: "" },
   { group: "玩家与连击", key: "playerDamage", label: "玩家伤害", min: 0.55, max: 1.85, step: 0.05, suffix: "x" },
   { group: "玩家与连击", key: "enemyDamage", label: "敌人伤害", min: 0.35, max: 2.5, step: 0.05, suffix: "x" },
@@ -1660,13 +1797,13 @@ const tuningControls = [
   { group: "玩家与连击", key: "comboDecayDelay", label: "连击衰减延迟", min: 500, max: 2200, step: 10, suffix: "ms" },
   { group: "玩家与连击", key: "comboDecayRate", label: "连击衰减速度", min: 0.01, max: 0.11, step: 0.001, suffix: "" },
   { group: "架势债务", key: "stanceCost", label: "每牌架势消耗", min: 0, max: 36, step: 1, suffix: "" },
-  { group: "架势债务", key: "burstStanceCost", label: "下划额外消耗", min: 0, max: 24, step: 1, suffix: "" },
+  { group: "架势债务", key: "burstStanceCost", label: "右划额外消耗", min: 0, max: 24, step: 1, suffix: "" },
   { group: "架势债务", key: "repeatDirectionCost", label: "重复方向惩罚", min: 0, max: 32, step: 1, suffix: "" },
   { group: "架势债务", key: "stanceRegen", label: "架势恢复速度", min: 0, max: 0.08, step: 0.001, suffix: "" },
   { group: "架势债务", key: "lowStanceDamage", label: "低架势伤害保底", min: 0.1, max: 0.9, step: 0.01, suffix: "x" },
   { group: "架势债务", key: "breakPressure", label: "破绽压力", min: 0, max: 90, step: 1, suffix: "" },
   { group: "架势债务", key: "varietyRefund", label: "换方向返还", min: 0, max: 18, step: 1, suffix: "" },
-  { group: "架势债务", key: "counterStanceGain", label: "闪反回架势", min: 0, max: 36, step: 1, suffix: "" },
+  { group: "架势债务", key: "counterStanceGain", label: "破招回架势", min: 0, max: 36, step: 1, suffix: "" },
   { group: "补牌节奏", key: "drawCooldown", label: "补牌冷却", min: 120, max: 2000, step: 10, suffix: "ms" },
   { group: "补牌节奏", key: "drawRewardScale", label: "奖励缩短补牌", min: 0, max: 0.22, step: 0.01, suffix: "x" },
   { group: "补牌节奏", key: "drawPreviewCount", label: "未来队列", min: 1, max: 2, step: 1, suffix: "张" },
@@ -1700,6 +1837,9 @@ const state = {
   hasStarted: false,
   ended: false,
   notebookOpen: false,
+  mapOpen: false,
+  pendingActIntro: false,
+  debugRun: false,
   runStarted: false,
   encounterIndex: 0,
   equipment: null,
@@ -1709,6 +1849,10 @@ const state = {
   evidence: { scout: 0, break: 0, finisher: 0 },
   bossMark: null,
   bossMove: null,
+  bossPhase: "prep",
+  bossPhaseSoundKey: "",
+  bossMoveStartedAt: 0,
+  bossConfirmPlayedFor: "",
   bossPreviewed: false,
   dailySeed: dailySeed(),
   rng: seededRandom(dailySeed()),
@@ -1719,6 +1863,27 @@ const state = {
   pressure: 0,
   stance: 100,
   lastDirection: null,
+  recentDirections: [],
+  recoveryUntil: 0,
+  recoveryLastMs: 0,
+  recoverySource: "none",
+  queuedInput: null,
+  lastActionResult: null,
+  lastReadFeedback: null,
+  poise: {
+    active: false,
+    max: 0,
+    remaining: 0,
+    progress: 0,
+    lastSource: "",
+    lastDamage: 0,
+    brokenThisAction: 0,
+    failed: false,
+  },
+  vulnerableUntil: 0,
+  vulnerableDrawPending: false,
+  vulnerableDrawn: false,
+  bossGetupUntil: 0,
   drawTimer: 0,
   tuning: loadTuning(),
   currentPreset: loadTuningPreset(),
@@ -1776,6 +1941,9 @@ const els = {
   comboLayer: document.getElementById("comboLayer"),
   styleRank: document.getElementById("styleRank"),
   arena: document.getElementById("arena"),
+  readLabel: document.querySelector(".read-label"),
+  poiseCracks: document.getElementById("poiseCracks"),
+  vulnerabilityTag: document.getElementById("vulnerabilityTag"),
   player: document.getElementById("player"),
   enemy: document.getElementById("enemy"),
   playerArt: document.querySelector(".player-art"),
@@ -1809,11 +1977,17 @@ const sfxTracks = {
   playerCardPress: { file: "./assets/audio/sfx/combat/sfx-player-card-press-01.mp3", volume: 0.3, decorative: true },
   playerCardRelease: { file: "./assets/audio/sfx/combat/sfx-player-card-release-01.mp3", volume: 0.32 },
   playerTap: { file: "./assets/audio/sfx/combat/sfx-player-tap-basic-slash-01.mp3", volume: 0.42 },
-  playerFlickUp: { file: "./assets/audio/sfx/combat/sfx-player-flick-up-launcher-01.mp3", volume: 0.42 },
-  playerFlickRight: { file: "./assets/audio/sfx/combat/sfx-player-flick-right-chase-01.mp3", volume: 0.43 },
-  playerFlickLeft: { file: "./assets/audio/sfx/combat/sfx-player-flick-left-dodge-01.mp3", volume: 0.4 },
-  playerFlickDown: { file: "./assets/audio/sfx/combat/sfx-player-flick-down-heavy-01.mp3", volume: 0.45 },
+  playerFlickUp: { file: "./assets/audio/sfx/combat/sfx-player-flick-right-chase-01.mp3", volume: 0.43 },
+  playerFlickRight: { file: "./assets/audio/sfx/combat/sfx-player-flick-down-heavy-01.mp3", volume: 0.45 },
+  playerFlickLeft: { file: "./assets/audio/sfx/combat/sfx-player-tap-basic-slash-01.mp3", volume: 0.42 },
+  playerFlickDown: { file: "./assets/audio/sfx/combat/sfx-player-left-sidestep-01.mp3", volume: 0.38 },
   playerPerfectCounter: { file: "./assets/audio/sfx/combat/sfx-player-perfect-counter-01.mp3", volume: 0.48 },
+  playerLeftSidestep: { file: "./assets/audio/sfx/combat/sfx-player-left-sidestep-01.mp3", volume: 0.38 },
+  playerLeftPerfectCounter: { file: "./assets/audio/sfx/combat/sfx-player-left-perfect-counter-02.mp3", volume: 0.5 },
+  playerLeftWhiff: { file: "./assets/audio/sfx/combat/sfx-player-left-whiff-01.mp3", volume: 0.42 },
+  playerRecoveryCancel: { file: "./assets/audio/sfx/combat/sfx-player-recovery-cancel-01.mp3", volume: 0.34 },
+  playerRecoveryDrag: { file: "./assets/audio/sfx/combat/sfx-player-recovery-drag-01.mp3", volume: 0.34 },
+  playerHeavyWhiff: { file: "./assets/audio/sfx/combat/sfx-player-heavy-whiff-01.mp3", volume: 0.44 },
   playerCritical: { file: "./assets/audio/sfx/combat/sfx-player-critical-01.mp3", volume: 0.42 },
   playerStanceBreak: { file: "./assets/audio/sfx/combat/sfx-player-stance-break-01.mp3", volume: 0.44 },
   playerComboBreak: { file: "./assets/audio/sfx/combat/sfx-player-combo-break-01.mp3", volume: 0.44 },
@@ -1826,6 +2000,13 @@ const sfxTracks = {
   bossFastTell: { file: "./assets/audio/sfx/boss/sfx-boss-fast-attack-tell-01.mp3", volume: 0.45 },
   bossSlowTell: { file: "./assets/audio/sfx/boss/sfx-boss-slow-attack-tell-01.mp3", volume: 0.45 },
   bossFeintTell: { file: "./assets/audio/sfx/boss/sfx-boss-feint-tell-01.mp3", volume: 0.44 },
+  bossTrueConfirm: { file: "./assets/audio/sfx/boss/sfx-boss-true-confirm-01.mp3", volume: 0.42 },
+  bossFeintFakeTell: { file: "./assets/audio/sfx/boss/sfx-boss-feint-fake-tell-01.mp3", volume: 0.42 },
+  bossFeintTrueTell: { file: "./assets/audio/sfx/boss/sfx-boss-feint-true-tell-01.mp3", volume: 0.43 },
+  bossBackstepOpen: { file: "./assets/audio/sfx/boss/sfx-boss-backstep-open-01.mp3", volume: 0.38 },
+  bossGroundGrabSuction: { file: "./assets/audio/sfx/boss/sfx-boss-ground-grab-suction-01.mp3", volume: 0.4 },
+  bossAdaptRead: { file: "./assets/audio/sfx/boss/sfx-boss-adapt-read-01.mp3", volume: 0.34 },
+  bossPunishStart: { file: "./assets/audio/sfx/boss/sfx-boss-punish-start-01.mp3", volume: 0.38 },
   bossRetreatTell: { file: "./assets/audio/sfx/boss/sfx-boss-retreat-slash-tell-01.mp3", volume: 0.44 },
   bossGroundGrabTell: { file: "./assets/audio/sfx/boss/sfx-boss-ground-grab-tell-01.mp3", volume: 0.45 },
   bossHitPlayer: { file: "./assets/audio/sfx/boss/sfx-boss-hit-player-01.mp3", volume: 0.48 },
@@ -1841,6 +2022,8 @@ const sfxTracks = {
   uiRouteMapBranch: { file: "./assets/audio/sfx/ui/sfx-ui-route-map-branch-01.mp3", volume: 0.34 },
   uiBossPreview: { file: "./assets/audio/sfx/ui/sfx-ui-boss-preview-01.mp3", volume: 0.38 },
   uiMuteToggle: { file: "./assets/audio/sfx/ui/sfx-ui-mute-toggle-01.mp3", volume: 0.32 },
+  uiReadCorrect: { file: "./assets/audio/sfx/ui/sfx-ui-read-correct-01.mp3", volume: 0.28 },
+  uiReadWrong: { file: "./assets/audio/sfx/ui/sfx-ui-read-wrong-01.mp3", volume: 0.28 },
 };
 
 Object.values(bgmTracks).forEach((track) => {
@@ -2033,10 +2216,10 @@ function playerActionSfx(direction) {
 
 function weaponActionSfx(card, direction, route) {
   const equipmentId = state.equipment?.id;
-  if (equipmentId === "storm-katana" && direction === "right") return "weaponStormKatana";
+  if (equipmentId === "storm-katana" && direction === "up") return "weaponStormKatana";
   if (equipmentId === "mirror-fan" && direction === "left") return "weaponMirrorFan";
-  if (equipmentId === "executioner" && direction === "down") return "weaponExecutioner";
-  if (equipmentId === "gravity-hammer" && (direction === "up" || direction === "down")) return "weaponGravityHammer";
+  if (equipmentId === "executioner" && direction === "right") return "weaponExecutioner";
+  if (equipmentId === "gravity-hammer" && (direction === "right" || direction === "down")) return "weaponGravityHammer";
   if (equipmentId === "gunblade" && (direction === "tap" || route === "damage")) return "weaponGunblade";
   if (equipmentId === "duelist-scabbard" && (direction === "left" || card.id === "guard" || card.id === "shadow-step")) return "weaponDuelScabbard";
   return null;
@@ -2205,6 +2388,15 @@ function toggleClass(el, name, active) {
   setCachedValue(el, key, active);
 }
 
+function setDatasetValue(el, name, value) {
+  const text = String(value ?? "");
+  const key = `data:${name}`;
+  if (cachedValue(el, key) === text) return;
+  if (text) el.dataset[name] = text;
+  else delete el.dataset[name];
+  setCachedValue(el, key, text);
+}
+
 function performanceProfile() {
   return Math.round(state.tuning.performanceProfile ?? 1);
 }
@@ -2319,7 +2511,7 @@ const bossTimelineFrameAssets = [
   ...Object.values(bossFrameSets).flatMap((frames) => Object.values(frames)),
 ];
 
-[...new Set([...Object.values(artAssets), ...Object.values(bossForms), ...Object.values(bossActionSprites), ...bossTimelineFrameAssets])].forEach(preloadImage);
+[...new Set([...Object.values(artAssets), ...Object.values(bossForms), ...Object.values(bossActionSprites), ...bossTimelineFrameAssets, worldMapAssets.overview])].forEach(preloadImage);
 
 function withTimeout(promise, timeout, label) {
   let timer = null;
@@ -2527,6 +2719,29 @@ function currentBattleImageWarmList(encounter = currentRoom()) {
   ];
 }
 
+function currentActMeta(level = state.actLevel) {
+  return actMeta[clamp(Number(level) || 1, 1, actMax)] ?? actMeta[1];
+}
+
+function mapImageForAct(level = state.actLevel) {
+  return currentActMeta(level).mapImage ?? worldMapAssets.act1;
+}
+
+function mapImageForRoom(room = currentRoom()) {
+  if (room?.type === "forge") return worldMapAssets.forge;
+  if (room?.form === "mirror" || /镜/.test(room?.name ?? "")) return worldMapAssets.mirrorCorridor;
+  if (room?.route === "speed" && state.actLevel === 1) return worldMapAssets.act1Bridge;
+  return mapImageForAct(state.actLevel);
+}
+
+function mapBgStyle(src = mapImageForAct()) {
+  return `--map-bg: url(${src});`;
+}
+
+function warmMapImages(level = state.actLevel, extras = []) {
+  return warmImages([worldMapAssets.overview, mapImageForAct(level), ...extras]);
+}
+
 function battleBgmKeyForEncounter(encounter = currentRoom()) {
   if (encounter?.type === "boss") {
     if (encounter.form === "storm" || encounter.name === "风暴队长") return "bossStorm";
@@ -2537,7 +2752,9 @@ function battleBgmKeyForEncounter(encounter = currentRoom()) {
 }
 
 function battleSfxWarmKeys() {
-  return Object.keys(sfxTracks).filter((key) => key.startsWith("player") || key.startsWith("weapon") || key.startsWith("boss") || key === "uiBattleStart");
+  return Object.keys(sfxTracks).filter(
+    (key) => key.startsWith("player") || key.startsWith("weapon") || key.startsWith("boss") || ["uiBattleStart", "uiReadCorrect", "uiReadWrong"].includes(key),
+  );
 }
 
 async function warmBattleAssets(reason = "battle", encounter = currentRoom()) {
@@ -2919,9 +3136,9 @@ function routeIcon(route) {
 function directionGlyph(direction) {
   return {
     up: "↟",
-    right: "➤",
+    right: "◆",
     left: "↺",
-    down: "◆",
+    down: "↧",
     tap: "✦",
   }[direction] ?? "◇";
 }
@@ -3023,9 +3240,9 @@ function drawCooldownDrop(mods = {}) {
 function routeValueText(route, value) {
   return {
     speed: `追击值 ${formatSigned(value)}`,
-    control: `挑空值 ${formatSigned(value)}`,
-    counter: `闪反值 ${formatSigned(value)}`,
-    burst: `爆发值 ${formatSigned(value)}`,
+    control: `回手值 ${formatSigned(value)}`,
+    counter: `破招值 ${formatSigned(value)}`,
+    burst: `重刀值 ${formatSigned(value)}`,
     damage: `压制值 ${formatSigned(value)}`,
     any: `全路线 ${formatSigned(value)}`,
   }[route] ?? `${route} ${formatSigned(value)}`;
@@ -3041,9 +3258,9 @@ function choiceEffectChips(choice) {
       const drop = drawCooldownDrop({ speed: value });
       if (drop > 0) chips.push({ tone: "good", text: `补牌冷却 -${drop}%` });
     }
-    if (route === "control") chips.push({ tone: "good", text: `上划拖延 ${formatSigned(value * state.tuning.controlDelay, "ms")}` });
+    if (route === "control") chips.push({ tone: "good", text: `下划稳压 ${formatSigned(value * 2)}` });
     if (route === "counter") chips.push({ tone: "good", text: `左划伤害 ${formatSigned(value * 5 * state.tuning.rewardPower)}` });
-    if (route === "burst") chips.push({ tone: "good", text: `下划伤害 ${formatSigned(value * 5 * state.tuning.rewardPower)}` });
+    if (route === "burst") chips.push({ tone: "good", text: `右划伤害 ${formatSigned(value * 5 * state.tuning.rewardPower)}` });
     if (route === "damage") chips.push({ tone: "good", text: `点击伤害 ${formatSigned(value * 2 * state.tuning.rewardPower)}` });
     if (route === "any") chips.push({ tone: "good", text: `全动作伤害 ${formatSigned(value * state.tuning.rewardPower)}` });
   }
@@ -3142,14 +3359,246 @@ function refreshBossMark() {
 
 function bossMoves(encounter = currentRoom()) {
   const base = [
-    { key: "fast", label: "快刀抬手", hint: "短抬手，左划或格挡更稳。", read: "快", damageScale: 0.86, pressure: 1 },
-    { key: "heavy", label: "慢刀蓄势", hint: "大幅蓄势，可抢破势。", read: "重", damageScale: 1.12, pressure: 1.16 },
+    { key: "fast", label: "快刀抬手", hint: "白裂亮起，用左划快刀破招。", read: "快", damageScale: 0.86, pressure: 1 },
+    { key: "heavy", label: "慢刀蓄势", hint: "金裂蓄势，用右划重刀打碎护势。", read: "重", damageScale: 1.12, pressure: 1.16 },
   ];
   if (encounter?.type !== "boss" && encounter?.type !== "elite" && encounter?.type !== "training") return base;
-  if (state.bossMark === "backstep") base.push({ key: "backstep", label: "后撤横切", hint: "惩罚无脑右划，等空挥再追。", read: "退", damageScale: 1.05, pressure: 1.22 });
+  if (state.bossMark === "backstep") base.push({ key: "backstep", label: "后撤横切", hint: "横切时别追，露空后上划追身。", read: "退", damageScale: 1.05, pressure: 1.22 });
   if (state.bossMark === "feint") base.push({ key: "feint", label: "假抬手", hint: "先假动作，别急着交防守。", read: "伪", damageScale: 0.92, pressure: 1.18 });
-  if (state.bossMark === "ground-grab") base.push({ key: "ground-grab", label: "地裂抓取", hint: "惩罚空下划，先破势再处决。", read: "裂", damageScale: 1.24, pressure: 1.26 });
+  if (state.bossMark === "ground-grab") base.push({ key: "ground-grab", label: "地裂抓取", hint: "脚下危险可下划撤身，金裂可右划破势。", read: "裂", damageScale: 1.24, pressure: 1.26 });
   return base;
+}
+
+function bossTimeline(move = state.bossMove) {
+  return bossMoveTimelines[move?.key] ?? bossMoveTimelines.fast;
+}
+
+function bossPhaseState(move = state.bossMove, remaining = state.intentTime) {
+  const timeline = bossTimeline(move);
+  const recoverStart = timeline.recover;
+  const hitStart = recoverStart + timeline.hit;
+  const confirmStart = hitStart + timeline.confirm;
+  if (remaining <= recoverStart) return { phase: "recover", isConfirm: false, isRecover: true, key: `${move?.key ?? "fast"}:recover` };
+  if (remaining <= hitStart) return { phase: "hit", isConfirm: false, isRecover: false, key: `${move?.key ?? "fast"}:hit` };
+  if (remaining <= confirmStart) return { phase: "confirm", isConfirm: true, isRecover: false, key: `${move?.key ?? "fast"}:confirm` };
+  if (move?.key === "feint") {
+    const fakeEnd = confirmStart + timeline.gap;
+    const fakeStart = fakeEnd + timeline.fake;
+    if (remaining <= fakeStart && remaining > fakeEnd) return { phase: "fake", isConfirm: false, isRecover: false, key: "feint:fake" };
+  }
+  return { phase: "prep", isConfirm: false, isRecover: false, key: `${move?.key ?? "fast"}:prep` };
+}
+
+function bossConfirmStart(move = state.bossMove) {
+  const timeline = bossTimeline(move);
+  return timeline.recover + timeline.hit + timeline.confirm;
+}
+
+function isFastEarlyInterceptOpen(move = state.bossMove, phase = bossPhaseState(move)) {
+  if (move?.key !== "fast" || phase.phase !== "prep") return false;
+  return state.intentTime <= bossConfirmStart(move) + 320;
+}
+
+function bossRemainingForPhase(move, phase) {
+  const timeline = bossTimeline(move);
+  const recoverStart = timeline.recover;
+  const hitStart = recoverStart + timeline.hit;
+  const confirmStart = hitStart + timeline.confirm;
+  if (phase === "recover") return Math.max(40, recoverStart * 0.55);
+  if (phase === "hit") return recoverStart + timeline.hit * 0.5;
+  if (phase === "confirm") return hitStart + timeline.confirm * 0.5;
+  if (phase === "fake" && move?.key === "feint") return confirmStart + timeline.gap + timeline.fake * 0.5;
+  return Math.min(state.intentMax, confirmStart + (timeline.gap ?? 0) + (timeline.fake ?? 0) + 260);
+}
+
+function bossReadLabel(move, phase) {
+  const key = move?.key ?? "fast";
+  if (isBossVulnerable()) return "易伤";
+  if (isPoiseActive()) return "护势";
+  if (key === "fast" && isFastEarlyInterceptOpen(move, phase)) return "白裂预破";
+  if (key === "fast" && phase.phase === "confirm") return "白裂左破";
+  if (key === "fast" && phase.phase === "hit") return "险截";
+  if (key === "heavy" && phase.phase === "confirm") return "金裂右砸";
+  if (key === "heavy" && phase.phase === "hit") return "重压";
+  if (key === "feint" && phase.phase === "fake") return "假影";
+  if (key === "feint" && phase.phase === "confirm") return "真招左破";
+  if (key === "backstep" && phase.phase === "recover") return "露空上追";
+  if (key === "backstep" && (phase.phase === "confirm" || phase.phase === "hit")) return "横切";
+  if (key === "ground-grab" && phase.phase === "confirm") return "金裂右砸";
+  if (key === "ground-grab" && phase.phase === "prep") return "脚下下退";
+  if (phase.phase === "recover") return "收招";
+  return move?.read ?? "";
+}
+
+function resetPoiseState() {
+  state.poise = {
+    active: false,
+    max: 0,
+    remaining: 0,
+    progress: 0,
+    lastSource: "",
+    lastDamage: 0,
+    brokenThisAction: 0,
+    failed: false,
+  };
+  state.vulnerableUntil = 0;
+  state.vulnerableDrawPending = false;
+  state.vulnerableDrawn = false;
+  state.bossGetupUntil = 0;
+}
+
+function poiseLayersForEncounter(encounter = currentRoom()) {
+  if (!encounter) return 0;
+  if (state.trainingLesson) return 2;
+  if (encounter.type === "elite" || encounter.type === "boss") return 3;
+  return 0;
+}
+
+function shouldStartPoise(move = state.bossMove, encounter = currentRoom()) {
+  return move?.key === "heavy" && poiseLayersForEncounter(encounter) > 0;
+}
+
+function startPoiseForMove(move = state.bossMove, encounter = currentRoom()) {
+  state.bossGetupUntil = 0;
+  state.vulnerableUntil = 0;
+  state.vulnerableDrawPending = false;
+  state.vulnerableDrawn = false;
+  const max = shouldStartPoise(move, encounter) ? poiseLayersForEncounter(encounter) : 0;
+  state.poise = {
+    active: max > 0,
+    max,
+    remaining: max,
+    progress: 0,
+    lastSource: "",
+    lastDamage: 0,
+    brokenThisAction: 0,
+    failed: false,
+  };
+}
+
+function isBossVulnerable(now = performance.now()) {
+  return state.vulnerableUntil > now;
+}
+
+function isBossGettingUp(now = performance.now()) {
+  return state.bossGetupUntil > now;
+}
+
+function isPoiseActive() {
+  if (!state.poise.active || state.poise.remaining <= 0 || isBossVulnerable()) return false;
+  const phase = bossPhaseState();
+  return state.bossMove?.key === "heavy" && (phase.phase === "prep" || phase.isConfirm);
+}
+
+function poiseDamageFor(card, direction, route) {
+  if (direction === "left") return 0;
+  if (direction === "tap") return 0.25;
+  if (direction === "up") return 0.2;
+  if (direction === "down") return 0.1;
+  if (direction !== "right") return 0;
+  if (["heavy-cleave", "breaker", "execute"].includes(card.id)) return 2;
+  if (route === "burst") return 1.5;
+  return 1;
+}
+
+function poiseHitRecoveryMs(direction, fallback) {
+  if (direction === "right") return 440;
+  if (direction === "down") return 420;
+  return Math.min(fallback, 420);
+}
+
+function wouldBreakPoise(damage) {
+  if (!isPoiseActive() || damage <= 0) return false;
+  return damage >= state.poise.remaining - state.poise.progress;
+}
+
+function applyPoiseDamage(readResult) {
+  const damage = Number(readResult?.poiseDamage ?? 0);
+  if (!isPoiseActive() || damage <= 0) return { changed: false, broken: false, layersBroken: 0 };
+  let remainingDamage = damage;
+  let layersBroken = 0;
+  state.poise.lastSource = readResult.poiseSource ?? readResult.type;
+  state.poise.lastDamage = damage;
+  while (remainingDamage > 0 && state.poise.remaining > 0) {
+    const needed = 1 - state.poise.progress;
+    if (remainingDamage + 0.0001 >= needed) {
+      remainingDamage -= needed;
+      state.poise.remaining -= 1;
+      state.poise.progress = 0;
+      layersBroken += 1;
+    } else {
+      state.poise.progress += remainingDamage;
+      remainingDamage = 0;
+    }
+  }
+  state.poise.brokenThisAction = layersBroken;
+  if (layersBroken > 0) {
+    restartClass(els.arena, "is-poise-cracked");
+    playSfx("bossBlocked");
+  }
+  if (state.poise.remaining <= 0) {
+    startVulnerability();
+    return { changed: true, broken: true, layersBroken };
+  }
+  return { changed: true, broken: false, layersBroken };
+}
+
+function startVulnerability(now = performance.now()) {
+  state.poise.active = false;
+  state.poise.remaining = 0;
+  state.poise.progress = 0;
+  state.vulnerableUntil = now + poiseConfig.vulnerabilityMs;
+  state.vulnerableDrawPending = true;
+  state.vulnerableDrawn = false;
+  state.bossGetupUntil = 0;
+  state.intentName = "护势碎裂 · 易伤";
+  state.pressure = Math.max(0, state.pressure - state.tuning.breakPressure * 0.48);
+  state.fightBreaks += 1;
+  state.evidence.break += 1;
+  restartClass(els.enemy, "is-vulnerable-start");
+  playSfx("bossStanceBreak");
+}
+
+function resolveVulnerabilityDraw() {
+  if (!state.vulnerableDrawPending) return false;
+  state.vulnerableDrawPending = false;
+  state.vulnerableDrawn = true;
+  if (handCount() < handLimit()) {
+    drawCard();
+    state.drawTimer = handCount() >= handLimit() ? 0 : currentDrawCooldown();
+    renderHand();
+    return true;
+  }
+  state.drawTimer = 0;
+  return false;
+}
+
+function vulnerabilityRecoveryMs(baseMs, direction) {
+  if (!isBossVulnerable()) return baseMs;
+  const heavy = direction === "right";
+  const scale = heavy ? poiseConfig.heavyRecoveryScale : poiseConfig.normalRecoveryScale;
+  const min = heavy ? poiseConfig.heavyRecoveryMin : poiseConfig.normalRecoveryMin;
+  return Math.max(min, Math.round(baseMs * scale));
+}
+
+function updateVulnerabilityTimers(now = performance.now()) {
+  if (state.vulnerableUntil > 0 && state.vulnerableUntil <= now) {
+    state.vulnerableUntil = 0;
+    state.bossGetupUntil = Math.max(state.bossGetupUntil, now + poiseConfig.getupMs);
+    state.intentName = "Boss 起身";
+    render();
+  }
+  if (state.bossGetupUntil > 0 && state.bossGetupUntil <= now) {
+    state.bossGetupUntil = 0;
+    resetBossIntentAfterInterrupt();
+  }
+}
+
+function resetBossPhaseAudio() {
+  state.bossPhase = "prep";
+  state.bossPhaseSoundKey = "";
+  state.bossConfirmPlayedFor = "";
+  state.bossMoveStartedAt = performance.now();
 }
 
 function chooseBossMove(encounter = currentRoom()) {
@@ -3157,6 +3606,8 @@ function chooseBossMove(encounter = currentRoom()) {
   state.bossMove = state.trainingLesson?.moveKey ? moves.find((move) => move.key === state.trainingLesson.moveKey) : null;
   state.bossMove = state.bossMove ?? moves[Math.floor((state.rng?.() ?? Math.random()) * moves.length)] ?? moves[0];
   state.intentName = state.evidence.scout > 0 ? `${state.bossMove.label} · 已侦察` : state.bossMove.label;
+  resetBossPhaseAudio();
+  startPoiseForMove(state.bossMove, encounter);
 }
 
 function dailyThemeForSeed(seed = dailySeed()) {
@@ -3222,6 +3673,9 @@ function resetGame() {
   setAudioScene("menu");
   state.rng = seededRandom(state.dailySeed);
   state.runStarted = false;
+  state.mapOpen = false;
+  state.pendingActIntro = false;
+  state.debugRun = false;
   state.encounterIndex = 0;
   state.actLevel = 1;
   state.equipment = null;
@@ -3253,6 +3707,10 @@ function resetGame() {
   state.pressure = 0;
   state.stance = 100;
   state.lastDirection = null;
+  state.recentDirections = [];
+  state.lastActionResult = null;
+  resetPoiseState();
+  resetActionRecovery();
   state.drawTimer = 0;
   state.runId = null;
   state.dailyRun = null;
@@ -3263,21 +3721,46 @@ function resetGame() {
 }
 
 async function startRun(equipment) {
+  return startRunAtAct(equipment, 1, { skipIntro: true });
+}
+
+function applyDebugActBaseline(actLevel) {
+  if (actLevel <= 1) return;
+  const baseline = actLevel === 2
+    ? { any: 2, speed: 1, counter: 1, burst: 1, control: 1, damage: 1 }
+    : { any: 4, speed: 2, counter: 2, burst: 2, control: 2, damage: 2 };
+  for (const [route, value] of Object.entries(baseline)) {
+    if (state.rewardMods[route] === undefined) continue;
+    state.rewardMods[route] += value;
+  }
+  state.rewardNames.push(`调试基底:${actLabel(actLevel)}`);
+}
+
+async function startRunAtAct(equipment, actLevel = 1, options = {}) {
   if (!equipment) return false;
-  await warmBattleAssets(`start:${equipment.id}`, encounters[0]);
+  const targetAct = clamp(Number(actLevel) || 1, 1, actMax);
+  const debug = Boolean(options.debug || targetAct > 1);
+  const firstRoom = scaledEncounter(encounters[0], targetAct, 0);
+  await Promise.all([
+    warmMapImages(targetAct),
+    warmBattleAssets(`${debug ? "debug-act" : "start"}:${equipment.id}:a${targetAct}`, firstRoom),
+  ]);
   setAudioScene("battle");
   playSfx("uiBattleStart");
   state.trainingLesson = null;
   state.dailyRun = null;
   state.runStarted = true;
+  state.mapOpen = false;
+  state.pendingActIntro = false;
+  state.debugRun = debug;
   state.encounterIndex = 0;
-  state.actLevel = 1;
+  state.actLevel = targetAct;
   state.equipment = equipment;
   state.rewardMods = { speed: 0, control: 0, counter: 0, burst: 0, damage: 0, any: 0 };
   state.rewardNames = [];
   state.routeMarks = { speed: 0, counter: 0, burst: 0, control: 0, damage: 0 };
   state.evidence = { scout: 0, break: 0, finisher: 0 };
-  state.bossMark = equipment.contract?.bossMark ?? null;
+  state.bossMark = currentActMeta(targetAct).bossMark ?? equipment.contract?.bossMark ?? null;
   state.bossMove = null;
   state.bossPreviewed = false;
   state.oaths = [];
@@ -3300,10 +3783,12 @@ async function startRun(equipment) {
     state.rewardMods[route] += value;
     if (route !== "any") state.routeMarks[route] += value;
   }
+  applyDebugActBaseline(targetAct);
   document.querySelector(".overlay")?.remove();
-  enterCurrentRoom();
+  if (options.skipIntro) enterCurrentRoom();
+  else showActIntroOverlay(targetAct, { debug });
   wakeLoop(true);
-  log(`${equipment.name} 已装备。今日种子 ${state.dailySeed} 开始。`);
+  log(debug ? `调试进入${actLabel(targetAct)}，非正式进度。${equipment.name} 已装备。` : `${equipment.name} 已装备。今日种子 ${state.dailySeed} 开始。`);
   return true;
 }
 
@@ -3318,6 +3803,9 @@ async function startDailyRun() {
   playSfx("uiBattleStart");
   state.trainingLesson = null;
   state.dailyRun = { seed, themeId: plan.theme.id, label: plan.theme.label };
+  state.mapOpen = false;
+  state.pendingActIntro = false;
+  state.debugRun = false;
   state.dailySeed = seed;
   state.rng = seededRandom(`${seed}-${plan.theme.id}`);
   state.runStarted = true;
@@ -3344,7 +3832,7 @@ async function startDailyRun() {
   state.pendingRewardIds = null;
   state.pendingPathChoiceIds = null;
   state.pathChoices = {};
-  state.anchor = { route: plan.theme.route, direction: plan.theme.route === "counter" ? "left" : plan.theme.route === "burst" ? "down" : "right", source: plan.theme.label, label: `${routeIcon(plan.theme.route)} ${plan.theme.label}` };
+  state.anchor = { route: plan.theme.route, direction: plan.theme.route === "counter" ? "left" : plan.theme.route === "burst" ? "right" : plan.theme.route === "control" ? "down" : "up", source: plan.theme.label, label: `${routeIcon(plan.theme.route)} ${plan.theme.label}` };
   state.runId = `daily-${seed}-${plan.theme.id}`;
   resetFightProofs();
   for (const [route, value] of Object.entries(equipment.mods)) {
@@ -3373,6 +3861,9 @@ async function startTrainingLesson(trainingId) {
   playSfx("uiBattleStart");
   state.trainingLesson = lesson;
   state.dailyRun = null;
+  state.mapOpen = false;
+  state.pendingActIntro = false;
+  state.debugRun = false;
   state.runStarted = true;
   state.encounterIndex = 0;
   state.actLevel = 1;
@@ -3499,6 +3990,7 @@ function newRunId() {
 function resetFightProofs() {
   state.fightProofs = { backstepIntercept: false, trueRead: false, shatterExecute: false };
   state.lastMastery = null;
+  state.lastReadFeedback = null;
 }
 
 function recipeForCardDirection(cardId, direction, equipmentId = state.equipment?.id) {
@@ -3518,10 +4010,10 @@ function anchorCueForCardDirection(cardId, direction) {
 
 function isAnchorWindow(cue) {
   if (!cue) return false;
-  const danger = state.intentTime < state.tuning.perfectWindow * 1.18;
-  if (cue.route === "speed") return state.bossMove?.key === "backstep" || state.route === "speed" || state.combo >= 4;
-  if (cue.route === "counter") return danger || ["fast", "heavy", "feint"].includes(state.bossMove?.key);
-  if (cue.route === "burst") return state.fightBreaks > 0 || ["heavy", "ground-grab"].includes(state.bossMove?.key);
+  const phase = bossPhaseState();
+  if (cue.route === "speed") return (state.bossMove?.key === "backstep" && phase.isRecover) || state.route === "speed" || state.combo >= 4;
+  if (cue.route === "counter") return phase.isConfirm && ["fast", "feint"].includes(state.bossMove?.key);
+  if (cue.route === "burst") return state.fightBreaks > 0 || (phase.isConfirm && ["heavy", "ground-grab"].includes(state.bossMove?.key));
   return false;
 }
 
@@ -3533,13 +4025,13 @@ function cardDirectionRoute(card, direction) {
 function isRecipeWindow(recipe) {
   if (!recipe || state.ended || !state.runStarted) return false;
   const move = state.bossMove?.key;
-  const danger = state.intentTime < state.tuning.perfectWindow * 1.12;
-  if (recipe.id === "chase-intercept") return move === "backstep" && danger;
-  if (recipe.id === "guard-mirror") return ["fast", "heavy", "feint"].includes(move) && danger;
-  if (recipe.id === "breaker-shatter") return ["heavy", "ground-grab"].includes(move) && danger;
-  if (recipe.route === "speed") return move === "backstep" || state.route === "speed" || state.combo >= 4;
-  if (recipe.route === "counter") return danger && ["fast", "heavy", "feint"].includes(move);
-  if (recipe.route === "burst") return ["heavy", "ground-grab"].includes(move) || state.fightBreaks > 0;
+  const phase = bossPhaseState();
+  if (recipe.id === "chase-intercept") return move === "backstep" && phase.isRecover;
+  if (recipe.id === "guard-mirror") return ["fast", "feint"].includes(move) && phase.isConfirm;
+  if (recipe.id === "breaker-shatter") return (move === "heavy" && (phase.isConfirm || isPoiseActive())) || (move === "ground-grab" && phase.isConfirm);
+  if (recipe.route === "speed") return (move === "backstep" && phase.isRecover) || state.route === "speed" || state.combo >= 4;
+  if (recipe.route === "counter") return phase.isConfirm && ["fast", "feint"].includes(move);
+  if (recipe.route === "burst") return (move === "heavy" && (phase.isConfirm || isPoiseActive())) || (move === "ground-grab" && phase.isConfirm) || state.fightBreaks > 0;
   return false;
 }
 
@@ -3586,9 +4078,9 @@ function evaluateMastery(card, direction, route, perfect, breakHit) {
   if (recipe && active) result = "masterstroke";
   if (recipe?.id === "guard-mirror" && perfect) result = "masterstroke";
   if (recipe?.id === "breaker-shatter" && breakHit && state.combo >= 3) result = "masterstroke";
-  if (state.equipment?.id === "storm-katana" && direction === "right" && state.bossMove?.key !== "backstep" && state.bossMark === "backstep" && !chaseLineReady) result = "flaw";
+  if (state.equipment?.id === "storm-katana" && direction === "up" && state.bossMove?.key !== "backstep" && state.bossMark === "backstep" && !chaseLineReady) result = "flaw";
   if (state.equipment?.id === "mirror-fan" && route === "counter" && state.bossMove?.key === "feint" && !perfect) result = "flaw";
-  if (state.equipment?.id === "executioner" && direction === "down" && state.bossMove?.key === "ground-grab" && state.fightBreaks <= 0 && !breakHit) result = "flaw";
+  if (state.equipment?.id === "executioner" && direction === "right" && state.bossMove?.key === "ground-grab" && state.fightBreaks <= 0 && !breakHit) result = "flaw";
   return { result, recipe };
 }
 
@@ -3653,7 +4145,7 @@ function grantDailyProgress(won) {
 
 function grantFightProgress() {
   const room = currentRoom();
-  if (state.dailyRun) return null;
+  if (state.dailyRun || state.debugRun) return null;
   if (!state.runId || !room || !["fight", "elite", "boss"].includes(room.type)) return null;
   if (profileLocked()) return { locked: true, error: state.profileErrors[state.profileMode] };
   const claimKey = `${state.runId}:A${state.actLevel}:${state.encounterIndex}`;
@@ -3707,6 +4199,7 @@ function clearPendingEnd() {
 
 function resetCombatVisualState() {
   clearPendingEnd();
+  resetPoiseState();
   state.artLockUntil = 0;
   resetBossMoveClass();
   toggleClass(els.enemy, "is-attacking", false);
@@ -3732,7 +4225,18 @@ function resetBossMoveClass() {
     toggleClass(els.enemy, `is-move-${key}`, false);
   }
   toggleClass(els.enemy, "is-read-danger", false);
+  toggleClass(els.enemy, "is-read-confirm", false);
+  toggleClass(els.enemy, "is-read-recover", false);
+  toggleClass(els.enemy, "is-read-fake", false);
   els.enemy.dataset.read = "";
+  setDatasetValue(els.arena, "bossMove", "");
+  setDatasetValue(els.arena, "bossPhase", "");
+  setDatasetValue(els.arena, "readLabel", "");
+  setDatasetValue(els.arena, "poiseActive", "");
+  setDatasetValue(els.arena, "poiseRemaining", "");
+  setDatasetValue(els.arena, "poiseMax", "");
+  setDatasetValue(els.arena, "vulnerable", "");
+  setDatasetValue(els.readLabel, "label", "");
 }
 
 function enterCurrentRoom() {
@@ -3917,10 +4421,372 @@ function replaceCard(index) {
   renderEmptyHandSlot(index);
 }
 
-function playCard(index, direction = "tap") {
-  if (state.ended || state.notebookOpen || state.versionOpen || !state.runStarted) return;
+function recoveryRemaining(now = performance.now()) {
+  return Math.max(0, state.recoveryUntil - now);
+}
+
+function isRecovering(now = performance.now()) {
+  return recoveryRemaining(now) > 0;
+}
+
+function resetActionRecovery() {
+  state.recoveryUntil = 0;
+  state.recoveryLastMs = 0;
+  state.recoverySource = "none";
+  state.queuedInput = null;
+}
+
+function startActionRecovery(ms, source) {
+  state.recoveryLastMs = Math.max(0, Math.round(ms));
+  state.recoverySource = source || "action";
+  state.recoveryUntil = performance.now() + state.recoveryLastMs;
+  if (state.queuedInput && recoveryRemaining() > inputBufferMs) state.queuedInput = null;
+}
+
+function canBufferCurrentRecovery() {
+  return ["perfect-left", "break-confirm", "backstep-chase"].includes(state.recoverySource);
+}
+
+function currentInputBufferWindow() {
+  if (!canBufferCurrentRecovery()) return 0;
+  return Math.min(120, Math.max(80, state.recoveryLastMs * 0.42));
+}
+
+function queueCardInput(index, direction, point = null) {
+  const remaining = recoveryRemaining();
+  if (remaining <= 0) return "ready";
+  if (remaining <= currentInputBufferWindow() && !state.queuedInput) {
+    state.queuedInput = { index, direction, point, queuedAt: performance.now() };
+    return "queued";
+  }
+  return "blocked";
+}
+
+function flushQueuedCardInput() {
+  if (!state.queuedInput || isRecovering()) return;
+  const queued = state.queuedInput;
+  state.queuedInput = null;
+  const cardEl = els.hand.children[queued.index];
+  if (!cardEl || !state.hand[queued.index]) return;
+  animateCardDirection(cardEl, queued.direction, queued.point);
+  playCard(queued.index, queued.direction, { fromBuffer: true });
+}
+
+function recordDirection(direction, resultType) {
+  state.lastDirection = direction;
+  state.recentDirections.push({ direction, resultType, at: Math.round(performance.now()) });
+  state.recentDirections = state.recentDirections.slice(-recentDirectionLimit);
+}
+
+function repeatedDirectionCount(direction) {
+  let count = 0;
+  for (let index = state.recentDirections.length - 1; index >= 0; index -= 1) {
+    if (state.recentDirections[index].direction !== direction) break;
+    count += 1;
+  }
+  return count;
+}
+
+function resetBossIntentAfterInterrupt(encounter = currentRoom()) {
+  state.intentTime = state.intentMax;
+  chooseBossMove(encounter);
+}
+
+function currentReadResult(card, direction, route, breakHit) {
+  const move = state.bossMove ?? bossMoves(currentRoom())[0];
+  const phase = bossPhaseState(move);
+  const moveKey = move?.key ?? "fast";
+  const baseRecoveryMs = vulnerabilityRecoveryMs(actionRecoveryMs[direction] ?? actionRecoveryMs.tap, direction);
+  const result = {
+    type: "steady",
+    label: "稳手",
+    perfect: false,
+    breakSuccess: false,
+    interrupt: false,
+    recoveryMs: baseRecoveryMs,
+    pressureBonus: 0,
+    damageBonus: 0,
+    poiseDamage: 0,
+    poiseBreak: false,
+    poiseSource: "",
+    log: "",
+    sfx: [],
+    feedback: "",
+    phase,
+    moveKey,
+  };
+
+  if (isBossVulnerable()) {
+    return {
+      ...result,
+      type: direction === "right" ? "vulnerable-heavy" : direction === "down" ? "vulnerable-retreat" : "vulnerable-strike",
+      label: direction === "right" ? "爆发" : direction === "down" ? "回手" : "追打",
+      recoveryMs: baseRecoveryMs,
+      damageBonus: direction === "right" ? 10 : direction === "down" ? -3 : 3,
+      feedback: direction === "right" ? "易伤重刀兑现" : direction === "down" ? "易伤回手，伤害低" : "易伤追打",
+      log: "",
+      sfx: direction === "right" ? ["playerCritical"] : [],
+    };
+  }
+
+  if (isPoiseActive()) {
+    const poiseDamage = poiseDamageFor(card, direction, route);
+    const poiseBreak = wouldBreakPoise(poiseDamage);
+    if (poiseDamage > 0) {
+      return {
+        ...result,
+        type: poiseBreak ? "poise-break" : "poise-hit",
+        label: poiseBreak ? "妙手" : "裂纹",
+        breakSuccess: poiseBreak,
+        interrupt: poiseBreak,
+        recoveryMs: poiseBreak ? actionRecoveryMs.cancel : poiseHitRecoveryMs(direction, result.recoveryMs),
+        pressureBonus: poiseBreak ? 0 : direction === "right" ? 3 : 0,
+        damageBonus: direction === "right" ? 5 : direction === "down" ? -4 : 0,
+        poiseDamage,
+        poiseBreak,
+        poiseSource: `${card.id}:${direction}`,
+        log: poiseBreak ? `${card.variants?.[direction]?.[0] ?? card.tap}: 右砸打碎护势，Boss 易伤。易伤，补一张。` : `${card.variants?.[direction]?.[0] ?? card.tap}: 护势裂开。`,
+        feedback: poiseBreak ? "护势碎裂，Boss 易伤" : "护势裂开",
+        sfx: poiseBreak ? ["playerStanceBreak", "playerRecoveryCancel", "uiReadCorrect"] : ["bossBlocked"],
+      };
+    }
+    if (direction === "down") {
+      return {
+        ...result,
+        type: "retreat-return",
+        label: "回手",
+        recoveryMs: actionRecoveryMs.down,
+        pressureBonus: -12,
+        damageBonus: -6,
+        log: `${card.variants?.down?.[0] ?? card.tap}: 撤出蓄势范围，连击断了。`,
+        feedback: "撤身安全，连击断了",
+        sfx: ["playerComboBreak"],
+      };
+    }
+    if (direction === "left") {
+      return {
+        ...result,
+        type: "left-deflect",
+        label: "稳手",
+        recoveryMs: actionRecoveryMs.left,
+        damageBonus: -3,
+        log: `${card.variants?.left?.[0] ?? card.tap}: 快刀能保命，但打不碎金裂护势。`,
+        feedback: "快刀不破护势",
+        sfx: ["bossBlocked"],
+      };
+    }
+  }
+
+  if (direction === "down") {
+    return {
+      ...result,
+      type: "retreat-return",
+      label: "回手",
+      recoveryMs: actionRecoveryMs.down,
+      pressureBonus: moveKey === "ground-grab" ? -18 : -10,
+      damageBonus: -6,
+      log:
+        moveKey === "ground-grab"
+          ? `${card.variants?.down?.[0] ?? card.tap}: 下退撤出脚下危险，回手低伤。`
+          : `${card.variants?.down?.[0] ?? card.tap}: 撤身回手，连击断了。`,
+      feedback: moveKey === "ground-grab" ? "撤出脚下危险，断连回手" : "撤身安全，连击断了",
+      sfx: ["playerComboBreak"],
+    };
+  }
+
+  if (direction === "left") {
+    if (moveKey === "fast" && isFastEarlyInterceptOpen(move, phase)) {
+      return {
+        ...result,
+        type: "early-left-intercept",
+        label: "稳手",
+        interrupt: true,
+        recoveryMs: actionRecoveryMs.left,
+        damageBonus: -4,
+        log: `${card.variants?.left?.[0] ?? card.tap[0]}: 白裂前预破，打断快刀但收益低。`,
+        feedback: "预破快刀，收益低",
+        sfx: ["bossBlocked", "uiReadCorrect"],
+      };
+    }
+    if ((moveKey === "fast" || moveKey === "feint") && phase.isConfirm) {
+      return {
+        ...result,
+        type: "perfect-left",
+        label: "妙手",
+        perfect: true,
+        interrupt: true,
+        recoveryMs: actionRecoveryMs.leftPerfect,
+        damageBonus: 10,
+        log: `${card.variants?.left?.[0] ?? card.tap[0]}: ${moveKey === "feint" ? "识破假抬手，真招左划破招" : "白裂左划破招，快刀截断"}。`,
+        feedback: moveKey === "feint" ? "识破假抬手，真招破招" : "白裂破招，快刀截断",
+        sfx: ["playerLeftPerfectCounter", "playerRecoveryCancel", "bossBlocked", "uiReadCorrect"],
+      };
+    }
+    if (moveKey === "feint" && phase.phase === "fake") {
+      return {
+        ...result,
+        type: "left-whiff",
+        label: "破绽",
+        recoveryMs: actionRecoveryMs.leftWhiff,
+        pressureBonus: 18,
+        damageBonus: -4,
+        log: `${card.variants?.left?.[0] ?? card.tap[0]}: 空破，被假抬手骗了，等真招白裂。`,
+        feedback: "空破，被假抬手骗了",
+        sfx: ["playerLeftWhiff", "playerRecoveryDrag", "uiReadWrong"],
+      };
+    }
+    if (moveKey === "fast" && phase.phase === "hit") {
+      return {
+        ...result,
+        type: "late-left-intercept",
+        label: "险截",
+        interrupt: true,
+        recoveryMs: 820,
+        pressureBonus: 6,
+        damageBonus: -7,
+        log: `${card.variants?.left?.[0] ?? card.tap[0]}: 险破救回，打断了但后摇很重。`,
+        feedback: "险破救回，后摇重",
+        sfx: ["playerLeftWhiff", "bossBlocked", "uiReadWrong"],
+      };
+    }
+    if (moveKey === "feint" && phase.phase === "hit") {
+      return {
+        ...result,
+        type: "late-left",
+        label: "破绽",
+        recoveryMs: actionRecoveryMs.leftWhiff,
+        pressureBonus: 16,
+        damageBonus: -5,
+        log: `${card.variants?.left?.[0] ?? card.tap[0]}: 晚了，真招已经贴身。`,
+        feedback: "晚了，快刀已经贴身",
+        sfx: ["playerLeftWhiff", "uiReadWrong"],
+      };
+    }
+    return {
+      ...result,
+      type: "left-deflect",
+      label: "稳手",
+      recoveryMs: actionRecoveryMs.left,
+      damageBonus: moveKey === "heavy" || moveKey === "ground-grab" ? -3 : 0,
+      log:
+        moveKey === "heavy"
+          ? `${card.variants?.left?.[0] ?? card.tap[0]}: 慢刀金裂太重，快刀只能保命。`
+          : moveKey === "ground-grab"
+            ? `${card.variants?.left?.[0] ?? card.tap[0]}: 地裂危险来自脚下，下退更稳。`
+            : "",
+      feedback: moveKey === "heavy" ? "金裂太重，快刀不破" : moveKey === "ground-grab" ? "危险来自脚下" : "",
+      sfx: ["bossBlocked"],
+    };
+  }
+
+  if (direction === "right") {
+    const canBreak = (moveKey === "heavy" && phase.isConfirm) || (moveKey === "ground-grab" && (phase.phase === "prep" || phase.isConfirm));
+    if (breakHit && canBreak) {
+      return {
+        ...result,
+        type: "break-confirm",
+        label: "妙手",
+        breakSuccess: true,
+        interrupt: true,
+        recoveryMs: actionRecoveryMs.cancel,
+        damageBonus: 8,
+        log: `${card.variants?.right?.[0] ?? card.tap[0]}: 金裂破势窗口，重刀截断。`,
+        feedback: "金裂破势，重刀截断",
+        sfx: ["playerStanceBreak", "playerRecoveryCancel", "bossStanceBreak", "uiReadCorrect"],
+      };
+    }
+    if (moveKey === "backstep" && phase.isRecover) {
+      return {
+        ...result,
+        type: "heavy-cashout",
+        label: "爆发",
+        recoveryMs: actionRecoveryMs.right,
+        damageBonus: 10,
+        log: `${card.variants?.right?.[0] ?? card.tap[0]}: 露空后重刀兑现，高伤但收招慢。`,
+        feedback: "露空重刀，高伤高后摇",
+        sfx: ["playerCritical"],
+      };
+    }
+    if (moveKey === "fast" || moveKey === "feint" || moveKey === "backstep" || moveKey === "ground-grab") {
+      return {
+        ...result,
+        type: "heavy-whiff",
+        label: "破绽",
+        recoveryMs: actionRecoveryMs.rightMistake,
+        pressureBonus: moveKey === "ground-grab" ? 24 : 18,
+        damageBonus: -7,
+        log:
+          moveKey === "ground-grab"
+            ? `${card.variants?.right?.[0] ?? card.tap[0]}: 地裂抓住重刀后摇。`
+            : `${card.variants?.right?.[0] ?? card.tap[0]}: 重刀贪早，被 Boss 抢招。`,
+        feedback: moveKey === "ground-grab" ? "地裂抓后摇" : "重刀贪早，被抢招",
+        sfx: ["playerHeavyWhiff", "playerRecoveryDrag", "uiReadWrong"],
+      };
+    }
+    return {
+      ...result,
+      type: "heavy-whiff",
+      label: "破绽",
+      recoveryMs: actionRecoveryMs.rightMistake,
+      pressureBonus: 16,
+      damageBonus: -6,
+      log: `${card.variants?.right?.[0] ?? card.tap[0]}: 没有金裂或露空，重刀空挥。`,
+      feedback: "重刀空挥，后摇很重",
+      sfx: ["playerHeavyWhiff", "playerRecoveryDrag", "uiReadWrong"],
+    };
+  }
+
+  if (direction === "up" && moveKey === "backstep") {
+    if (phase.isRecover) {
+      return {
+        ...result,
+        type: "backstep-chase",
+        label: "妙手",
+        interrupt: true,
+        recoveryMs: actionRecoveryMs.cancel,
+        damageBonus: 6,
+        log: `${card.variants?.up?.[0] ?? card.tap[0]}: 后撤露空，上追命中。`,
+        feedback: "露空上追，保住连击",
+        sfx: ["playerRecoveryCancel", "uiReadCorrect"],
+      };
+    }
+    if (phase.phase === "confirm" || phase.phase === "hit") {
+      return {
+        ...result,
+        type: "early-chase",
+        label: "破绽",
+        recoveryMs: actionRecoveryMs.up + 180,
+        pressureBonus: 15,
+        log: `${card.variants?.up?.[0] ?? card.tap[0]}: 追早了，撞上横切。`,
+        feedback: "追早了，撞上横切",
+        sfx: ["bossEvade", "playerRecoveryDrag", "uiReadWrong"],
+      };
+    }
+  }
+
+  if (direction === "up" && (moveKey === "heavy" || moveKey === "ground-grab") && (phase.phase === "prep" || phase.isConfirm)) {
+    return {
+      ...result,
+      type: "chase-pressure",
+      label: "稳手",
+      recoveryMs: actionRecoveryMs.up,
+      damageBonus: 1,
+      log: `${card.variants?.up?.[0] ?? card.tap[0]}: 贴身压住一拍，但金裂还没碎。`,
+      feedback: moveKey === "ground-grab" ? "追身压一拍，脚下仍危险" : "追身压一拍，金裂未碎",
+      sfx: [],
+    };
+  }
+
+  return result;
+}
+
+function playCard(index, direction = "tap", options = {}) {
+  if (state.ended || state.notebookOpen || state.versionOpen || !state.runStarted) return null;
+  if (!options.ignoreRecovery && isRecovering()) {
+    return { blocked: true, remaining: Math.round(recoveryRemaining()) };
+  }
   const card = state.hand[index];
-  if (!card) return;
+  if (!card) return null;
 
   const variant = direction === "tap" ? [card.tap, card.route] : card.variants[direction];
   const actionName = variant[0];
@@ -3933,18 +4799,25 @@ function playCard(index, direction = "tap") {
   const quick = now - state.lastActionAt < state.tuning.comboWindow;
   const danger = state.intentTime < state.tuning.perfectWindow;
   const defensive = route === "counter" || card.id === "guard" || card.id === "shadow-step";
-  const perfect = danger && defensive;
+  const breakHit = direction === "right" && (route === "burst" || card.id === "breaker" || card.id === "heavy-cleave" || card.id === "execute");
+  const readResult = currentReadResult(card, direction, route, breakHit);
+  const perfect = readResult.perfect || (danger && defensive && direction === "left" && readResult.type === "steady");
+  const isRetreat = readResult.type === "retreat-return" || direction === "down";
+  const vulnerableDamageActive = isBossVulnerable();
   let baseDamage = damageFor(card, route, direction, perfect);
-  const breakHit = direction === "down" && (route === "burst" || card.id === "breaker" || card.id === "heavy-cleave");
+  baseDamage = Math.max(1, baseDamage + readResult.damageBonus);
   const mastery = evaluateMastery(card, direction, route, perfect, breakHit);
   baseDamage += applyMasteryResult(mastery);
+  if (vulnerableDamageActive) {
+    baseDamage = Math.max(1, Math.round(baseDamage * poiseConfig.damageScale));
+  }
 
   state.lastActionAt = now;
   state.hasStarted = true;
-  state.combo = quick ? state.combo + 1 : Math.max(1, Math.floor(state.combo * 0.45));
+  state.combo = isRetreat ? 0 : quick ? state.combo + 1 : Math.max(1, Math.floor(state.combo * 0.45));
   state.maxCombo = Math.max(state.maxCombo, state.combo);
-  state.comboCharge = Math.min(100, state.comboCharge + 16 + state.combo * 1.5);
-  state.routeScores[route] += direction === "tap" ? 1 : 2;
+  if (!isRetreat) state.comboCharge = Math.min(100, state.comboCharge + 16 + state.combo * 1.5);
+  state.routeScores[route] += isRetreat ? 1 : direction === "tap" ? 1 : 2;
   const anchorCue = direction === "tap" ? null : anchorCueForCardDirection(card.id, direction);
   if (anchorCue) {
     state.routeScores[anchorCue.route] += anchorCue.tier === "core" ? 2 : 1;
@@ -3957,17 +4830,33 @@ function playCard(index, direction = "tap") {
   if (route === "speed" || state.rewardMods.any > 0) {
     state.comboCharge = Math.min(100, state.comboCharge + state.rewardMods.speed * 3 + state.rewardMods.any);
   }
-  if (route === "control" && direction === "up") {
-    state.intentTime = Math.min(state.intentMax, state.intentTime + state.tuning.controlDelay * state.rewardMods.control);
+  if (route === "control" && direction === "down") {
+    state.intentTime = Math.min(state.intentMax, state.intentTime + state.tuning.controlDelay * state.rewardMods.control * 0.6);
   }
-  if (route === "speed" && direction === "right") {
+  if (readResult.type === "chase-pressure") {
+    state.intentTime = Math.min(state.intentMax, state.intentTime + 180 + state.rewardMods.control * 18);
+  }
+  if (route === "speed" && direction === "up") {
     state.intentTime = Math.min(state.intentMax, state.intentTime + 45 + state.rewardMods.speed * 6);
   }
-  if (route === "burst" && direction === "down" && state.combo >= 3) {
+  if (route === "burst" && direction === "right" && state.combo >= 3) {
     state.pressure = Math.max(0, state.pressure - Math.min(18, 8 + state.rewardMods.burst * 1.2));
   }
 
-  if (mastery.result === "masterstroke") {
+  const poiseOutcome = applyPoiseDamage(readResult);
+  for (const key of readResult.sfx) playSfx(key);
+  if (readResult.perfect) {
+    state.fightReads += 1;
+    state.evidence.scout += readResult.moveKey === "feint" ? 1 : 0;
+    resetBossIntentAfterInterrupt();
+    state.pressure = Math.max(0, state.pressure - state.tuning.counterRelief);
+    state.combo += 2;
+    state.routeScores.counter += 3;
+  }
+
+  if (readResult.log) {
+    log(readResult.log);
+  } else if (mastery.result === "masterstroke") {
     const label = masteryLabel(mastery);
     log(`${actionName}: ${label}，连击读招成立。`);
     spawnMasteryFeedback(mastery.recipe.route, label);
@@ -3975,14 +4864,14 @@ function playCard(index, direction = "tap") {
   } else if (mastery.result === "flaw") {
     log(`${actionName}: 错读，被 Boss 看穿。`);
     playSfx("bossEvade");
-  } else if (perfect) {
+  } else if (perfect && !readResult.perfect) {
     state.fightReads += 1;
-    state.evidence.scout += state.bossMove?.key === "feint" ? 1 : 0;
-    state.intentTime = state.intentMax;
+    state.evidence.scout += readResult.moveKey === "feint" ? 1 : 0;
+    resetBossIntentAfterInterrupt();
     state.pressure = Math.max(0, state.pressure - state.tuning.counterRelief);
     state.combo += 2;
     state.routeScores.counter += 3;
-    log(`${actionName}: 完美闪反，连击不断。`);
+    log(`${actionName}: 完美破招，连击不断。`);
     playSfx("playerPerfectCounter");
     playSfx("bossBlocked");
   } else {
@@ -3991,25 +4880,36 @@ function playCard(index, direction = "tap") {
 
   if (mastery.result === "masterstroke" && mastery.recipe?.id === "guard-mirror") {
     state.fightReads += 1;
-    state.evidence.scout += state.bossMove?.key === "feint" ? 1 : 0;
-    state.intentTime = state.intentMax;
+    state.evidence.scout += readResult.moveKey === "feint" ? 1 : 0;
+    resetBossIntentAfterInterrupt();
     state.pressure = Math.max(0, state.pressure - state.tuning.counterRelief * 0.85);
     state.playerHp = Math.min(state.playerMaxHp, state.playerHp + 8);
   }
 
-  if (breakHit && state.combo >= 3) {
+  if (readResult.breakSuccess && !readResult.poiseBreak) {
     state.fightBreaks += 1;
     state.evidence.break += 1;
     state.pressure = Math.max(0, state.pressure - state.tuning.breakPressure * 0.42);
-    playSfx("playerStanceBreak");
-    playSfx("bossStanceBreak");
+    resetBossIntentAfterInterrupt();
+  } else if (readResult.interrupt && !readResult.perfect && !readResult.poiseBreak) {
+    resetBossIntentAfterInterrupt();
+  } else if (breakHit && state.combo >= 3 && readResult.type !== "heavy-whiff") {
+    state.fightBreaks += 1;
+    state.evidence.break += 1;
+    state.pressure = Math.max(0, state.pressure - state.tuning.breakPressure * 0.22);
   }
 
   spawnComboFeedback(route);
+  spawnReadFeedback(readResult);
   applyStanceCost(route, direction, perfect, { suppressBreak: defeated });
   burstMovement(route, direction);
   spawnSlash(route, direction);
   replaceCard(index);
+  const vulnerabilityDrawn = resolveVulnerabilityDraw();
+  if (isRetreat) {
+    state.pressure = Math.max(0, state.pressure - 8 - state.rewardMods.control * 2);
+    state.drawTimer = Math.min(state.drawTimer, currentDrawCooldown() * 0.35);
+  }
 
   if (defeated) {
     scheduleVictory();
@@ -4017,7 +4917,47 @@ function playCard(index, direction = "tap") {
   }
 
   applyActionPressure(card, route, direction, perfect);
+  if (readResult.pressureBonus !== 0) {
+    state.pressure = clamp(state.pressure + readResult.pressureBonus, 0, state.tuning.pressureLimit * 1.8);
+    if (readResult.pressureBonus >= 18) playSfx("bossPunishStart");
+  }
+  const repeatCount = repeatedDirectionCount(direction);
+  recordDirection(direction, readResult.type);
+  if (repeatCount >= 3) {
+    state.pressure = clamp(state.pressure + 8, 0, state.tuning.pressureLimit * 1.8);
+    playSfx("bossAdaptRead");
+  }
+  state.lastActionResult = {
+    cardId: card.id,
+    direction,
+    route,
+    resultType: readResult.type,
+    resultLabel: readResult.label,
+    bossMove: readResult.moveKey,
+    bossPhase: readResult.phase.phase,
+    recoveryMs: readResult.recoveryMs,
+    interrupt: Boolean(readResult.interrupt),
+    perfect: Boolean(readResult.perfect),
+    breakSuccess: Boolean(readResult.breakSuccess),
+    poiseDamage: readResult.poiseDamage,
+    poiseBreak: Boolean(readResult.poiseBreak),
+    poiseRemaining: state.poise.remaining,
+    vulnerable: isBossVulnerable(),
+    vulnerabilityDrawn,
+    feedback: readResult.feedback,
+    at: Math.round(performance.now()),
+  };
+  state.lastReadFeedback = {
+    text: readResult.feedback,
+    resultType: readResult.type,
+    move: readResult.moveKey,
+    phase: readResult.phase.phase,
+    direction,
+    at: state.lastActionResult.at,
+  };
+  startActionRecovery(readResult.recoveryMs, readResult.type);
   scheduleRender();
+  return state.lastActionResult;
 }
 
 function damageFor(card, route, direction, perfect) {
@@ -4025,16 +4965,17 @@ function damageFor(card, route, direction, perfect) {
   if (card.id === "heavy-cleave") value += 8;
   if (card.id === "execute") value += 12 + Math.min(18, state.combo);
   if (card.id === "breaker") value += 6;
-  if (direction === "down") value += 7;
-  if (direction === "right") value += Math.min(8, Math.floor(state.combo / 2));
-  if (direction === "up") value += route === "control" ? 4 : 2;
+  if (direction === "right") value += 10 + Math.min(8, Math.floor(state.combo / 2));
+  if (direction === "up") value += route === "speed" ? 4 : 2;
+  if (direction === "down") value -= 4;
   if (perfect) value += 12;
   if (state.route === route && state.combo > 5) value += 5;
   value += state.rewardMods[route] * 3 * state.tuning.rewardPower;
   value += state.rewardMods.any * state.tuning.rewardPower;
   if (direction === "tap") value += state.rewardMods.damage * 2 * state.tuning.rewardPower;
-  if (direction === "down") value += state.rewardMods.burst * 2 * state.tuning.rewardPower;
+  if (direction === "right") value += state.rewardMods.burst * 2 * state.tuning.rewardPower;
   if (direction === "left") value += state.rewardMods.counter * 2 * state.tuning.rewardPower;
+  if (direction === "up") value += state.rewardMods.speed * 1.5 * state.tuning.rewardPower;
   const anchorCue = direction === "tap" ? null : anchorCueForCardDirection(card.id, direction);
   if (anchorCue) {
     value += anchorCue.tier === "core" ? 7 : anchorCue.tier === "bridge" ? 4 : 2;
@@ -4049,11 +4990,12 @@ function damageFor(card, route, direction, perfect) {
 
 function applyStanceCost(route, direction, perfect, { suppressBreak = false } = {}) {
   let cost = state.tuning.stanceCost;
-  if (direction === "down") cost += state.tuning.burstStanceCost;
+  if (direction === "right") cost += state.tuning.burstStanceCost;
+  if (direction === "down") cost -= state.tuning.varietyRefund * 0.4;
   if (state.lastDirection === direction) cost += state.tuning.repeatDirectionCost;
   if (state.lastDirection && state.lastDirection !== direction) cost -= state.tuning.varietyRefund;
   if (route === "counter" || perfect) cost -= state.tuning.counterStanceGain * (perfect ? 1 : 0.45);
-  if (route === "control" && direction === "up") cost -= state.tuning.varietyRefund * 0.5;
+  if (route === "control" && direction === "down") cost -= state.tuning.varietyRefund * 0.5;
 
   state.stance = clamp(state.stance - cost, 0, 100);
   state.lastDirection = direction;
@@ -4062,7 +5004,7 @@ function applyStanceCost(route, direction, perfect, { suppressBreak = false } = 
     state.stance = clamp(state.stance + state.tuning.counterStanceGain, 0, 100);
   }
 
-  if (state.stance <= 0 && !suppressBreak) {
+  if (state.stance <= 0 && !suppressBreak && !isBossVulnerable()) {
     state.pressure = clamp(state.pressure + state.tuning.breakPressure, 0, state.tuning.pressureLimit * 1.8);
     enemyAttack("破绽", 0.88);
     state.stance = 24;
@@ -4089,20 +5031,21 @@ function scheduleVictory() {
 }
 
 function applyActionPressure(card, route, direction, perfect) {
+  if (isBossVulnerable()) return;
   if (perfect) return;
   const encounter = currentRoom();
   let pressure = state.tuning.actionPressure;
   if (encounter?.type === "boss") pressure += state.tuning.bossPressure;
   if (encounter?.type === "elite") pressure += state.tuning.elitePressure;
-  if (direction === "down") pressure += state.tuning.burstRisk;
-  if (route === "control" && direction === "up") pressure -= state.tuning.controlRelief;
+  if (direction === "right") pressure += state.tuning.burstRisk;
+  if (route === "control" && direction === "down") pressure -= state.tuning.controlRelief;
   if (route === "counter" || card.id === "guard" || card.id === "shadow-step") pressure -= state.tuning.counterRelief * 0.45;
-  if (route === "speed" && direction === "right") pressure -= Math.min(18, state.rewardMods.speed * 1.35 + state.combo * 0.6);
-  if (route === "burst" && direction === "down" && state.combo >= 3) pressure -= Math.min(16, state.rewardMods.burst * 1.2 + state.combo * 0.8);
-  const chaseLineReady = route === "speed" && direction === "right" && state.route === "speed" && state.combo >= 4;
-  if (state.bossMark === "backstep" && direction === "right" && state.bossMove?.key !== "backstep" && !chaseLineReady) pressure += 10;
+  if (route === "speed" && direction === "up") pressure -= Math.min(18, state.rewardMods.speed * 1.35 + state.combo * 0.6);
+  if (route === "burst" && direction === "right" && state.combo >= 3) pressure -= Math.min(16, state.rewardMods.burst * 1.2 + state.combo * 0.8);
+  const chaseLineReady = route === "speed" && direction === "up" && state.route === "speed" && state.combo >= 4;
+  if (state.bossMark === "backstep" && direction === "up" && state.bossMove?.key !== "backstep" && !chaseLineReady) pressure += 10;
   if (state.bossMark === "feint" && route === "counter" && !perfect) pressure += 9;
-  if (state.bossMark === "ground-grab" && direction === "down" && state.fightBreaks <= 0) pressure += 12;
+  if (state.bossMark === "ground-grab" && direction === "right" && state.fightBreaks <= 0) pressure += 12;
   if (state.bossMove?.pressure) pressure *= state.bossMove.pressure;
 
   state.pressure = clamp(state.pressure + pressure, 0, state.tuning.pressureLimit * 1.8);
@@ -4131,8 +5074,8 @@ function burstMovement(route, direction) {
     return;
   }
   const comboLift = Math.min(30, state.combo * 1.7);
-  const playerX = direction === "right" ? 48 : direction === "left" ? -48 : route === "speed" ? 28 : 0;
-  const playerY = direction === "up" ? -118 : direction === "down" ? -46 : -72 - comboLift;
+  const playerX = direction === "right" ? 36 : direction === "left" ? -42 : direction === "down" ? -32 : route === "speed" ? 28 : 0;
+  const playerY = direction === "up" ? -118 : direction === "down" ? -18 : -72 - comboLift;
   const enemyX = route === "burst" ? 20 : route === "control" ? -12 : 9;
   const enemyY = route === "control" ? -28 : route === "burst" ? 15 : 0;
   setCombatArt({ player: artAssets.playerLunge, lock: 260 });
@@ -4195,6 +5138,16 @@ function spawnMasteryFeedback(route, label) {
   pop.textContent = label;
   els.comboLayer.append(pop);
   window.setTimeout(() => pop.remove(), 720);
+}
+
+function spawnReadFeedback(readResult) {
+  if (!readResult?.feedback || isCompactMotionMode()) return;
+  const pop = document.createElement("span");
+  const isMistake = ["left-whiff", "late-left", "heavy-whiff", "early-chase"].includes(readResult.type);
+  pop.className = `read-pop ${isMistake ? "is-mistake" : "is-success"}`;
+  pop.textContent = readResult.feedback;
+  els.comboLayer.append(pop);
+  window.setTimeout(() => pop.remove(), 760);
 }
 
 function currentBossArt(action = "idle") {
@@ -4279,11 +5232,49 @@ function setCombatArt({ player = null, boss = null, bossAction = "idle", lock = 
 function renderBossMoveState(danger = false) {
   const move = state.bossMove ?? bossMoves(currentRoom())[0];
   const key = move?.key ?? "fast";
+  const phase = bossPhaseState(move);
+  const vulnerable = isBossVulnerable();
+  const poiseActive = isPoiseActive();
   for (const item of bossMoveClassKeys) {
     toggleClass(els.enemy, `is-move-${item}`, item === key);
   }
   toggleClass(els.enemy, "is-read-danger", danger);
+  toggleClass(els.enemy, "is-read-confirm", phase.phase === "confirm");
+  toggleClass(els.enemy, "is-read-recover", phase.phase === "recover");
+  toggleClass(els.enemy, "is-read-fake", phase.phase === "fake");
+  toggleClass(els.enemy, "is-vulnerable", vulnerable);
+  toggleClass(els.enemy, "is-poise-active", poiseActive);
+  toggleClass(els.arena, "is-vulnerable", vulnerable);
   els.enemy.dataset.read = move?.read ?? "";
+  setDatasetValue(els.arena, "bossMove", danger || vulnerable ? key : "");
+  setDatasetValue(els.arena, "bossPhase", vulnerable ? "vulnerable" : danger ? phase.phase : "");
+  setDatasetValue(els.arena, "readLabel", danger || vulnerable ? bossReadLabel(move, phase) : "");
+  setDatasetValue(els.readLabel, "label", danger || vulnerable ? bossReadLabel(move, phase) : "");
+  renderPoiseState();
+}
+
+function renderPoiseState() {
+  const poiseActive = isPoiseActive();
+  const vulnerable = isBossVulnerable();
+  setDatasetValue(els.arena, "poiseActive", poiseActive ? "1" : "");
+  setDatasetValue(els.arena, "poiseRemaining", poiseActive ? state.poise.remaining : "");
+  setDatasetValue(els.arena, "poiseMax", poiseActive ? state.poise.max : "");
+  setDatasetValue(els.arena, "vulnerable", vulnerable ? "1" : "");
+  if (els.vulnerabilityTag) {
+    const remaining = vulnerable ? Math.max(0, Math.ceil((state.vulnerableUntil - performance.now()) / 100) / 10).toFixed(1) : "";
+    setText(els.vulnerabilityTag, vulnerable ? `易伤 ${remaining}s` : "易伤");
+  }
+  if (!els.poiseCracks) return;
+  const html = poiseActive
+    ? Array.from({ length: state.poise.max }, (_, index) => {
+        const cracked = index >= state.poise.remaining;
+        const active = index === state.poise.remaining - 1;
+        return `<i class="${cracked ? "is-broken" : ""} ${active ? "is-active" : ""}"></i>`;
+      }).join("")
+    : "";
+  if (cachedValue(els.poiseCracks, "html") === html) return;
+  els.poiseCracks.innerHTML = html;
+  setCachedValue(els.poiseCracks, "html", html);
 }
 
 function forceCombatArt() {
@@ -4307,9 +5298,23 @@ function makeImpactVfx(src, className) {
 
 function renderCombatArt() {
   if (state.ended && els.enemy.classList.contains("is-death")) return;
-  if (performance.now() < state.artLockUntil) return;
+  if (isBossVulnerable()) {
+    renderBossMoveState(true);
+    if (performance.now() < state.artLockUntil) return;
+    setCombatArt({
+      player: artAssets.playerIdle,
+      boss: currentBossArt("damaged"),
+      bossAction: "damaged",
+      bossCharging: false,
+    });
+    return;
+  }
   const warningWindow = Math.max(360, state.tuning.perfectWindow * 1.35);
-  const danger = state.runStarted && !state.ended && state.intentTime < warningWindow;
+  const phase = bossPhaseState();
+  const readablePrep = ["heavy", "feint", "backstep", "ground-grab"].includes(state.bossMove?.key) || isFastEarlyInterceptOpen(state.bossMove, phase);
+  const danger = state.runStarted && !state.ended && (readablePrep || state.intentTime < warningWindow || phase.phase !== "prep");
+  renderBossMoveState(danger);
+  if (performance.now() < state.artLockUntil) return;
   const action = danger ? (state.bossMove?.key ?? "fast") : "idle";
   setCombatArt({
     player: artAssets.playerIdle,
@@ -4317,7 +5322,23 @@ function renderCombatArt() {
     bossAction: action,
     bossCharging: danger,
   });
-  renderBossMoveState(danger);
+}
+
+function updateBossPhaseAudio() {
+  if (!state.runStarted || state.ended || !state.bossMove || isBossVulnerable() || isBossGettingUp()) return;
+  const phase = bossPhaseState();
+  state.bossPhase = phase.phase;
+  if (state.bossPhaseSoundKey === phase.key) return;
+  state.bossPhaseSoundKey = phase.key;
+  if (phase.phase === "fake" && state.bossMove.key === "feint") {
+    playSfx("bossFeintFakeTell");
+  } else if (phase.phase === "confirm") {
+    playSfx(state.bossMove.key === "feint" ? "bossFeintTrueTell" : "bossTrueConfirm");
+  } else if (phase.phase === "recover" && state.bossMove.key === "backstep") {
+    playSfx("bossBackstepOpen");
+  } else if (phase.phase === "prep" && state.bossMove.key === "ground-grab") {
+    playSfx("bossGroundGrabSuction");
+  }
 }
 
 function tick(delta) {
@@ -4337,8 +5358,14 @@ function tick(delta) {
   }
 
   tickDraw(delta);
+  flushQueuedCardInput();
   state.stance = clamp(state.stance + delta * state.tuning.stanceRegen, 0, 100);
   state.pressure = Math.max(0, state.pressure - delta * state.tuning.pressureDecay);
+  updateVulnerabilityTimers(now);
+  if (isBossVulnerable(now) || isBossGettingUp(now)) {
+    render();
+    return;
+  }
   state.intentTime -= delta;
   const encounter = currentRoom() ?? scaledEncounter(activeEncounters()[0] ?? encounters[0], state.actLevel);
   const enraged = state.enemyHp < state.enemyMaxHp * state.tuning.enrageThreshold;
@@ -4346,9 +5373,24 @@ function tick(delta) {
   state.intentMax = enraged ? Math.max(650, baseSpeed / state.tuning.enrageTempo) : baseSpeed;
   const moveName = state.bossMove?.label ?? "进攻";
   state.intentName = enraged ? `${moveName} · 急` : moveName;
+  updateBossPhaseAudio();
 
   if (state.intentTime <= 0) {
+    let poiseFailureLine = "";
+    if (state.poise.active && state.poise.remaining > 0 && state.bossMove?.key === "heavy") {
+      state.poise.failed = true;
+      poiseFailureLine = state.recoverySource === "poise-hit" ? "重招没破护势，被抓后摇。" : "护势未破，大招落下。";
+      state.lastReadFeedback = {
+        text: poiseFailureLine,
+        resultType: "poise-fail",
+        move: state.bossMove.key,
+        phase: bossPhaseState().phase,
+        direction: state.lastDirection ?? "",
+        at: Math.round(performance.now()),
+      };
+    }
     enemyAttack(state.bossMove?.label ?? "进攻", state.bossMove?.damageScale ?? 1);
+    if (poiseFailureLine) log(poiseFailureLine);
     state.intentTime = state.intentMax;
     chooseBossMove(encounter);
   }
@@ -4509,6 +5551,11 @@ function render() {
   setText(els.playerHpText, Math.ceil(state.playerHp));
   setText(els.intentName, state.intentName);
   setStyleVar(els.intent, "--intent", `${Math.round(100 - (state.intentTime / state.intentMax) * 100)}%`);
+  const remainingRecovery = recoveryRemaining();
+  const bufferWindow = currentInputBufferWindow();
+  toggleClass(els.game, "is-recovering", remainingRecovery > 0);
+  toggleClass(els.game, "is-buffer-open", remainingRecovery > 0 && remainingRecovery <= bufferWindow);
+  setStyleVar(els.game, "--recovery", `${Math.round(remainingRecovery)}ms`);
   const pressureRatio = clamp(state.pressure / state.tuning.pressureLimit, 0, 1);
   setTransform(els.pressureBar, scaleX(pressureRatio));
   setText(els.pressureName, `抢招压力 ${Math.round(pressureRatio * 100)}`);
@@ -4524,11 +5571,12 @@ function render() {
       forge: "锻造",
       market: "黑市",
     }[encounter.type] ?? "事件";
-  const stageLabel = state.trainingLesson ? `训练课 ${typeLabel}` : state.dailyRun ? `每日刀路 ${typeLabel} ${state.encounterIndex + 1}/${activeEncounters().length}` : state.runStarted ? `${actLabel()} 上行刀路 ${typeLabel} ${state.encounterIndex + 1}/${activeEncounters().length}` : "选武器";
+  const stageLabel = state.trainingLesson ? `训练课 ${typeLabel}` : state.dailyRun ? `每日刀路 ${typeLabel} ${state.encounterIndex + 1}/${activeEncounters().length}` : state.runStarted ? `${actLabel()} ${currentActMeta().placeName} ${typeLabel} ${state.encounterIndex + 1}/${activeEncounters().length}` : "选武器";
   setText(els.runStage, stageLabel);
   setText(els.equipmentName, state.equipment?.name ?? "未选武器");
   setText(els.rewardStack, state.anchor ? `锚 ${routeIcon(state.anchor.route)} · ${state.rewardNames.length} 证物` : state.rewardNames.length ? `${state.rewardNames.length} 证物 · ${bossMarkLabel()}` : state.dailySeed);
   renderBladeMap();
+  refreshHandAffinity();
 }
 
 function renderBladeMap() {
@@ -4640,13 +5688,15 @@ function renderHand() {
 
 function currentHandAffinityKey() {
   const dangerBucket = state.intentTime < state.tuning.perfectWindow * 1.12 ? "hot" : "cold";
+  const phase = bossPhaseState();
   return [
     state.hand.map((card) => card?.id ?? "empty").join(","),
     state.equipment?.id ?? "none",
     state.anchor?.route ?? "no-anchor",
     state.route,
     state.bossMove?.key ?? "none",
-    dangerBucket,
+    `${dangerBucket}:${phase.key}`,
+    `poise:${state.poise.remaining}/${state.poise.max}:${isBossVulnerable() ? "vuln" : "live"}`,
     Object.keys(state.profile.recipes ?? {}).sort().join(","),
   ].join("|");
 }
@@ -4692,6 +5742,17 @@ function attachGesture(element, index) {
       direction = dx > 0 ? "right" : "left";
     } else {
       direction = dy > 0 ? "down" : "up";
+    }
+    const queueState = queueCardInput(index, direction, { clientX: startX, clientY: startY });
+    if (queueState === "queued") {
+      element.classList.add("is-buffered");
+      window.setTimeout(() => element.classList.remove("is-buffered"), inputBufferMs + 40);
+      return;
+    }
+    if (queueState === "blocked") {
+      element.classList.add("is-recovery-blocked");
+      window.setTimeout(() => element.classList.remove("is-recovery-blocked"), 130);
+      return;
     }
     animateCardDirection(element, direction, { clientX: startX, clientY: startY });
     playCard(index, direction);
@@ -5112,7 +6173,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.70",
+      version: "v0.2.81",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -5184,8 +6245,109 @@ function shouldOpenMobileAcceptanceFromUrl() {
   return params.get("mobileQa") === "1" || params.get("mobileQa") === "true";
 }
 
+function isFormalActUnlocked(level) {
+  const act = clamp(Number(level) || 1, 1, actMax);
+  if (act <= 1) return true;
+  return Boolean(state.profile.routeAtlas?.[`act${act}`]);
+}
+
+function worldMapActButton(act, { debug = false } = {}) {
+  const meta = currentActMeta(act);
+  const unlocked = debug || isFormalActUnlocked(act);
+  const disabled = unlocked ? "" : "disabled";
+  const mode = debug ? "debug-act" : "start-act";
+  const label = debug ? `调试：${meta.label}` : unlocked ? `进入${meta.placeName}` : "未解锁";
+  return `
+    <button class="map-act-card ${unlocked ? "is-unlocked" : "is-locked"} ${debug ? "is-debug" : ""}" type="button" data-${mode}="${act}" ${disabled} style="${mapBgStyle(meta.mapImage)}">
+      <small>${meta.label} · ${meta.factionName}</small>
+      <b>${meta.placeName}</b>
+      <span>${meta.bossName}</span>
+      <em>${debug ? "不记录正式进度" : meta.lesson}</em>
+      <i>${label}</i>
+    </button>
+  `;
+}
+
+function showWorldMapOverlay(equipment = state.equipment ?? equipmentPool[0]) {
+  if (!equipment) return;
+  void warmMapImages(1, [worldMapAssets.act2, worldMapAssets.act3]);
+  setAudioScene("menu");
+  state.mapOpen = true;
+  const overlay = document.createElement("div");
+  overlay.className = "overlay world-map-overlay";
+  overlay.setAttribute("style", mapBgStyle(worldMapAssets.overview));
+  overlay.innerHTML = `
+    <div class="overlay-panel world-map-panel">
+      <small class="map-kicker">上行图谱</small>
+      <h2>上行刀路</h2>
+      <p>${effectTextMarkup(`沿天裂而上，刀路会记住你的胜法。当前兵器：${equipment.name}。`)}</p>
+      <div class="map-act-stack">
+        ${[1, 2, 3].map((act) => worldMapActButton(act)).join("")}
+      </div>
+      <div class="map-debug-panel">
+        <small>调试直达，不记录正式进度。</small>
+        <div>
+          ${[1, 2, 3].map((act) => worldMapActButton(act, { debug: true })).join("")}
+        </div>
+      </div>
+      <button class="map-back-button" type="button" data-map-back>返回选武器</button>
+    </div>
+  `;
+  overlay.querySelectorAll("[data-start-act]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const act = clamp(Number(button.dataset.startAct) || 1, 1, actMax);
+      void startRunAtAct(equipment, act, { debug: false });
+    });
+  });
+  overlay.querySelectorAll("[data-debug-act]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const act = clamp(Number(button.dataset.debugAct) || 1, 1, actMax);
+      void startRunAtAct(equipment, act, { debug: true });
+    });
+  });
+  overlay.querySelector("[data-map-back]").addEventListener("click", () => {
+    state.mapOpen = false;
+    overlay.remove();
+    showEquipmentOverlay();
+  });
+  document.querySelector(".overlay")?.remove();
+  els.game.append(overlay);
+}
+
+function showActIntroOverlay(level = state.actLevel, { debug = state.debugRun } = {}) {
+  const act = clamp(Number(level) || 1, 1, actMax);
+  const meta = currentActMeta(act);
+  state.pendingActIntro = true;
+  state.ended = true;
+  render();
+  void warmMapImages(act);
+  const overlay = document.createElement("div");
+  overlay.className = "overlay act-intro-overlay has-map-bg";
+  overlay.setAttribute("style", mapBgStyle(meta.mapImage));
+  overlay.innerHTML = `
+    <div class="overlay-panel act-intro-panel">
+      <small class="map-kicker">${meta.label} · ${meta.factionName}</small>
+      <h2>${meta.placeName}</h2>
+      <p>${effectTextMarkup(`${meta.tagline} Boss：${meta.bossName}。当前进度 ${state.encounterIndex + 1}/${activeEncounters().length}。${debug ? " 调试直达，不记录正式进度。" : ""}`)}</p>
+      <button class="choice map-start-choice" type="button" data-enter-act>
+        <small class="choice-meta" style="${routeStyle(meta.bossRoute)}"><i>${routeIcon(meta.bossRoute)}</i>${meta.label}</small>
+        <b>进入${meta.placeName}</b>
+        <span>${effectTextMarkup(meta.lesson)}</span>
+      </button>
+    </div>
+  `;
+  overlay.querySelector("[data-enter-act]").addEventListener("click", () => {
+    state.pendingActIntro = false;
+    overlay.remove();
+    enterCurrentRoom();
+  });
+  document.querySelector(".overlay")?.remove();
+  els.game.append(overlay);
+}
+
 function showEquipmentOverlay() {
   setAudioScene("menu");
+  state.mapOpen = false;
   const dailyPlan = dailyPlanFor();
   const dailyRecord = state.profile.dailyRecords?.[dailyPlan.seed];
   const overlay = document.createElement("div");
@@ -5193,7 +6355,7 @@ function showEquipmentOverlay() {
   overlay.innerHTML = `
     <div class="overlay-panel">
       <h2>选择武器</h2>
-      <p>你在下，Boss 在上。上划是冲上去，左右是横向闪避，下划是蓄势重斩。</p>
+      <p>你在下，Boss 在上。上追身，左破招，右重刀，下撤身。</p>
       <button class="choice" type="button" data-toggle-menu-bgm>
         <small class="choice-meta" style="${routeStyle("speed")}"><i>音</i>BGM</small>
         <b>游戏音乐</b>
@@ -5208,9 +6370,9 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>距</i>当前 v0.2.70</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>向</i>当前 v0.2.81</small>
         <b>版本记录</b>
-        <span class="choice-effect">${effectTextMarkup("这版压缩手机顶部信息，并给底部上划留出安全距离。")}</span>
+        <span class="choice-effect">${effectTextMarkup("这版统一四向战斗意图，Boss 提示和出牌收益会一起变化。")}</span>
       </button>
       <button class="choice" type="button" data-copy-mobile-link>
         <small class="choice-meta" style="${routeStyle("control")}"><i>链</i>Alpha 5</small>
@@ -5276,7 +6438,7 @@ function showEquipmentOverlay() {
   overlay.querySelectorAll("[data-equipment]").forEach((button) => {
     button.addEventListener("click", () => {
       const equipment = equipmentPool.find((item) => item.id === button.dataset.equipment);
-      void startRun(equipment);
+      showWorldMapOverlay(equipment);
     });
   });
   els.game.append(overlay);
@@ -5290,7 +6452,8 @@ function showRewardOverlay() {
   state.lastBreakdown = `${encounter.name}: 最高 ${state.maxCombo} 连，读招 ${state.fightReads}，破势 ${state.fightBreaks}，路线 ${routeIcon(state.route)} ${routeLabel(state.route)}。`;
   const progressLine = state.dailyRun ? "每日中途不发长期材料，通关后只记成绩。" : progressGain ? profileGainText(progressGain) : "长期材料已记录。";
   const overlay = document.createElement("div");
-  overlay.className = "overlay";
+  overlay.className = "overlay has-map-bg";
+  overlay.setAttribute("style", mapBgStyle(mapImageForRoom(encounter)));
   overlay.innerHTML = `
     <div class="overlay-panel">
       <h2>风格结算</h2>
@@ -5329,7 +6492,8 @@ function showPathChoiceOverlay() {
   const choices = state.pendingPathChoiceIds ? state.pendingPathChoiceIds.map((id) => pathChoiceCatalog.find((choice) => choice.id === id)).filter(Boolean) : nextPathChoices();
   state.pendingPathChoiceIds = choices.map((choice) => choice.id);
   const overlay = document.createElement("div");
-  overlay.className = "overlay";
+  overlay.className = "overlay has-map-bg";
+  overlay.setAttribute("style", mapBgStyle(mapImageForAct()));
   overlay.innerHTML = `
     <div class="overlay-panel">
       <h2>选择刀路</h2>
@@ -5570,6 +6734,9 @@ function restoreSaveSnapshot(snapshot) {
   state.pressure = Number(snapshot.pressure ?? 0);
   state.stance = Number(snapshot.stance ?? 100);
   state.lastDirection = snapshot.lastDirection ?? null;
+  state.recentDirections = [];
+  state.lastActionResult = null;
+  resetActionRecovery();
   state.drawTimer = Number(snapshot.drawTimer ?? 0);
   state.tuning = normalizeTuning(snapshot.tuning ?? state.tuning);
   state.currentPreset = snapshot.currentPreset ?? "custom";
@@ -5588,6 +6755,7 @@ function restoreSaveSnapshot(snapshot) {
   state.lastActionAt = performance.now();
   const move = bossMoves(currentRoom()).find((item) => item.key === snapshot.bossMoveKey);
   state.bossMove = move ?? bossMoves(currentRoom())[0];
+  resetBossPhaseAudio();
   saveTuning();
   resetCombatVisualState();
   forceCombatArt();
@@ -5959,13 +7127,15 @@ function applyReward(reward) {
 }
 
 function setAnchorFromChoice(choice) {
-  if (state.anchor || !choice || !["speed", "counter", "burst"].includes(choice.route)) return;
+  if (state.anchor || !choice || !["speed", "counter", "burst", "control"].includes(choice.route)) return;
   const direction =
     choice.route === "speed"
-      ? "right"
+      ? "up"
       : choice.route === "counter"
         ? "left"
-        : "down";
+        : choice.route === "burst"
+          ? "right"
+          : "down";
   state.anchor = {
     route: choice.route,
     direction,
@@ -6072,7 +7242,8 @@ function showNodeOverlay(room) {
   document.querySelector(".overlay")?.remove();
   const choices = choicesForNode(room);
   const overlay = document.createElement("div");
-  overlay.className = "overlay";
+  overlay.className = "overlay has-map-bg";
+  overlay.setAttribute("style", mapBgStyle(mapImageForRoom(room)));
   overlay.innerHTML = `
     <div class="overlay-panel">
       <h2>${room.name}</h2>
@@ -6108,7 +7279,8 @@ function showBossPreviewOverlay(room) {
   playSfx("uiBossPreview");
   const markRoute = dominantMarkRoute();
   const overlay = document.createElement("div");
-  overlay.className = "overlay";
+  overlay.className = "overlay has-map-bg";
+  overlay.setAttribute("style", mapBgStyle(mapImageForRoom(room)));
   overlay.innerHTML = `
     <div class="overlay-panel">
       <h2>Boss 预演</h2>
@@ -6135,7 +7307,7 @@ function advanceAct() {
   state.bossPreviewed = false;
   state.pendingRewardIds = null;
   state.playerHp = Math.min(state.playerMaxHp, state.playerHp + 28);
-  enterCurrentRoom();
+  showActIntroOverlay(state.actLevel);
 }
 
 function showActClearOverlay() {
@@ -6327,7 +7499,7 @@ function showNotebookOverlay() {
       <div class="notebook-grid">
         <div class="notebook-section">
           <b>方向</b>
-          <span>你在下，Boss 在上。上划冲向 Boss 并挑空，右划追身，左划侧退闪反，下划蓄势重斩。</span>
+          <span>你在下，Boss 在上。上划追身，左划快刀破招，右划重刀兑现，下划撤身回手。</span>
         </div>
         <div class="notebook-section">
           <b>当前路线</b>
@@ -6488,11 +7660,11 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
     },
     forceBossMove(key) {
       const fallback = {
-        fast: { key: "fast", label: "快刀抬手", hint: "短抬手，左划或格挡更稳。", read: "快", damageScale: 0.86, pressure: 1 },
-        heavy: { key: "heavy", label: "慢刀蓄势", hint: "大幅蓄势，可抢破势。", read: "重", damageScale: 1.12, pressure: 1.16 },
+        fast: { key: "fast", label: "快刀抬手", hint: "白裂亮起，用左划快刀破招。", read: "快", damageScale: 0.86, pressure: 1 },
+        heavy: { key: "heavy", label: "慢刀蓄势", hint: "金裂蓄势，用右划重刀打碎护势。", read: "重", damageScale: 1.12, pressure: 1.16 },
         feint: { key: "feint", label: "假抬手", hint: "先假动作，别急着交防守。", read: "伪", damageScale: 0.92, pressure: 1.18 },
-        backstep: { key: "backstep", label: "后撤横切", hint: "惩罚无脑右划，等空挥再追。", read: "退", damageScale: 1.05, pressure: 1.22 },
-        "ground-grab": { key: "ground-grab", label: "地裂抓取", hint: "惩罚空下划，先破势再处决。", read: "裂", damageScale: 1.24, pressure: 1.26 },
+        backstep: { key: "backstep", label: "后撤横切", hint: "横切时别追，露空后上划追身。", read: "退", damageScale: 1.05, pressure: 1.22 },
+        "ground-grab": { key: "ground-grab", label: "地裂抓取", hint: "脚下危险可下划撤身，金裂可右划破势。", read: "裂", damageScale: 1.24, pressure: 1.26 },
       };
       state.ended = true;
       document.querySelector(".overlay")?.remove();
@@ -6500,6 +7672,7 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
       state.intentName = state.bossMove.label;
       state.intentMax = state.tuning.perfectWindow;
       state.intentTime = state.tuning.perfectWindow * 0.72;
+      startPoiseForMove(state.bossMove, currentRoom());
       resetBossMoveClass();
       toggleClass(els.enemy, "is-death", false);
       toggleClass(els.enemy, "is-damaged", false);
@@ -6509,6 +7682,127 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
       setCombatArt({ boss: currentBossArt(state.bossMove.key), bossAction: state.bossMove.key, bossCharging: true });
       renderBossMoveState(true);
       return { key: state.bossMove.key, label: state.bossMove.label };
+    },
+    setBossReadWindow(key = "fast", phase = "confirm", options = {}) {
+      const fallback = {
+        fast: { key: "fast", label: "快刀抬手", hint: "白裂亮起，用左划快刀破招。", read: "快", damageScale: 0.86, pressure: 1 },
+        heavy: { key: "heavy", label: "慢刀蓄势", hint: "金裂蓄势，用右划重刀打碎护势。", read: "重", damageScale: 1.12, pressure: 1.16 },
+        feint: { key: "feint", label: "假抬手", hint: "先假动作，别急着交防守。", read: "伪", damageScale: 0.92, pressure: 1.18 },
+        backstep: { key: "backstep", label: "后撤横切", hint: "横切时别追，露空后上划追身。", read: "退", damageScale: 1.05, pressure: 1.22 },
+        "ground-grab": { key: "ground-grab", label: "地裂抓取", hint: "脚下危险可下划撤身，金裂可右划破势。", read: "裂", damageScale: 1.24, pressure: 1.26 },
+      };
+      state.ended = false;
+      document.querySelector(".overlay")?.remove();
+      state.bossMove = bossMoves(currentRoom()).find((move) => move.key === key) ?? fallback[key] ?? fallback.fast;
+      state.intentMax = Math.max(state.intentMax, 1400);
+      state.intentTime = bossRemainingForPhase(state.bossMove, phase);
+      state.intentName = state.bossMove.label;
+      resetBossPhaseAudio();
+      state.bossPhaseSoundKey = "";
+      startPoiseForMove(state.bossMove, currentRoom());
+      if (Number(options.poiseLayers ?? 0) > 0) {
+        const layers = clamp(Math.round(Number(options.poiseLayers)), 1, 4);
+        state.poise = {
+          active: true,
+          max: layers,
+          remaining: layers,
+          progress: 0,
+          lastSource: "",
+          lastDamage: 0,
+          brokenThisAction: 0,
+          failed: false,
+        };
+      }
+      render();
+      return this.readState();
+    },
+    forcePoise(layers = 3) {
+      const count = clamp(Math.round(Number(layers)), 1, 4);
+      state.poise = {
+        active: true,
+        max: count,
+        remaining: count,
+        progress: 0,
+        lastSource: "",
+        lastDamage: 0,
+        brokenThisAction: 0,
+        failed: false,
+      };
+      state.vulnerableUntil = 0;
+      state.vulnerableDrawPending = false;
+      state.vulnerableDrawn = false;
+      state.bossGetupUntil = 0;
+      render();
+      return this.readState();
+    },
+    playCardDirect(direction = "tap", options = {}) {
+      const index = Number.isInteger(options.index) ? options.index : state.hand.findIndex(Boolean);
+      if (index < 0) return null;
+      if (options.ignoreRecovery) state.recoveryUntil = 0;
+      const result = playCard(index, direction, { ignoreRecovery: Boolean(options.ignoreRecovery) });
+      render();
+      return result ?? this.readState().lastActionResult;
+    },
+    setHand(ids = ["quick-slash", "thrust", "guard", "breaker"]) {
+      const next = ids.map((id) => cardById.get(id)).filter(Boolean).slice(0, handLimit());
+      if (!next.length) return false;
+      state.hand = next;
+      while (state.hand.length < handLimit()) state.hand.push(cardById.get("quick-slash"));
+      renderHand();
+      render();
+      return state.hand.map((card) => card?.id ?? null);
+    },
+    readState() {
+      const phase = bossPhaseState();
+      return {
+        recoveryRemaining: Math.round(recoveryRemaining()),
+        recoveryLastMs: state.recoveryLastMs,
+        recoverySource: state.recoverySource,
+        queuedInput: state.queuedInput ? { index: state.queuedInput.index, direction: state.queuedInput.direction } : null,
+        lastActionResult: state.lastActionResult,
+        lastReadFeedback: state.lastReadFeedback,
+        bossMove: state.bossMove?.key ?? "",
+        bossPhase: phase.phase,
+        bossReadLabel: bossReadLabel(state.bossMove, phase),
+        bossTimeline: bossTimeline(state.bossMove),
+        fastEarlyInterceptOpen: isFastEarlyInterceptOpen(state.bossMove, phase),
+        intentTime: Math.round(state.intentTime),
+        poise: {
+          active: isPoiseActive(),
+          max: state.poise.max,
+          remaining: state.poise.remaining,
+          progress: Number(state.poise.progress.toFixed(2)),
+          lastSource: state.poise.lastSource,
+          lastDamage: state.poise.lastDamage,
+          brokenThisAction: state.poise.brokenThisAction,
+          failed: state.poise.failed,
+        },
+        vulnerability: {
+          active: isBossVulnerable(),
+          remainingMs: Math.max(0, Math.round(state.vulnerableUntil - performance.now())),
+          drawPending: state.vulnerableDrawPending,
+          drawn: state.vulnerableDrawn,
+          getupRemainingMs: Math.max(0, Math.round(state.bossGetupUntil - performance.now())),
+        },
+        handCount: handCount(),
+        drawTimer: Math.round(state.drawTimer),
+        isHeavyWindow: ["heavy", "ground-grab"].includes(state.bossMove?.key) && (phase.phase === "confirm" || (state.bossMove?.key === "ground-grab" && phase.phase === "prep")),
+        isChaseWindow: state.bossMove?.key === "backstep" && phase.isRecover,
+        isRetreatUseful: state.bossMove?.key === "ground-grab" || state.pressure > state.tuning.pressureLimit * 0.45,
+        directionSemantics: { up: "追身", left: "快刀破招", right: "重刀兑现", down: "撤身回手" },
+        isTrueConfirm: phase.isConfirm,
+        isRecover: phase.isRecover,
+        arenaRead: {
+          move: els.arena.dataset.bossMove ?? "",
+          phase: els.arena.dataset.bossPhase ?? "",
+          label: els.arena.dataset.readLabel ?? "",
+          poiseActive: els.arena.dataset.poiseActive ?? "",
+          poiseRemaining: els.arena.dataset.poiseRemaining ?? "",
+          poiseMax: els.arena.dataset.poiseMax ?? "",
+          vulnerable: els.arena.dataset.vulnerable ?? "",
+        },
+        recentDirections: state.recentDirections.map((item) => ({ ...item })),
+      };
     },
     rewardStats() {
       const pool = [...rewards, ...dailyContractPool];
@@ -6607,7 +7901,7 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
         observer = null;
       }
       if (!state.runStarted) await startRun(equipmentPool[0]);
-      const directions = ["right", "left", "down", "up", "tap"];
+      const directions = ["up", "left", "right", "down", "tap"];
       const started = performance.now();
       let actions = 0;
       let overlays = 0;
@@ -6731,6 +8025,281 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
         performance: this.performanceState(),
       };
     },
+    async runActionCommitmentProbe(options = {}) {
+      const interval = clamp(Number(options.interval ?? 90), 40, 220);
+      const directions = options.directions ?? ["right", "left", "down", "up"];
+      if (options.reset || !state.runStarted) {
+        const wasUnlocked = audioState.unlocked;
+        audioState.unlocked = false;
+        resetGame();
+        audioState.unlocked = wasUnlocked;
+        await startRun(equipmentPool[0]);
+      }
+      await warmBattleAssets("action-commitment-probe", currentRoom());
+      await new Promise((resolve) => window.requestAnimationFrame(resolve));
+      refreshCardMotionCache();
+      let accepted = 0;
+      let lastActionAt = state.lastActionResult?.at ?? 0;
+      const attempts = [];
+      for (let i = 0; i < directions.length; i += 1) {
+        const card = els.hand.querySelector("button.card:not(.card-empty)");
+        if (!card || state.ended) break;
+        const rect = cardMotionCache.get(card);
+        const clientX = (gameMotionRect?.left ?? 0) + (rect?.left ?? 90) + (rect?.width ?? 84) * 0.48;
+        const clientY = (gameMotionRect?.top ?? 0) + (rect?.top ?? 660) + (rect?.height ?? 124) * 0.58;
+        const delta = {
+          left: [-120, 0],
+          right: [120, 0],
+          up: [0, -120],
+          down: [0, 120],
+          tap: [2, 2],
+        }[directions[i]] ?? [120, 0];
+        card.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerId: 4200 + i, clientX, clientY }));
+        card.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 4200 + i, clientX: clientX + delta[0], clientY: clientY + delta[1] }));
+        const actionChanged = (state.lastActionResult?.at ?? 0) !== lastActionAt;
+        if (actionChanged) {
+          accepted += 1;
+          lastActionAt = state.lastActionResult?.at ?? lastActionAt;
+        }
+        attempts.push({
+          direction: directions[i],
+          accepted: actionChanged,
+          recentCount: state.recentDirections.length,
+          recoveryRemaining: Math.round(recoveryRemaining()),
+          recoveryLastMs: state.recoveryLastMs,
+          queued: state.queuedInput ? state.queuedInput.direction : null,
+          lastResult: state.lastActionResult?.resultType ?? null,
+        });
+        await new Promise((resolve) => window.setTimeout(resolve, interval));
+      }
+      await new Promise((resolve) => window.setTimeout(resolve, 240));
+      return {
+        interval,
+        attempts,
+        accepted,
+        recovery: {
+          remaining: Math.round(recoveryRemaining()),
+          lastMs: state.recoveryLastMs,
+          source: state.recoverySource,
+          queued: state.queuedInput ? state.queuedInput.direction : null,
+        },
+        readState: this.readState(),
+      };
+    },
+    async runPoiseProbe(options = {}) {
+      if (options.reset || !state.runStarted) {
+        const wasUnlocked = audioState.unlocked;
+        audioState.unlocked = false;
+        resetGame();
+        audioState.unlocked = wasUnlocked;
+        await startRun(equipmentPool.find((item) => item.id === "executioner") ?? equipmentPool[0]);
+      }
+      await warmBattleAssets("poise-probe", currentRoom());
+      const setHand = (ids) => {
+        state.hand = ids.map((id) => cardById.get(id)).filter(Boolean).slice(0, handLimit());
+        while (state.hand.length < handLimit()) state.hand.push(cardById.get("quick-slash"));
+        renderHand();
+      };
+      const playFirst = (direction) => {
+        const index = state.hand.findIndex(Boolean);
+        state.recoveryUntil = 0;
+        return playCard(index, direction, { ignoreRecovery: true });
+      };
+      const playNext = (direction) => {
+        const index = state.hand.findIndex(Boolean);
+        return playCard(index, direction);
+      };
+
+      state.enemyMaxHp = Math.max(state.enemyMaxHp, 9999);
+      state.enemyHp = state.enemyMaxHp;
+      state.playerHp = state.playerMaxHp;
+      setHand(["breaker", "heavy-cleave", "execute", "quick-slash"]);
+      this.setBossReadWindow("heavy", "confirm", { poiseLayers: 3 });
+      const visualBefore = {
+        poiseActive: els.arena.dataset.poiseActive ?? "",
+        poiseRemaining: els.arena.dataset.poiseRemaining ?? "",
+        crackCount: els.poiseCracks?.querySelectorAll("i").length ?? 0,
+      };
+      const firstHit = playFirst("right");
+      render();
+      const afterFirst = this.readState();
+      const secondHit = playFirst("right");
+      render();
+      const afterBreak = this.readState();
+      state.recoveryUntil = 0;
+      const vulnerableHpBefore = state.enemyHp;
+      const vulnerableStrike = playFirst("tap");
+      render();
+      const afterVulnerableStrike = this.readState();
+      const vulnerableDamage = Math.max(0, vulnerableHpBefore - state.enemyHp);
+      await new Promise((resolve) => window.setTimeout(resolve, Number(options.vulnerabilityWait ?? 2100)));
+      const hpAfterWait = state.playerHp;
+      await new Promise((resolve) => window.setTimeout(resolve, poiseConfig.getupMs + 80));
+      const afterGetup = this.readState();
+
+      setHand(["quick-slash", "thrust", "guard", "launcher"]);
+      state.enemyMaxHp = Math.max(state.enemyMaxHp, 9999);
+      state.enemyHp = state.enemyMaxHp;
+      state.playerHp = state.playerMaxHp;
+      this.setBossReadWindow("heavy", "confirm", { poiseLayers: 3 });
+      const realChainBefore = this.readState();
+      const realChainFirst = playFirst("right");
+      render();
+      const realChainAfterFirst = this.readState();
+      await new Promise((resolve) => window.setTimeout(resolve, recoveryRemaining() + 40));
+      const realChainSecond = playNext("right");
+      render();
+      const realChainAfterSecond = this.readState();
+
+      setHand(["breaker", "heavy-cleave", "execute", "quick-slash"]);
+      state.enemyMaxHp = Math.max(state.enemyMaxHp, 9999);
+      state.enemyHp = state.enemyMaxHp;
+      this.setBossReadWindow("heavy", "confirm", { poiseLayers: 2 });
+      const fullHandBefore = handCount();
+      const fullHandBreak = playFirst("right");
+      render();
+      const fullHandAfter = this.readState();
+
+      setHand(["quick-slash", "thrust", "guard", "launcher"]);
+      state.playerHp = state.playerMaxHp;
+      this.setBossReadWindow("heavy", "confirm", { poiseLayers: 3 });
+      const chip = playFirst("tap");
+      render();
+      state.recoveryUntil = 0;
+      state.intentTime = 0;
+      tick(24);
+      const afterFail = this.readState();
+
+      return {
+        visualBefore,
+        firstHit,
+        afterFirst,
+        secondHit,
+        afterBreak,
+        vulnerableStrike,
+        afterVulnerableStrike,
+        vulnerableDamage,
+        hpAfterWait,
+        afterGetup,
+        realChainBefore,
+        realChainFirst,
+        realChainAfterFirst,
+        realChainSecond,
+        realChainAfterSecond,
+        fullHandBefore,
+        fullHandBreak,
+        fullHandAfter,
+        chip,
+        afterFail,
+        log: els.combatLog?.textContent?.trim() ?? "",
+      };
+    },
+    async runReadMatrixProbe(options = {}) {
+      if (options.reset || !state.runStarted) {
+        const wasUnlocked = audioState.unlocked;
+        audioState.unlocked = false;
+        resetGame();
+        audioState.unlocked = wasUnlocked;
+        await startRun(equipmentPool[0]);
+      }
+      if (options.skipWarm !== true) await warmBattleAssets("read-matrix-probe", currentRoom());
+      const cases = [
+        ["fast", "prep", "left"],
+        ["fast", "confirm", "left"],
+        ["fast", "hit", "left"],
+        ["feint", "fake", "left"],
+        ["feint", "confirm", "left"],
+        ["heavy", "confirm", "left"],
+        ["heavy", "confirm", "right"],
+        ["backstep", "confirm", "up"],
+        ["backstep", "recover", "up"],
+        ["ground-grab", "prep", "down"],
+        ["ground-grab", "confirm", "right"],
+      ];
+      const results = [];
+      for (const [move, phase, direction] of cases) {
+        const index = state.hand.findIndex(Boolean);
+        if (index < 0) break;
+        this.setBossReadWindow(move, phase);
+        state.enemyMaxHp = Math.max(state.enemyMaxHp, 9999);
+        state.enemyHp = state.enemyMaxHp;
+        state.playerHp = state.playerMaxHp;
+        state.ended = false;
+        state.recoveryUntil = 0;
+        render();
+        const telegraph = {
+          move: els.arena.dataset.bossMove ?? "",
+          phase: els.arena.dataset.bossPhase ?? "",
+          label: els.arena.dataset.readLabel ?? "",
+          lineOpacity: window.getComputedStyle(document.querySelector(".read-line")).opacity,
+          zoneOpacity: window.getComputedStyle(document.querySelector(".read-zone")).opacity,
+          echoOpacity: window.getComputedStyle(document.querySelector(".read-echo")).opacity,
+        };
+        const beforeIntent = state.intentTime;
+        const result = playCard(index, direction, { ignoreRecovery: true });
+        results.push({
+          move,
+          phase,
+          direction,
+          telegraph,
+          resultType: result?.resultType ?? null,
+          recoveryMs: result?.recoveryMs ?? null,
+          interrupt: Boolean(result?.interrupt),
+          feedback: result?.feedback ?? "",
+          beforeIntent: Math.round(beforeIntent),
+          afterIntent: Math.round(state.intentTime),
+          log: els.combatLog?.textContent?.trim() ?? "",
+        });
+        state.recoveryUntil = 0;
+        while (state.hand.findIndex(Boolean) < 0 && state.drawPile.length) drawCard();
+        await new Promise((resolve) => window.requestAnimationFrame(resolve));
+      }
+      return { results, readState: this.readState(), audio: this.audioState() };
+    },
+    async runLeftSwipeSpamProbe(options = {}) {
+      const count = clamp(Math.round(Number(options.count ?? 12)), 4, 36);
+      const interval = clamp(Number(options.interval ?? 110), 40, 500);
+      if (options.reset || !state.runStarted) {
+        const wasUnlocked = audioState.unlocked;
+        audioState.unlocked = false;
+        resetGame();
+        audioState.unlocked = wasUnlocked;
+        await startRun(equipmentPool[0]);
+      }
+      if (options.skipWarm !== true) await warmBattleAssets("left-swipe-spam-probe", currentRoom());
+      state.bossMark = "feint";
+      const results = [];
+      for (let i = 0; i < count; i += 1) {
+        const move = i % 3 === 0 ? "fast" : i % 3 === 1 ? "heavy" : "feint";
+        const phase = move === "feint" ? "fake" : "confirm";
+        this.setBossReadWindow(move, phase);
+        state.enemyMaxHp = Math.max(state.enemyMaxHp, 9999);
+        state.enemyHp = state.enemyMaxHp;
+        state.playerHp = state.playerMaxHp;
+        state.ended = false;
+        const index = state.hand.findIndex(Boolean);
+        if (index < 0) break;
+        const result = playCard(index, "left", { ignoreRecovery: i === 0 });
+        results.push({
+          index: i,
+          move,
+          phase,
+          blocked: Boolean(result?.blocked),
+          resultType: result?.resultType ?? null,
+          recoveryMs: result?.recoveryMs ?? null,
+          interrupt: Boolean(result?.interrupt),
+        });
+        await new Promise((resolve) => window.setTimeout(resolve, interval));
+      }
+      return {
+        results,
+        interrupts: results.filter((item) => item.interrupt).length,
+        whiffs: results.filter((item) => item.resultType === "left-whiff").length,
+        deflects: results.filter((item) => item.resultType === "left-deflect").length,
+        blocked: results.filter((item) => item.blocked).length,
+        readState: this.readState(),
+      };
+    },
     async runMobileAcceptanceProbe(options = {}) {
       return runMobileAcceptanceProbe(options);
     },
@@ -6784,6 +8353,7 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
     jumpToAct(act = 1, index = 0) {
       state.dailyRun = null;
       state.trainingLesson = null;
+      state.debugRun = true;
       state.actLevel = clamp(Number(act) || 1, 1, actMax);
       state.encounterIndex = clamp(Number(index) || 0, 0, encounters.length - 1);
       state.pendingRewardIds = null;
@@ -6794,6 +8364,33 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
       enterCurrentRoom();
       render();
       return currentRoom();
+    },
+    showWorldMap(equipmentId = state.equipment?.id ?? equipmentPool[0]?.id) {
+      const equipment = equipmentById.get(equipmentId) ?? equipmentPool[0];
+      showWorldMapOverlay(equipment);
+      return this.mapState();
+    },
+    async startRunAtAct(act = 1, equipmentId = state.equipment?.id ?? equipmentPool[0]?.id, options = {}) {
+      const equipment = equipmentById.get(equipmentId) ?? equipmentPool[0];
+      await startRunAtAct(equipment, act, { debug: true, skipIntro: Boolean(options.skipIntro) });
+      return this.mapState();
+    },
+    previewNextActIntro() {
+      advanceAct();
+      return this.mapState();
+    },
+    mapState() {
+      return {
+        mapOpen: state.mapOpen,
+        pendingActIntro: state.pendingActIntro,
+        debugRun: state.debugRun,
+        act: state.actLevel,
+        placeName: currentActMeta().placeName,
+        bossName: currentActMeta().bossName,
+        encounterIndex: state.encounterIndex,
+        overlayClass: document.querySelector(".overlay")?.className ?? "",
+        overlayText: document.querySelector(".overlay")?.textContent?.replace(/\s+/g, " ").trim().slice(0, 240) ?? "",
+      };
     },
     performanceState() {
       return {
