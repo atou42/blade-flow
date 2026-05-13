@@ -246,6 +246,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.82",
+    title: "走查修复",
+    date: "2026-05-13",
+    icon: "验",
+    color: "#72b7a8",
+    points: ["项目全面走查与证据报告", "战斗热身预解码全部已登记音效", "Gitea、线上、手机视口和调试探针复验"],
+  },
+  {
     id: "v0.2.81",
     title: "四向意图",
     date: "2026-05-13",
@@ -2752,9 +2760,7 @@ function battleBgmKeyForEncounter(encounter = currentRoom()) {
 }
 
 function battleSfxWarmKeys() {
-  return Object.keys(sfxTracks).filter(
-    (key) => key.startsWith("player") || key.startsWith("weapon") || key.startsWith("boss") || ["uiBattleStart", "uiReadCorrect", "uiReadWrong"].includes(key),
-  );
+  return Object.keys(sfxTracks);
 }
 
 async function warmBattleAssets(reason = "battle", encounter = currentRoom()) {
@@ -6173,7 +6179,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.81",
+      version: "v0.2.82",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -6370,7 +6376,7 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>向</i>当前 v0.2.81</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>验</i>当前 v0.2.82</small>
         <b>版本记录</b>
         <span class="choice-effect">${effectTextMarkup("这版统一四向战斗意图，Boss 提示和出牌收益会一起变化。")}</span>
       </button>

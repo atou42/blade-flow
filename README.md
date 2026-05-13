@@ -4,7 +4,7 @@
 
 它看起来像卡牌游戏，但目标手感更接近动作游戏。玩家在手机上通过划动卡牌出招，观察 Boss 的读招提示，在后摇、连击、破招、追击和撤身之间做选择。
 
-当前线上版本是 `v0.2.81 四向意图`。
+当前线上版本是 `v0.2.82 走查修复`。
 
 试玩地址：https://games.atou.cc/combo-card-roguelike/versions/a/
 
@@ -54,7 +54,7 @@
 
 如果只想理解当前游戏，先看 `docs/design/four-direction-combat-intent-spec.md`、`docs/design/world-map-flow-spec.md`、`docs/design/world-bible.md`。
 
-如果想看最新实现是否验过，先看 `docs/verification/v0281-four-direction-combat-intent.md`。
+如果想看最新实现是否验过，先看 `docs/verification/v0282-project-wide-audit.md` 和 `docs/verification/v0281-four-direction-combat-intent.md`。
 
 如果要继续做音频和动作反馈，先看 `docs/design/audio-design-spec.md`、`docs/design/audio-integration-plan.md`、`docs/design/action-recovery-audio-spec.md`。
 
@@ -106,8 +106,10 @@ BGM 在 `assets/audio/bgm/`。
 
 ## 版本记录
 
-当前版本是 `v0.2.81 四向意图`。
+当前版本是 `v0.2.82 走查修复`。
 
-这一版把上划、左划、右划、下划重新定义为四种明确战斗意图，并同步改了卡牌方向、Boss 提示、后摇反馈和调试验收。
+这一版完成项目全面走查，修复了界面类音效没有跟随战斗热身一起预解码的问题，并复验了本地、线上、Gitea、手机视口和关键调试探针。
+
+上一版 `v0.2.81 四向意图` 把上划、左划、右划、下划重新定义为四种明确战斗意图，并同步改了卡牌方向、Boss 提示、后摇反馈和调试验收。
 
 更完整的版本验收记录在 `docs/verification/`。
