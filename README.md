@@ -10,6 +10,10 @@
 
 内部 Gitea 仓库：https://git.talesofai.com/atou/blade-flow
 
+GitHub 开源仓库：https://github.com/atou42/blade-flow
+
+开源协议：MIT
+
 ## 当前玩法
 
 战斗的核心是四个方向。
