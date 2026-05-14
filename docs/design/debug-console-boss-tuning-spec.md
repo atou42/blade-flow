@@ -169,7 +169,7 @@ Boss 参数包括最大生命、当前生命比例、伤害倍率、架势值、
 ```json
 {
   "schema": "blade-flow.debug-boss-tuning.v1",
-  "gameVersion": "v0.2.82",
+  "gameVersion": "v0.2.83",
   "createdAt": "2026-05-14T00:00:00.000Z",
   "label": "二幕赤线宿敌 标准体验",
   "target": {

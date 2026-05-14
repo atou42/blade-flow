@@ -246,6 +246,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.83",
+    title: "Boss 调试台",
+    date: "2026-05-14",
+    icon: "调",
+    color: "#4bbda8",
+    points: ["手机竖屏 Boss 调试台第一版", "三幕 Boss 直达与成长包模拟", "配置导入导出、本地预设和调试战结果记录"],
+  },
+  {
     id: "v0.2.82",
     title: "走查修复",
     date: "2026-05-13",
@@ -1487,6 +1495,10 @@ const anchorMatrix = {
 const tuningStorageKey = "blade-flow-tuning-v1";
 const saveStorageKey = "blade-flow-saves-v1";
 const mobileAcceptanceStorageKey = "blade-flow-mobile-acceptance-v1";
+const debugBossTuningStorageKey = "blade-flow-debug-boss-tuning-v1";
+const debugBossPresetStorageKey = "blade-flow-debug-boss-presets-v1";
+const debugBossResultStorageKey = "blade-flow-debug-boss-results-v1";
+const debugBossTuningSchema = "blade-flow.debug-boss-tuning.v1";
 const profileStorageKeys = {
   real: "blade-flow-profile-v1",
   debug: "blade-flow-debug-profile-v1",
@@ -1530,6 +1542,130 @@ const bossMoveTimelines = {
   feint: { fake: 260, gap: 200, confirm: 300, hit: 120, recover: 240 },
   "ground-grab": { confirm: 420, hit: 150, recover: 250 },
 };
+
+const debugBossTargets = [
+  {
+    bossId: "storm-captain",
+    act: 1,
+    label: "风暴队长",
+    place: "风暴门",
+    tone: "教学验证",
+    equipmentId: "storm-katana",
+    growthStage: "act1-standard",
+    bossMark: "backstep",
+  },
+  {
+    bossId: "redline-rival",
+    act: 2,
+    label: "赤线宿敌",
+    place: "赤线猎场",
+    tone: "习惯反制",
+    equipmentId: "mirror-fan",
+    growthStage: "act2-standard",
+    bossMark: "feint",
+  },
+  {
+    bossId: "no-form-shadow",
+    act: 3,
+    label: "无相刀影",
+    place: "无相高路",
+    tone: "终局混合",
+    equipmentId: "duelist-scabbard",
+    growthStage: "act3-standard",
+    bossMark: "backstep",
+  },
+];
+
+const debugBossTargetById = new Map(debugBossTargets.map((target) => [target.bossId, target]));
+
+const debugGrowthPacks = {
+  "act1-min": {
+    label: "一幕最低可玩",
+    act: 1,
+    routeMods: { any: 1 },
+    rewardIds: ["right-inscription"],
+    evidence: { scout: 0, break: 0, finisher: 0 },
+  },
+  "act1-standard": {
+    label: "一幕推荐通关",
+    act: 1,
+    routeMods: { speed: 1, counter: 1, burst: 1 },
+    rewardIds: ["redline-scabbard", "borrowed-edge"],
+    evidence: { scout: 1, break: 0, finisher: 0 },
+  },
+  "act2-min": {
+    label: "二幕最低可玩",
+    act: 2,
+    routeMods: { any: 2, speed: 1, counter: 1, burst: 1, control: 1 },
+    rewardIds: ["borrowed-edge", "drop-hammer"],
+    evidence: { scout: 1, break: 1, finisher: 0 },
+  },
+  "act2-standard": {
+    label: "二幕推荐通关",
+    act: 2,
+    routeMods: { any: 2, speed: 2, counter: 2, burst: 1, control: 1 },
+    rewardIds: ["mirror-scar", "drop-hammer", "right-inscription"],
+    evidence: { scout: 2, break: 1, finisher: 0 },
+  },
+  "act2-pressure": {
+    label: "二幕高压测试",
+    act: 2,
+    routeMods: { any: 1, speed: 1, counter: 1, burst: 1 },
+    rewardIds: ["borrowed-edge", "mirror-oath"],
+    evidence: { scout: 1, break: 0, finisher: 0 },
+  },
+  "act3-min": {
+    label: "三幕最低可玩",
+    act: 3,
+    routeMods: { any: 3, speed: 2, counter: 2, burst: 2, control: 1, damage: 1 },
+    rewardIds: ["comet-sheath", "mirror-scar", "drop-hammer"],
+    evidence: { scout: 2, break: 2, finisher: 1 },
+  },
+  "act3-standard": {
+    label: "三幕推荐通关",
+    act: 3,
+    routeMods: { any: 4, speed: 3, counter: 3, burst: 3, control: 2, damage: 1 },
+    rewardIds: ["comet-sheath", "mirror-scar", "execution-drum", "boss-fragment"],
+    evidence: { scout: 3, break: 2, finisher: 1 },
+  },
+  "act3-pressure": {
+    label: "三幕高压测试",
+    act: 3,
+    routeMods: { any: 2, speed: 2, counter: 2, burst: 2, control: 1 },
+    rewardIds: ["thin-blade-vow", "drop-hammer", "borrowed-edge"],
+    evidence: { scout: 2, break: 1, finisher: 0 },
+  },
+};
+
+const debugTuningControls = [
+  { group: "Boss", path: "boss.hpScale", label: "Boss 血量", min: 0.5, max: 3, step: 0.05, suffix: "x", tuningKey: "enemyHp" },
+  { group: "Boss", path: "boss.bossTempo", label: "Boss 出手速度", min: 0.65, max: 2.8, step: 0.05, suffix: "x", tuningKey: "bossTempo" },
+  { group: "Boss", path: "boss.damageScale", label: "Boss 伤害", min: 0.35, max: 2.5, step: 0.05, suffix: "x", tuningKey: "enemyDamage" },
+  { group: "玩家", path: "player.focus", label: "玩家专注", min: 55, max: 180, step: 5, suffix: "", tuningKey: "playerFocus" },
+  { group: "玩家", path: "player.damageScale", label: "玩家伤害", min: 0.55, max: 1.85, step: 0.05, suffix: "x", tuningKey: "playerDamage" },
+  { group: "玩家", path: "player.cardIntervalMs", label: "出牌间隔", min: 0, max: 1200, step: 20, suffix: "ms" },
+  { group: "玩家", path: "player.recoveryScale", label: "动作后摇", min: 0.5, max: 1.8, step: 0.05, suffix: "x" },
+  { group: "窗口", path: "windows.perfectWindow", label: "破招窗口", min: 360, max: 1300, step: 10, suffix: "ms", tuningKey: "perfectWindow" },
+  { group: "奖励", path: "rewards.rewardPower", label: "奖励强度", min: 0.4, max: 2, step: 0.05, suffix: "x", tuningKey: "rewardPower" },
+  { group: "AI", path: "ai.pressure", label: "Boss 压力", min: 0, max: 26, step: 1, suffix: "", tuningKey: "bossPressure" },
+  { group: "AI", path: "ai.repeatAdapt", label: "重复惩罚", min: 0, max: 32, step: 1, suffix: "", tuningKey: "repeatDirectionCost" },
+];
+
+const debugRewardChoices = [
+  "redline-scabbard",
+  "comet-sheath",
+  "borrowed-edge",
+  "mirror-scar",
+  "drop-hammer",
+  "execution-drum",
+  "boss-fragment",
+  "redline-pursuit",
+  "mirror-oath",
+  "black-drum",
+  "thin-blade-vow",
+];
+
+const debugOpeningHandChoices = ["quick-slash", "thrust", "guard", "shadow-step", "breaker", "heavy-cleave", "flying-blade", "execute"];
 
 const tuningPresets = {
   easy: {
@@ -1878,6 +2014,16 @@ const state = {
   queuedInput: null,
   lastActionResult: null,
   lastReadFeedback: null,
+  debugConsoleOpen: false,
+  debugConsoleTab: "params",
+  debugConsoleConfig: null,
+  debugConsoleMessage: "",
+  debugConsoleImportText: "",
+  debugRunConfig: null,
+  debugCardIntervalMs: 0,
+  debugRecoveryScale: 1,
+  debugStats: null,
+  debugLastResult: null,
   poise: {
     active: false,
     max: 0,
@@ -2846,6 +2992,250 @@ function saveTuning() {
   );
 }
 
+function isDebugMode() {
+  return location.hostname === "127.0.0.1" || location.hostname === "localhost" || location.search.includes("debug=1");
+}
+
+function debugNowIso() {
+  return new Date().toISOString();
+}
+
+function getPathValue(source, path) {
+  return path.split(".").reduce((value, key) => (value && Object.prototype.hasOwnProperty.call(value, key) ? value[key] : undefined), source);
+}
+
+function setPathValue(target, path, value) {
+  const keys = path.split(".");
+  let cursor = target;
+  for (let index = 0; index < keys.length - 1; index += 1) {
+    const key = keys[index];
+    cursor[key] = restoreObject({}, cursor[key]);
+    cursor = cursor[key];
+  }
+  cursor[keys.at(-1)] = value;
+}
+
+function debugTargetForAct(act = 1) {
+  return debugBossTargets.find((target) => target.act === act) ?? debugBossTargets[0];
+}
+
+function debugGrowthPackForTarget(target) {
+  return debugGrowthPacks[target?.growthStage] ?? debugGrowthPacks[`act${target?.act ?? 1}-standard`] ?? debugGrowthPacks["act1-standard"];
+}
+
+function defaultDebugBossConfig(targetId = debugBossTargets[0].bossId) {
+  const target = debugBossTargetById.get(targetId) ?? debugBossTargets[0];
+  const growthPack = debugGrowthPackForTarget(target);
+  const tuning = {
+    boss: {
+      hpScale: target.act === 1 ? 1 : target.act === 2 ? 1.08 : 1.16,
+      bossTempo: target.act === 1 ? 1 : target.act === 2 ? 1.12 : 1.2,
+      damageScale: target.act === 1 ? 1 : target.act === 2 ? 1.08 : 1.14,
+    },
+    player: {
+      focus: target.act === 1 ? 110 : target.act === 2 ? 118 : 126,
+      damageScale: 1,
+      cardIntervalMs: 420,
+      recoveryScale: 1,
+    },
+    windows: {
+      perfectWindow: target.act === 1 ? 820 : target.act === 2 ? 760 : 720,
+    },
+    rewards: {
+      rewardPower: 1,
+    },
+    ai: {
+      pressure: target.act === 1 ? 7 : target.act === 2 ? 10 : 13,
+      repeatAdapt: target.act === 1 ? 10 : target.act === 2 ? 14 : 17,
+    },
+  };
+  return {
+    schema: debugBossTuningSchema,
+    gameVersion: versionHistory[0]?.id ?? "dev",
+    createdAt: debugNowIso(),
+    label: `${actLabel(target.act)}${target.label} ${growthPack.label}`,
+    target: {
+      act: target.act,
+      bossId: target.bossId,
+      encounterKind: "boss",
+    },
+    playerBuild: {
+      equipmentId: target.equipmentId,
+      growthStage: growthPack.label.includes("最低") ? `act${target.act}-min` : target.growthStage,
+      rewardPackId: target.growthStage,
+      enabledRewards: [...growthPack.rewardIds],
+      deckOverrides: {},
+      openingHand: [],
+      seed: `debug-${target.bossId}-standard-01`,
+    },
+    tuning,
+    notes: "",
+  };
+}
+
+function readDebugConfig() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(debugBossTuningStorageKey) ?? "null");
+    return normalizeDebugBossConfig(parsed);
+  } catch {
+    return defaultDebugBossConfig();
+  }
+}
+
+function saveDebugConfig(config = state.debugConsoleConfig) {
+  const normalized = normalizeDebugBossConfig(config);
+  localStorage.setItem(debugBossTuningStorageKey, JSON.stringify(normalized));
+  state.debugConsoleConfig = normalized;
+  return normalized;
+}
+
+function debugConfigTarget(config = state.debugConsoleConfig) {
+  return debugBossTargetById.get(config?.target?.bossId) ?? debugBossTargets[0];
+}
+
+function debugConfigGrowthPack(config = state.debugConsoleConfig) {
+  const key = config?.playerBuild?.growthStage ?? config?.playerBuild?.rewardPackId;
+  return debugGrowthPacks[key] ?? debugGrowthPackForTarget(debugConfigTarget(config));
+}
+
+function normalizeDebugBossConfig(source) {
+  if (!source || typeof source !== "object") return defaultDebugBossConfig();
+  if (source.schema !== debugBossTuningSchema) throw new Error("不支持的调试配置版本");
+  const target = debugBossTargetById.get(source.target?.bossId);
+  if (!target) throw new Error(`不存在的 Boss：${source.target?.bossId ?? "空"}`);
+  if (Number(source.target?.act) !== target.act) throw new Error("Boss 与幕数不匹配");
+  if (source.target?.encounterKind !== "boss") throw new Error("当前只支持 Boss 调试配置");
+  const equipment = equipmentById.get(source.playerBuild?.equipmentId);
+  if (!equipment) throw new Error(`不存在的武器：${source.playerBuild?.equipmentId ?? "空"}`);
+  const growthStage = source.playerBuild?.growthStage ?? source.playerBuild?.rewardPackId ?? target.growthStage;
+  const growthPack = debugGrowthPacks[growthStage];
+  if (!growthPack) throw new Error(`不存在的成长包：${growthStage}`);
+  if (growthPack.act > target.act) throw new Error("成长包不能高于 Boss 所在幕");
+  const enabledRewards = Array.isArray(source.playerBuild?.enabledRewards) ? source.playerBuild.enabledRewards : growthPack.rewardIds;
+  for (const rewardId of enabledRewards) {
+    if (!rewardById.has(rewardId)) throw new Error(`不存在的奖励：${rewardId}`);
+  }
+  const openingHand = Array.isArray(source.playerBuild?.openingHand) ? source.playerBuild.openingHand : [];
+  for (const cardId of openingHand) {
+    if (!cardById.has(cardId)) throw new Error(`不存在的手牌：${cardId}`);
+  }
+  const config = defaultDebugBossConfig(target.bossId);
+  config.createdAt = typeof source.createdAt === "string" ? source.createdAt : debugNowIso();
+  config.label = String(source.label || `${actLabel(target.act)}${target.label} ${growthPack.label}`).slice(0, 80);
+  config.playerBuild.equipmentId = equipment.id;
+  config.playerBuild.growthStage = growthStage;
+  config.playerBuild.rewardPackId = growthStage;
+  config.playerBuild.enabledRewards = [...enabledRewards];
+  config.playerBuild.openingHand = openingHand.slice(0, 4);
+  config.playerBuild.seed = String(source.playerBuild?.seed || config.playerBuild.seed).slice(0, 80);
+  config.playerBuild.deckOverrides = restoreObject({}, source.playerBuild?.deckOverrides);
+  config.notes = String(source.notes ?? "").slice(0, 400);
+  for (const control of debugTuningControls) {
+    const fallback = getPathValue(config.tuning, control.path);
+    const raw = getPathValue(source.tuning, control.path);
+    const value = Number(raw ?? fallback);
+    if (!Number.isFinite(value)) throw new Error(`${control.label} 不是有效数字`);
+    if (value < control.min || value > control.max) throw new Error(`${control.label} 超出范围 ${control.min}-${control.max}`);
+    setPathValue(config.tuning, control.path, clamp(value, control.min, control.max));
+  }
+  return config;
+}
+
+function debugConfigToTuning(config) {
+  const values = normalizeTuning(state.tuning);
+  for (const control of debugTuningControls) {
+    if (!control.tuningKey) continue;
+    values[control.tuningKey] = getPathValue(config.tuning, control.path);
+  }
+  return normalizeTuning(values);
+}
+
+function readDebugPresets() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(debugBossPresetStorageKey) ?? "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((entry) => {
+        try {
+          return normalizeDebugBossConfig(entry);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean)
+      .slice(0, 12);
+  } catch {
+    return [];
+  }
+}
+
+function writeDebugPresets(presets) {
+  localStorage.setItem(debugBossPresetStorageKey, JSON.stringify(presets.map((preset) => normalizeDebugBossConfig(preset)).slice(0, 12)));
+}
+
+function saveDebugPreset(config = state.debugConsoleConfig) {
+  const normalized = normalizeDebugBossConfig({ ...config, createdAt: debugNowIso() });
+  const presets = readDebugPresets().filter((preset) => preset.label !== normalized.label || preset.target.bossId !== normalized.target.bossId);
+  presets.unshift(normalized);
+  writeDebugPresets(presets);
+  return normalized;
+}
+
+function debugConfigSummary(config = state.debugConsoleConfig) {
+  const target = debugConfigTarget(config);
+  const growth = debugConfigGrowthPack(config);
+  const equipment = equipmentById.get(config?.playerBuild?.equipmentId);
+  return `${actLabel(target.act)} · ${target.place} · ${target.label} · ${equipment?.name ?? "未知武器"} · ${growth.label}`;
+}
+
+function debugConfigExportText(config = state.debugConsoleConfig) {
+  return JSON.stringify(normalizeDebugBossConfig(config), null, 2);
+}
+
+function storeDebugResult(result) {
+  state.debugLastResult = result;
+  try {
+    const previous = JSON.parse(localStorage.getItem(debugBossResultStorageKey) ?? "[]");
+    const list = Array.isArray(previous) ? previous : [];
+    list.unshift(result);
+    localStorage.setItem(debugBossResultStorageKey, JSON.stringify(list.slice(0, 8)));
+  } catch {
+    localStorage.setItem(debugBossResultStorageKey, JSON.stringify([result]));
+  }
+}
+
+function resetDebugStats(config) {
+  state.debugStats = {
+    config: normalizeDebugBossConfig(config),
+    startedAt: performance.now(),
+    actions: 0,
+    takenHits: 0,
+    directions: { tap: 0, up: 0, left: 0, right: 0, down: 0 },
+    success: { perfect: 0, break: 0, heavy: 0, retreat: 0 },
+    failures: {},
+  };
+}
+
+function trackDebugAction(direction, readResult) {
+  if (!state.debugRun || !state.debugStats) return;
+  state.debugStats.actions += 1;
+  state.debugStats.directions[direction] = (state.debugStats.directions[direction] ?? 0) + 1;
+  if (readResult?.perfect) state.debugStats.success.perfect += 1;
+  if (readResult?.breakSuccess || readResult?.poiseBreak) state.debugStats.success.break += 1;
+  if (direction === "right") state.debugStats.success.heavy += 1;
+  if (direction === "down") state.debugStats.success.retreat += 1;
+  if (readResult?.type && /whiff|mistake|punished|fake|caught|blocked/.test(readResult.type)) {
+    state.debugStats.failures[readResult.feedback] = (state.debugStats.failures[readResult.feedback] ?? 0) + 1;
+  }
+}
+
+function trackDebugPlayerHit() {
+  if (!state.debugRun || !state.debugStats) return;
+  state.debugStats.takenHits += 1;
+  const label = state.bossMove?.label ?? "Boss 命中";
+  state.debugStats.failures[label] = (state.debugStats.failures[label] ?? 0) + 1;
+}
+
 function createEmptyProfile() {
   const weaponSchools = Object.fromEntries(
     schoolCatalog.map((school) => [
@@ -3682,6 +4072,10 @@ function resetGame() {
   state.mapOpen = false;
   state.pendingActIntro = false;
   state.debugRun = false;
+  state.debugRunConfig = null;
+  state.debugCardIntervalMs = 0;
+  state.debugRecoveryScale = 1;
+  state.debugStats = null;
   state.encounterIndex = 0;
   state.actLevel = 1;
   state.equipment = null;
@@ -3740,6 +4134,104 @@ function applyDebugActBaseline(actLevel) {
     state.rewardMods[route] += value;
   }
   state.rewardNames.push(`调试基底:${actLabel(actLevel)}`);
+}
+
+function applyDebugGrowth(config) {
+  const growth = debugConfigGrowthPack(config);
+  for (const [route, value] of Object.entries(growth.routeMods ?? {})) {
+    if (state.rewardMods[route] === undefined) continue;
+    state.rewardMods[route] += value;
+    if (route !== "any" && state.routeMarks[route] !== undefined) state.routeMarks[route] += value;
+  }
+  for (const [key, value] of Object.entries(growth.evidence ?? {})) {
+    if (state.evidence[key] === undefined) continue;
+    state.evidence[key] += value;
+  }
+  state.rewardNames.push(`成长包:${growth.label}`);
+  for (const rewardId of config.playerBuild.enabledRewards ?? []) {
+    const reward = rewardById.get(rewardId);
+    if (reward) applyChoice(reward);
+  }
+}
+
+function applyDebugOpeningHand(config) {
+  const ids = config.playerBuild.openingHand ?? [];
+  if (!ids.length) return;
+  const handCards = ids.map((id) => cardById.get(id)).filter(Boolean).slice(0, handLimit());
+  if (!handCards.length) return;
+  state.hand = Array.from({ length: handLimit() }, (_, index) => handCards[index] ?? null);
+  const excluded = new Set(handCards.map((card) => card.id));
+  state.drawPile = state.drawPile.filter((card) => !excluded.has(card.id));
+  queueDrawIfNeeded();
+  renderHand();
+}
+
+async function startDebugBossRun(sourceConfig = state.debugConsoleConfig) {
+  const config = normalizeDebugBossConfig(sourceConfig);
+  const target = debugConfigTarget(config);
+  const equipment = equipmentById.get(config.playerBuild.equipmentId);
+  if (!equipment) throw new Error(`不存在的武器：${config.playerBuild.equipmentId}`);
+  const targetAct = target.act;
+  const targetIndex = encounters.length - 1;
+  const room = scaledEncounter(encounters[targetIndex], targetAct, targetIndex);
+  await Promise.all([
+    warmMapImages(targetAct),
+    warmBattleAssets(`debug-boss:${target.bossId}:${config.playerBuild.seed}`, room),
+  ]);
+  setAudioScene("battle");
+  playSfx("uiBattleStart");
+  state.trainingLesson = null;
+  state.dailyRun = null;
+  state.rng = seededRandom(config.playerBuild.seed);
+  state.tuning = debugConfigToTuning(config);
+  state.currentPreset = "custom";
+  state.debugCardIntervalMs = Number(config.tuning.player.cardIntervalMs ?? 0);
+  state.debugRecoveryScale = Number(config.tuning.player.recoveryScale ?? 1);
+  state.debugRunConfig = config;
+  state.runStarted = true;
+  state.mapOpen = false;
+  state.pendingActIntro = false;
+  state.debugRun = true;
+  state.encounterIndex = targetIndex;
+  state.actLevel = targetAct;
+  state.equipment = equipment;
+  state.rewardMods = { speed: 0, control: 0, counter: 0, burst: 0, damage: 0, any: 0 };
+  state.rewardNames = [];
+  state.routeMarks = { speed: 0, counter: 0, burst: 0, control: 0, damage: 0 };
+  state.evidence = { scout: 0, break: 0, finisher: 0 };
+  state.bossMark = target.bossMark ?? currentActMeta(targetAct).bossMark ?? equipment.contract?.bossMark ?? null;
+  state.bossMove = null;
+  state.bossPreviewed = true;
+  state.oaths = [];
+  state.oathPressure = 0;
+  state.rewardBias = null;
+  state.playerMaxHp = state.tuning.playerFocus;
+  state.playerHp = state.playerMaxHp;
+  state.pressure = 0;
+  state.stance = 100;
+  state.lastDirection = null;
+  state.drawTimer = 0;
+  state.lastBreakdown = "调试 Boss 战开始。";
+  state.pendingRewardIds = null;
+  state.pendingPathChoiceIds = null;
+  state.pathChoices = {};
+  state.anchor = null;
+  state.runId = `debug-boss-${target.bossId}-${Date.now().toString(36)}`;
+  resetFightProofs();
+  resetDebugStats(config);
+  for (const [route, value] of Object.entries(equipment.mods)) {
+    state.rewardMods[route] += value;
+    if (route !== "any") state.routeMarks[route] += value;
+  }
+  applyDebugGrowth(config);
+  document.querySelector(".overlay")?.remove();
+  state.debugConsoleOpen = false;
+  startEncounter(room);
+  applyDebugOpeningHand(config);
+  state.lastActionAt = performance.now() - state.debugCardIntervalMs;
+  wakeLoop(true);
+  log(`调试战：${debugConfigSummary(config)}。不记录正式进度。`);
+  return true;
 }
 
 async function startRunAtAct(equipment, actLevel = 1, options = {}) {
@@ -4788,8 +5280,12 @@ function currentReadResult(card, direction, route, breakHit) {
 
 function playCard(index, direction = "tap", options = {}) {
   if (state.ended || state.notebookOpen || state.versionOpen || !state.runStarted) return null;
+  const now = performance.now();
   if (!options.ignoreRecovery && isRecovering()) {
     return { blocked: true, remaining: Math.round(recoveryRemaining()) };
+  }
+  if (!options.ignoreRecovery && state.debugRun && state.debugCardIntervalMs > 0 && now - state.lastActionAt < state.debugCardIntervalMs) {
+    return { blocked: true, remaining: Math.round(state.debugCardIntervalMs - (now - state.lastActionAt)), reason: "debug-card-interval" };
   }
   const card = state.hand[index];
   if (!card) return null;
@@ -4801,12 +5297,14 @@ function playCard(index, direction = "tap", options = {}) {
   playSfx(playerActionSfx(direction));
   const weaponSfx = weaponActionSfx(card, direction, route);
   if (weaponSfx) playSfx(weaponSfx, { volume: 0.9 });
-  const now = performance.now();
   const quick = now - state.lastActionAt < state.tuning.comboWindow;
   const danger = state.intentTime < state.tuning.perfectWindow;
   const defensive = route === "counter" || card.id === "guard" || card.id === "shadow-step";
   const breakHit = direction === "right" && (route === "burst" || card.id === "breaker" || card.id === "heavy-cleave" || card.id === "execute");
   const readResult = currentReadResult(card, direction, route, breakHit);
+  if (state.debugRun && state.debugRecoveryScale > 0) {
+    readResult.recoveryMs = Math.round(readResult.recoveryMs * state.debugRecoveryScale);
+  }
   const perfect = readResult.perfect || (danger && defensive && direction === "left" && readResult.type === "steady");
   const isRetreat = readResult.type === "retreat-return" || direction === "down";
   const vulnerableDamageActive = isBossVulnerable();
@@ -4850,6 +5348,7 @@ function playCard(index, direction = "tap", options = {}) {
   }
 
   const poiseOutcome = applyPoiseDamage(readResult);
+  trackDebugAction(direction, readResult);
   for (const key of readResult.sfx) playSfx(key);
   if (readResult.perfect) {
     state.fightReads += 1;
@@ -5348,7 +5847,7 @@ function updateBossPhaseAudio() {
 }
 
 function tick(delta) {
-  if (state.ended || state.notebookOpen || state.tunerOpen || state.versionOpen) return;
+  if (state.ended || state.notebookOpen || state.tunerOpen || state.debugConsoleOpen || state.versionOpen) return;
   const now = performance.now();
   const decayAfter = now - state.lastActionAt;
 
@@ -5434,6 +5933,7 @@ function enemyAttack(kind = "进攻", damageScale = 1) {
   state.comboCharge = Math.min(state.comboCharge, 24);
   const line = kind === "抢招" ? "抢招命中" : kind === "破绽" ? "抓住破绽" : `${kind} 命中你`;
   log(`${encounter.name} ${line}，连击碎了。${state.bossMove?.hint ?? "危险临近时左划或用格挡。"}`);
+  trackDebugPlayerHit();
   playSfx("bossHitPlayer");
   playSfx("playerComboBreak");
   animateEnemyAttack(kind);
@@ -5577,7 +6077,15 @@ function render() {
       forge: "锻造",
       market: "黑市",
     }[encounter.type] ?? "事件";
-  const stageLabel = state.trainingLesson ? `训练课 ${typeLabel}` : state.dailyRun ? `每日刀路 ${typeLabel} ${state.encounterIndex + 1}/${activeEncounters().length}` : state.runStarted ? `${actLabel()} ${currentActMeta().placeName} ${typeLabel} ${state.encounterIndex + 1}/${activeEncounters().length}` : "选武器";
+  const stageLabel = state.trainingLesson
+    ? `训练课 ${typeLabel}`
+    : state.dailyRun
+      ? `每日刀路 ${typeLabel} ${state.encounterIndex + 1}/${activeEncounters().length}`
+      : state.debugRun
+        ? `调试战 ${actLabel()} ${currentActMeta().bossName}`
+        : state.runStarted
+          ? `${actLabel()} ${currentActMeta().placeName} ${typeLabel} ${state.encounterIndex + 1}/${activeEncounters().length}`
+          : "选武器";
   setText(els.runStage, stageLabel);
   setText(els.equipmentName, state.equipment?.name ?? "未选武器");
   setText(els.rewardStack, state.anchor ? `锚 ${routeIcon(state.anchor.route)} · ${state.rewardNames.length} 证物` : state.rewardNames.length ? `${state.rewardNames.length} 证物 · ${bossMarkLabel()}` : state.dailySeed);
@@ -5829,8 +6337,103 @@ function log(message) {
   els.combatLog.textContent = message;
 }
 
+function debugResultFor(won) {
+  const stats = state.debugStats ?? resetDebugStats(state.debugRunConfig ?? defaultDebugBossConfig());
+  const durationMs = Math.max(0, Math.round(performance.now() - (state.debugStats?.startedAt ?? performance.now())));
+  const failures = Object.entries(state.debugStats?.failures ?? {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([label, count]) => ({ label, count }));
+  return {
+    schema: "blade-flow.debug-boss-result.v1",
+    createdAt: debugNowIso(),
+    won: Boolean(won),
+    durationMs,
+    bossRemainingHp: Math.ceil(state.enemyHp),
+    bossMaxHp: state.enemyMaxHp,
+    playerRemainingHp: Math.ceil(state.playerHp),
+    playerMaxHp: state.playerMaxHp,
+    actions: state.debugStats?.actions ?? 0,
+    takenHits: state.debugStats?.takenHits ?? 0,
+    maxCombo: state.maxCombo,
+    reads: state.fightReads,
+    breaks: state.fightBreaks,
+    directions: restoreObject({ tap: 0, up: 0, left: 0, right: 0, down: 0 }, state.debugStats?.directions),
+    success: restoreObject({ perfect: 0, break: 0, heavy: 0, retreat: 0 }, state.debugStats?.success),
+    failures,
+    log: els.combatLog?.textContent?.trim() ?? "",
+    config: normalizeDebugBossConfig(state.debugRunConfig ?? state.debugStats?.config ?? defaultDebugBossConfig()),
+  };
+}
+
+function debugResultText(result) {
+  return JSON.stringify(result, null, 2);
+}
+
+async function copyTextOrReveal(text, textarea, statusEl) {
+  if (textarea) textarea.value = text;
+  try {
+    await navigator.clipboard.writeText(text);
+    if (statusEl) statusEl.innerHTML = effectTextMarkup("已复制。");
+    return true;
+  } catch {
+    if (textarea) {
+      textarea.hidden = false;
+      textarea.focus();
+      textarea.select();
+    }
+    if (statusEl) statusEl.innerHTML = effectTextMarkup("浏览器没有给复制权限，可以手动复制文本。");
+    return false;
+  }
+}
+
+function showDebugResultOverlay(won) {
+  const result = debugResultFor(won);
+  storeDebugResult(result);
+  const text = debugResultText(result);
+  const failureLine = result.failures.length ? result.failures.map((item) => `${item.label} ${item.count}`).join("，") : "没有明显重复失败。";
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+  overlay.innerHTML = `
+    <div class="overlay-panel debug-console-panel debug-result-panel">
+      <h2>${won ? "调试战胜利" : "调试战失败"}</h2>
+      <p>${effectTextMarkup(`${debugConfigSummary(result.config)}。用时 ${Math.round(result.durationMs / 1000)}s，剩余专注 ${result.playerRemainingHp}/${result.playerMaxHp}，出牌 ${result.actions}，受击 ${result.takenHits}，最高 ${result.maxCombo} 连。`)}</p>
+      <div class="debug-result-grid">
+        <span>上追 ${result.directions.up}</span>
+        <span>左破 ${result.directions.left}</span>
+        <span>右重 ${result.directions.right}</span>
+        <span>下退 ${result.directions.down}</span>
+      </div>
+      <p>${effectTextMarkup(`失败摘要：${failureLine}`)}</p>
+      <textarea class="debug-export-text" data-debug-result-text hidden>${escapeHtml(text)}</textarea>
+      <div class="tuner-actions">
+        <button type="button" data-debug-result-again>再打一场</button>
+        <button class="tuner-secondary" type="button" data-debug-result-console>返回调试台</button>
+        <button class="tuner-secondary" type="button" data-debug-result-copy>复制结果</button>
+      </div>
+    </div>
+  `;
+  overlay.querySelector("[data-debug-result-again]").addEventListener("click", () => {
+    overlay.remove();
+    void startDebugBossRun(result.config);
+  });
+  overlay.querySelector("[data-debug-result-console]").addEventListener("click", () => {
+    overlay.remove();
+    state.debugConsoleConfig = result.config;
+    showDebugConsoleOverlay();
+  });
+  overlay.querySelector("[data-debug-result-copy]").addEventListener("click", async () => {
+    await copyTextOrReveal(text, overlay.querySelector("[data-debug-result-text]"), overlay.querySelector("p"));
+  });
+  els.game.append(overlay);
+}
+
 function endFight(won) {
   state.ended = true;
+  if (state.debugRun && state.debugRunConfig) {
+    showDebugResultOverlay(won);
+    return;
+  }
   if (state.trainingLesson) {
     showTrainingOverlay(won);
     return;
@@ -6179,7 +6782,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.82",
+      version: "v0.2.83",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -6376,9 +6979,9 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>验</i>当前 v0.2.82</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>验</i>当前 v0.2.83</small>
         <b>版本记录</b>
-        <span class="choice-effect">${effectTextMarkup("这版统一四向战斗意图，Boss 提示和出牌收益会一起变化。")}</span>
+        <span class="choice-effect">${effectTextMarkup("这版新增 Boss 调试台，支持直达、改数值、导入导出和结果记录。")}</span>
       </button>
       <button class="choice" type="button" data-copy-mobile-link>
         <small class="choice-meta" style="${routeStyle("control")}"><i>链</i>Alpha 5</small>
@@ -6411,7 +7014,8 @@ function showEquipmentOverlay() {
     </div>
   `;
   overlay.querySelector("[data-open-tuner]").addEventListener("click", () => {
-    showTunerOverlay(true);
+    if (isDebugMode()) showDebugConsoleOverlay();
+    else showTunerOverlay(true);
   });
   overlay.querySelector("[data-toggle-menu-bgm]").addEventListener("click", () => {
     toggleMenuBgm();
@@ -7490,6 +8094,407 @@ function bindTunerOverlay(overlay) {
   });
 }
 
+function debugGrowthOptions(config = state.debugConsoleConfig) {
+  const target = debugConfigTarget(config);
+  return Object.entries(debugGrowthPacks)
+    .filter(([, pack]) => pack.act <= target.act)
+    .map(([id, pack]) => `<option value="${id}" ${config.playerBuild.growthStage === id ? "selected" : ""}>${pack.label}</option>`)
+    .join("");
+}
+
+function debugControlValue(config, control) {
+  const value = getPathValue(config.tuning, control.path);
+  return Number.isInteger(value) ? String(value) : Number(value).toFixed(control.step < 0.01 ? 3 : control.step < 0.1 ? 2 : 1).replace(/\.0$/, "");
+}
+
+function debugConsoleTabs() {
+  const tabs = [
+    ["params", "战斗参数"],
+    ["growth", "成长奖励"],
+    ["deck", "卡组手牌"],
+    ["export", "预设导出"],
+  ];
+  return tabs.map(([id, label]) => `<button type="button" data-debug-tab="${id}" class="${state.debugConsoleTab === id ? "is-active" : ""}">${label}</button>`).join("");
+}
+
+function debugBossCards(config = state.debugConsoleConfig) {
+  return debugBossTargets
+    .map((target) => {
+      const active = config.target.bossId === target.bossId;
+      const meta = actMeta[target.act];
+      return `
+        <button class="debug-boss-card ${active ? "is-active" : ""}" type="button" data-debug-boss="${target.bossId}" style="${mapBgStyle(meta.mapImage)}">
+          <b>${target.label}</b>
+          <span>${actLabel(target.act)} · ${target.place}</span>
+          <em>${target.tone}</em>
+        </button>
+      `;
+    })
+    .join("");
+}
+
+function debugParamsPanel(config = state.debugConsoleConfig) {
+  const groups = [...new Set(debugTuningControls.map((control) => control.group))];
+  return groups
+    .map(
+      (group) => `
+        <section class="debug-console-section">
+          <h3>${group}</h3>
+          ${debugTuningControls
+            .filter((control) => control.group === group)
+            .map(
+              (control) => `
+                <label class="tuner-control debug-control">
+                  <span class="tuner-label">
+                    <span>${control.label}</span>
+                    <b class="tuner-value" data-debug-value="${control.path}">${debugControlValue(config, control)}${control.suffix}</b>
+                  </span>
+                  <input type="range" min="${control.min}" max="${control.max}" step="${control.step}" value="${getPathValue(config.tuning, control.path)}" data-debug-tune="${control.path}" />
+                </label>
+              `,
+            )
+            .join("")}
+        </section>
+      `,
+    )
+    .join("");
+}
+
+function debugGrowthPanel(config = state.debugConsoleConfig) {
+  const growth = debugConfigGrowthPack(config);
+  const rewardsMarkup = debugRewardChoices
+    .map((rewardId) => {
+      const reward = rewardById.get(rewardId);
+      if (!reward) return "";
+      const checked = config.playerBuild.enabledRewards.includes(rewardId);
+      return `
+        <label class="debug-reward-chip ${checked ? "is-active" : ""}" style="${routeStyle(reward.route === "any" ? "neutral" : reward.route)}">
+          <input type="checkbox" data-debug-reward="${rewardId}" ${checked ? "checked" : ""} />
+          <b>${kindInfo(reward.kind).short}</b>
+          <span>${reward.name}</span>
+        </label>
+      `;
+    })
+    .join("");
+  return `
+    <section class="debug-console-section">
+      <h3>成长阶段</h3>
+      <label class="mobile-qa-field">
+        <span>推荐成长包</span>
+        <select data-debug-growth>${debugGrowthOptions(config)}</select>
+      </label>
+      <p>${effectTextMarkup(`${growth.label}：路线成长 ${Object.entries(growth.routeMods).map(([route, value]) => `${routeLabel(route)} +${value}`).join("，")}。证据 scout ${growth.evidence.scout ?? 0}，break ${growth.evidence.break ?? 0}，finisher ${growth.evidence.finisher ?? 0}。`)}</p>
+    </section>
+    <section class="debug-console-section">
+      <h3>奖励开关</h3>
+      <div class="debug-reward-grid">${rewardsMarkup}</div>
+    </section>
+  `;
+}
+
+function debugDeckPanel(config = state.debugConsoleConfig) {
+  const handMarkup = debugOpeningHandChoices
+    .map((cardId) => {
+      const card = cardById.get(cardId);
+      if (!card) return "";
+      const checked = config.playerBuild.openingHand.includes(cardId);
+      return `
+        <label class="debug-hand-chip ${checked ? "is-active" : ""}" style="${routeStyle(card.route)}">
+          <input type="checkbox" data-debug-hand="${cardId}" ${checked ? "checked" : ""} />
+          <b>${routeIcon(card.route)}</b>
+          <span>${card.name}</span>
+        </label>
+      `;
+    })
+    .join("");
+  return `
+    <section class="debug-console-section">
+      <h3>武器与种子</h3>
+      <label class="mobile-qa-field">
+        <span>武器</span>
+        <select data-debug-equipment>
+          ${equipmentPool.map((equipment) => `<option value="${equipment.id}" ${config.playerBuild.equipmentId === equipment.id ? "selected" : ""}>${equipment.name}</option>`).join("")}
+        </select>
+      </label>
+      <label class="mobile-qa-field">
+        <span>固定种子</span>
+        <input type="text" value="${escapeHtml(config.playerBuild.seed)}" data-debug-seed />
+      </label>
+    </section>
+    <section class="debug-console-section">
+      <h3>起手手牌</h3>
+      <div class="debug-reward-grid">${handMarkup}</div>
+    </section>
+  `;
+}
+
+function debugExportPanel(config = state.debugConsoleConfig) {
+  const presets = readDebugPresets();
+  const presetMarkup = presets.length
+    ? presets
+        .map(
+          (preset, index) => `
+            <button class="debug-preset-row" type="button" data-debug-load-preset="${index}">
+              <b>${escapeHtml(preset.label)}</b>
+              <span>${debugConfigSummary(preset)}</span>
+            </button>
+          `,
+        )
+        .join("")
+    : `<p>还没有保存的本地预设。</p>`;
+  return `
+    <section class="debug-console-section">
+      <h3>当前配置</h3>
+      <p>${effectTextMarkup(debugConfigSummary(config))}</p>
+      <textarea class="debug-export-text" data-debug-export-text readonly>${escapeHtml(debugConfigExportText(config))}</textarea>
+    </section>
+    <section class="debug-console-section">
+      <h3>导入配置</h3>
+      <textarea class="debug-export-text" data-debug-import-text placeholder="粘贴 blade-flow.debug-boss-tuning.v1 JSON">${escapeHtml(state.debugConsoleImportText)}</textarea>
+      <button class="tuner-secondary" type="button" data-debug-import>导入并校验</button>
+    </section>
+    <section class="debug-console-section">
+      <h3>本地预设</h3>
+      <div class="debug-preset-list">${presetMarkup}</div>
+    </section>
+  `;
+}
+
+function debugConsoleBody(config = state.debugConsoleConfig) {
+  if (state.debugConsoleTab === "growth") return debugGrowthPanel(config);
+  if (state.debugConsoleTab === "deck") return debugDeckPanel(config);
+  if (state.debugConsoleTab === "export") return debugExportPanel(config);
+  return debugParamsPanel(config);
+}
+
+function debugConsoleTemplate() {
+  const config = state.debugConsoleConfig;
+  const message = state.debugConsoleMessage ? `<p class="debug-console-message">${effectTextMarkup(state.debugConsoleMessage)}</p>` : "";
+  return `
+    <div class="overlay-panel debug-console-panel">
+      <div class="debug-console-head">
+        <span>Boss 调试台</span>
+        <button type="button" data-debug-close>×</button>
+      </div>
+      <p>${effectTextMarkup(debugConfigSummary(config))}</p>
+      <div class="debug-boss-strip">${debugBossCards(config)}</div>
+      <div class="debug-tab-strip">${debugConsoleTabs()}</div>
+      ${message}
+      <div class="debug-console-body">${debugConsoleBody(config)}</div>
+      <div class="debug-console-actions">
+        <button type="button" data-debug-start>挑战此 Boss</button>
+        <button class="tuner-secondary" type="button" data-debug-copy>复制配置</button>
+        <button class="tuner-secondary" type="button" data-debug-save-preset>保存预设</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderDebugConsoleOverlay(overlay) {
+  try {
+    state.debugConsoleConfig = normalizeDebugBossConfig(state.debugConsoleConfig ?? readDebugConfig());
+  } catch (error) {
+    state.debugConsoleConfig = defaultDebugBossConfig();
+    state.debugConsoleMessage = `本地调试配置损坏，已锁定旧配置并回到默认：${error.message}`;
+  }
+  overlay.innerHTML = debugConsoleTemplate();
+  bindDebugConsoleOverlay(overlay);
+}
+
+function updateDebugConfig(mutator) {
+  const next = normalizeDebugBossConfig(state.debugConsoleConfig);
+  mutator(next);
+  state.debugConsoleConfig = saveDebugConfig(next);
+}
+
+function bindDebugConsoleOverlay(overlay) {
+  overlay.querySelector("[data-debug-close]")?.addEventListener("click", () => {
+    state.debugConsoleOpen = false;
+    overlay.remove();
+    render();
+    wakeLoop(true);
+  });
+  overlay.querySelectorAll("[data-debug-boss]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.debugConsoleConfig = saveDebugConfig(defaultDebugBossConfig(button.dataset.debugBoss));
+      state.debugConsoleMessage = "";
+      renderDebugConsoleOverlay(overlay);
+    });
+  });
+  overlay.querySelectorAll("[data-debug-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.debugConsoleTab = button.dataset.debugTab;
+      state.debugConsoleMessage = "";
+      renderDebugConsoleOverlay(overlay);
+    });
+  });
+  overlay.querySelectorAll("[data-debug-tune]").forEach((input) => {
+    input.addEventListener("input", () => {
+      const control = debugTuningControls.find((item) => item.path === input.dataset.debugTune);
+      if (!control) return;
+      updateDebugConfig((config) => setPathValue(config.tuning, control.path, Number(input.value)));
+      const value = overlay.querySelector(`[data-debug-value="${CSS.escape(control.path)}"]`);
+      if (value) value.textContent = `${debugControlValue(state.debugConsoleConfig, control)}${control.suffix}`;
+      state.debugConsoleMessage = "参数已更新，下一场挑战生效。";
+    });
+  });
+  overlay.querySelector("[data-debug-growth]")?.addEventListener("change", (event) => {
+    const growthId = event.currentTarget.value;
+    updateDebugConfig((config) => {
+      const pack = debugGrowthPacks[growthId];
+      if (!pack) return;
+      config.playerBuild.growthStage = growthId;
+      config.playerBuild.rewardPackId = growthId;
+      config.playerBuild.enabledRewards = [...pack.rewardIds];
+      config.label = `${debugConfigTarget(config).label} ${pack.label}`;
+    });
+    state.debugConsoleMessage = "成长包已切换。";
+    renderDebugConsoleOverlay(overlay);
+  });
+  overlay.querySelectorAll("[data-debug-reward]").forEach((input) => {
+    input.addEventListener("change", () => {
+      const rewardId = input.dataset.debugReward;
+      updateDebugConfig((config) => {
+        const set = new Set(config.playerBuild.enabledRewards);
+        if (input.checked) set.add(rewardId);
+        else set.delete(rewardId);
+        config.playerBuild.enabledRewards = [...set];
+      });
+      state.debugConsoleMessage = "奖励包已更新。";
+      renderDebugConsoleOverlay(overlay);
+    });
+  });
+  overlay.querySelector("[data-debug-equipment]")?.addEventListener("change", (event) => {
+    updateDebugConfig((config) => {
+      config.playerBuild.equipmentId = event.currentTarget.value;
+    });
+    state.debugConsoleMessage = "武器已切换。";
+    renderDebugConsoleOverlay(overlay);
+  });
+  overlay.querySelector("[data-debug-seed]")?.addEventListener("change", (event) => {
+    updateDebugConfig((config) => {
+      config.playerBuild.seed = event.currentTarget.value.trim() || config.playerBuild.seed;
+    });
+    state.debugConsoleMessage = "种子已更新。";
+    renderDebugConsoleOverlay(overlay);
+  });
+  overlay.querySelectorAll("[data-debug-hand]").forEach((input) => {
+    input.addEventListener("change", () => {
+      const cardId = input.dataset.debugHand;
+      updateDebugConfig((config) => {
+        const set = new Set(config.playerBuild.openingHand);
+        if (input.checked) set.add(cardId);
+        else set.delete(cardId);
+        config.playerBuild.openingHand = [...set].slice(0, 4);
+      });
+      state.debugConsoleMessage = "起手手牌已更新。";
+      renderDebugConsoleOverlay(overlay);
+    });
+  });
+  overlay.querySelector("[data-debug-copy]")?.addEventListener("click", async () => {
+    const text = debugConfigExportText(state.debugConsoleConfig);
+    await copyTextOrReveal(text, overlay.querySelector("[data-debug-export-text]"), overlay.querySelector(".debug-console-message"));
+    state.debugConsoleMessage = "配置已复制。";
+    renderDebugConsoleOverlay(overlay);
+  });
+  overlay.querySelector("[data-debug-save-preset]")?.addEventListener("click", () => {
+    saveDebugPreset(state.debugConsoleConfig);
+    state.debugConsoleMessage = "本地预设已保存。";
+    renderDebugConsoleOverlay(overlay);
+  });
+  overlay.querySelector("[data-debug-import]")?.addEventListener("click", () => {
+    const text = overlay.querySelector("[data-debug-import-text]")?.value ?? "";
+    state.debugConsoleImportText = text;
+    try {
+      const parsed = JSON.parse(text);
+      state.debugConsoleConfig = saveDebugConfig(parsed);
+      state.debugConsoleMessage = `导入成功：${debugConfigSummary(state.debugConsoleConfig)}`;
+    } catch (error) {
+      state.debugConsoleMessage = `导入失败：${error.message}`;
+    }
+    renderDebugConsoleOverlay(overlay);
+  });
+  overlay.querySelectorAll("[data-debug-load-preset]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const preset = readDebugPresets()[Number(button.dataset.debugLoadPreset)];
+      if (!preset) return;
+      state.debugConsoleConfig = saveDebugConfig(preset);
+      state.debugConsoleMessage = `已读取预设：${preset.label}`;
+      renderDebugConsoleOverlay(overlay);
+    });
+  });
+  overlay.querySelector("[data-debug-start]")?.addEventListener("click", async () => {
+    try {
+      const config = saveDebugConfig(state.debugConsoleConfig);
+      await startDebugBossRun(config);
+    } catch (error) {
+      state.debugConsoleMessage = `无法开战：${error.message}`;
+      renderDebugConsoleOverlay(overlay);
+    }
+  });
+}
+
+function showDebugConsoleOverlay() {
+  const existingOverlay = document.querySelector(".overlay");
+  existingOverlay?.remove();
+  state.tunerOpen = false;
+  state.debugConsoleOpen = true;
+  state.debugConsoleConfig = state.debugConsoleConfig ?? readDebugConfig();
+  state.debugConsoleMessage = "";
+  const overlay = document.createElement("div");
+  overlay.className = "overlay debug-console-overlay";
+  renderDebugConsoleOverlay(overlay);
+  els.game.append(overlay);
+}
+
+function showDebugQuickDrawer() {
+  if (!state.debugRunConfig) {
+    showDebugConsoleOverlay();
+    return;
+  }
+  state.debugConsoleOpen = true;
+  const overlay = document.createElement("div");
+  overlay.className = "overlay debug-drawer-overlay";
+  overlay.innerHTML = `
+    <div class="overlay-panel debug-drawer-panel">
+      <h2>调试战</h2>
+      <p>${effectTextMarkup(debugConfigSummary(state.debugRunConfig))}</p>
+      <div class="debug-result-grid">
+        <span>Boss ${Math.ceil(state.enemyHp)}/${state.enemyMaxHp}</span>
+        <span>专注 ${Math.ceil(state.playerHp)}/${state.playerMaxHp}</span>
+        <span>出牌 ${state.debugStats?.actions ?? 0}</span>
+        <span>受击 ${state.debugStats?.takenHits ?? 0}</span>
+      </div>
+      <textarea class="debug-export-text" data-debug-drawer-text hidden>${escapeHtml(debugConfigExportText(state.debugRunConfig))}</textarea>
+      <div class="tuner-actions">
+        <button type="button" data-debug-drawer-restart>重开本场</button>
+        <button class="tuner-secondary" type="button" data-debug-drawer-console>返回调试台</button>
+        <button class="tuner-secondary" type="button" data-debug-drawer-copy>复制配置</button>
+        <button class="tuner-secondary" type="button" data-debug-drawer-close>关闭</button>
+      </div>
+    </div>
+  `;
+  overlay.querySelector("[data-debug-drawer-restart]").addEventListener("click", () => {
+    state.debugConsoleOpen = false;
+    overlay.remove();
+    void startDebugBossRun(state.debugRunConfig);
+  });
+  overlay.querySelector("[data-debug-drawer-console]").addEventListener("click", () => {
+    overlay.remove();
+    state.debugConsoleConfig = state.debugRunConfig;
+    showDebugConsoleOverlay();
+  });
+  overlay.querySelector("[data-debug-drawer-copy]").addEventListener("click", async () => {
+    await copyTextOrReveal(debugConfigExportText(state.debugRunConfig), overlay.querySelector("[data-debug-drawer-text]"), overlay.querySelector("p"));
+  });
+  overlay.querySelector("[data-debug-drawer-close]").addEventListener("click", () => {
+    state.debugConsoleOpen = false;
+    overlay.remove();
+    wakeLoop(true);
+  });
+  els.game.append(overlay);
+}
+
 function showNotebookOverlay() {
   if (document.querySelector(".overlay") || state.notebookOpen) return;
   state.notebookOpen = true;
@@ -7585,7 +8590,7 @@ function showVersionOverlay(returnToGear = false) {
 
 let last = performance.now();
 function isLoopActive() {
-  return document.visibilityState === "visible" && state.runStarted && !state.ended && !state.notebookOpen && !state.tunerOpen && !state.versionOpen && !state.saveOpen;
+  return document.visibilityState === "visible" && state.runStarted && !state.ended && !state.notebookOpen && !state.tunerOpen && !state.debugConsoleOpen && !state.versionOpen && !state.saveOpen;
 }
 
 function wakeLoop(resetTime = false) {
@@ -7612,7 +8617,14 @@ function loop(now) {
 
 els.musicButton.addEventListener("click", toggleMenuBgm);
 els.resetButton.addEventListener("click", resetGame);
-els.tunerButton.addEventListener("click", showTunerOverlay);
+els.tunerButton.addEventListener("click", () => {
+  if (isDebugMode()) {
+    if (state.debugRun && state.runStarted && !state.ended) showDebugQuickDrawer();
+    else showDebugConsoleOverlay();
+    return;
+  }
+  showTunerOverlay();
+});
 els.saveButton.addEventListener("click", showSaveOverlay);
 els.versionButton.addEventListener("click", () => showVersionOverlay(false));
 els.notebookButton.addEventListener("click", showNotebookOverlay);
@@ -8380,6 +9392,49 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
       const equipment = equipmentById.get(equipmentId) ?? equipmentPool[0];
       await startRunAtAct(equipment, act, { debug: true, skipIntro: Boolean(options.skipIntro) });
       return this.mapState();
+    },
+    debugBossDefault(bossId = "redline-rival") {
+      return defaultDebugBossConfig(bossId);
+    },
+    debugBossValidate(config) {
+      return normalizeDebugBossConfig(config);
+    },
+    debugBossExport() {
+      state.debugConsoleConfig = state.debugConsoleConfig ?? readDebugConfig();
+      return debugConfigExportText(state.debugConsoleConfig);
+    },
+    debugBossImport(text) {
+      const parsed = typeof text === "string" ? JSON.parse(text) : text;
+      state.debugConsoleConfig = saveDebugConfig(parsed);
+      return {
+        ok: true,
+        summary: debugConfigSummary(state.debugConsoleConfig),
+        config: state.debugConsoleConfig,
+      };
+    },
+    async startDebugBoss(configOrBossId = "redline-rival") {
+      const config = typeof configOrBossId === "string" ? defaultDebugBossConfig(configOrBossId) : configOrBossId;
+      await startDebugBossRun(config);
+      return this.debugBossState();
+    },
+    debugBossState() {
+      return {
+        debugRun: state.debugRun,
+        act: state.actLevel,
+        encounterIndex: state.encounterIndex,
+        room: currentRoom()?.name ?? "",
+        equipment: state.equipment?.id ?? "",
+        rewardNames: state.rewardNames,
+        rewardMods: state.rewardMods,
+        evidence: state.evidence,
+        bossMark: state.bossMark,
+        tuning: state.tuning,
+        cardIntervalMs: state.debugCardIntervalMs,
+        recoveryScale: state.debugRecoveryScale,
+        stats: state.debugStats,
+        result: state.debugLastResult,
+        overlayText: document.querySelector(".overlay")?.textContent?.replace(/\s+/g, " ").trim().slice(0, 260) ?? "",
+      };
     },
     previewNextActIntro() {
       advanceAct();
