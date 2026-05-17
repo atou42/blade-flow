@@ -246,6 +246,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.85",
+    title: "实验台可读性",
+    date: "2026-05-17",
+    icon: "清",
+    color: "#a6d93a",
+    points: ["修复 Boss 实验战浅底白字问题", "提高手机端 Boss 卡和实验预设卡可读性", "更新缓存版本避免旧样式残留"],
+  },
+  {
     id: "v0.2.84",
     title: "Boss 实验战",
     date: "2026-05-17",

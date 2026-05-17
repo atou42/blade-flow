@@ -3574,7 +3574,7 @@ h1 {
   margin: 6px 0 8px;
 }
 
-.debug-boss-card {
+.overlay .debug-boss-card {
   display: grid;
   gap: 2px;
   min-height: 62px;
@@ -3586,21 +3586,22 @@ h1 {
     rgba(18, 16, 13, 0.86);
   color: var(--paper);
   text-align: left;
+  text-transform: none;
 }
 
-.debug-boss-card.is-active {
+.overlay .debug-boss-card.is-active {
   border-color: color-mix(in srgb, var(--red) 64%, var(--bone));
   box-shadow: inset 0 0 0 1px rgba(216, 59, 36, 0.42);
 }
 
-.debug-boss-card b {
+.overlay .debug-boss-card b {
   color: var(--bone);
   font-size: 0.86rem;
   text-shadow: var(--stroke-dark);
 }
 
-.debug-boss-card span,
-.debug-boss-card em {
+.overlay .debug-boss-card span,
+.overlay .debug-boss-card em {
   color: rgba(242, 234, 217, 0.78);
   font-size: 0.62rem;
   font-style: normal;
@@ -3682,38 +3683,48 @@ h1 {
   gap: 7px;
 }
 
-.debug-experiment-card,
+.overlay .debug-experiment-card,
 .debug-result-row {
   display: grid;
   gap: 3px;
   min-height: 58px;
-  border: 1px solid rgba(242, 234, 217, 0.16);
-  background: rgba(18, 16, 13, 0.5);
+  border: 1px solid rgba(242, 234, 217, 0.22);
+  background:
+    linear-gradient(180deg, rgba(18, 16, 13, 0.86), rgba(18, 16, 13, 0.7)),
+    var(--ui-panel) 50% 50% / cover no-repeat,
+    rgba(18, 16, 13, 0.88);
   color: rgba(242, 234, 217, 0.76);
   padding: 8px;
   text-align: left;
+  text-transform: none;
 }
 
-.debug-experiment-card.is-active {
+.overlay .debug-experiment-card.is-active {
   border-color: rgba(75, 189, 168, 0.72);
-  background: rgba(75, 189, 168, 0.16);
+  background:
+    linear-gradient(135deg, rgba(75, 189, 168, 0.34), rgba(18, 16, 13, 0.78)),
+    var(--ui-panel) 50% 50% / cover no-repeat,
+    rgba(18, 16, 13, 0.9);
   color: var(--bone);
+  box-shadow: inset 0 0 0 1px rgba(75, 189, 168, 0.34);
 }
 
-.debug-experiment-card b,
+.overlay .debug-experiment-card b,
 .debug-result-row b {
   color: var(--bone);
   font-size: 0.72rem;
+  text-shadow: var(--stroke-dark);
 }
 
-.debug-experiment-card span,
-.debug-experiment-card em,
+.overlay .debug-experiment-card span,
+.overlay .debug-experiment-card em,
 .debug-result-row span,
 .debug-result-row em {
-  color: rgba(242, 234, 217, 0.72);
+  color: rgba(242, 234, 217, 0.84);
   font-size: 0.58rem;
   font-style: normal;
   line-height: 1.2;
+  text-shadow: var(--stroke-dark);
 }
 
 .debug-reward-chip,
