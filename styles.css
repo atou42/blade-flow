@@ -3608,7 +3608,7 @@ h1 {
 
 .debug-tab-strip {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 5px;
   margin-bottom: 8px;
 }
@@ -3675,6 +3675,45 @@ h1 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
+}
+
+.debug-experiment-grid {
+  display: grid;
+  gap: 7px;
+}
+
+.debug-experiment-card,
+.debug-result-row {
+  display: grid;
+  gap: 3px;
+  min-height: 58px;
+  border: 1px solid rgba(242, 234, 217, 0.16);
+  background: rgba(18, 16, 13, 0.5);
+  color: rgba(242, 234, 217, 0.76);
+  padding: 8px;
+  text-align: left;
+}
+
+.debug-experiment-card.is-active {
+  border-color: rgba(75, 189, 168, 0.72);
+  background: rgba(75, 189, 168, 0.16);
+  color: var(--bone);
+}
+
+.debug-experiment-card b,
+.debug-result-row b {
+  color: var(--bone);
+  font-size: 0.72rem;
+}
+
+.debug-experiment-card span,
+.debug-experiment-card em,
+.debug-result-row span,
+.debug-result-row em {
+  color: rgba(242, 234, 217, 0.72);
+  font-size: 0.58rem;
+  font-style: normal;
+  line-height: 1.2;
 }
 
 .debug-reward-chip,
@@ -3747,6 +3786,15 @@ h1 {
   min-height: 42px;
   padding: 8px 6px;
   font-size: 0.66rem;
+}
+
+.debug-console-actions .tuner-secondary {
+  background:
+    linear-gradient(180deg, rgba(18, 16, 13, 0.84), rgba(18, 16, 13, 0.62)),
+    var(--ui-panel) 50% 50% / cover no-repeat,
+    rgba(18, 16, 13, 0.88);
+  color: var(--bone);
+  text-shadow: var(--stroke-dark);
 }
 
 .debug-result-panel,

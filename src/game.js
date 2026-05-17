@@ -246,6 +246,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.84",
+    title: "Boss 实验战",
+    date: "2026-05-17",
+    icon: "验",
+    color: "#4bbda8",
+    points: ["主菜单开放 Boss 实验战入口", "新增风暴队长卡牌容错实验预设", "实验结果支持最近记录对比"],
+  },
+  {
     id: "v0.2.83",
     title: "Boss 调试台",
     date: "2026-05-14",
@@ -1658,6 +1666,10 @@ const debugRewardChoices = [
   "mirror-scar",
   "drop-hammer",
   "execution-drum",
+  "high-hand-sigil",
+  "floating-point",
+  "repair-focus",
+  "route-scout",
   "boss-fragment",
   "redline-pursuit",
   "mirror-oath",
@@ -1666,6 +1678,69 @@ const debugRewardChoices = [
 ];
 
 const debugOpeningHandChoices = ["quick-slash", "thrust", "guard", "shadow-step", "breaker", "heavy-cleave", "flying-blade", "execute"];
+
+const debugExperimentPresets = [
+  {
+    id: "storm-teaching-mercy",
+    targetId: "storm-captain",
+    label: "教学容错",
+    goal: "验证 Boss 是否能被看懂，先放宽惩罚。",
+    rewardIds: ["high-hand-sigil", "floating-point", "repair-focus"],
+    openingHand: ["guard", "shadow-step", "quick-slash", "chase-cut"],
+    tuning: {
+      boss: { hpScale: 0.9, bossTempo: 0.88, damageScale: 0.72 },
+      player: { focus: 135, damageScale: 1, cardIntervalMs: 360, recoveryScale: 0.9 },
+      windows: { perfectWindow: 940 },
+      rewards: { rewardPower: 1.08 },
+      ai: { pressure: 4, repeatAdapt: 4 },
+    },
+  },
+  {
+    id: "storm-card-survival",
+    targetId: "storm-captain",
+    label: "回血护盾",
+    goal: "验证防守牌和回血奖励能否让玩家多一次补救。",
+    rewardIds: ["high-hand-sigil", "floating-point", "repair-focus", "route-scout"],
+    openingHand: ["guard", "shadow-step", "breaker", "quick-slash"],
+    tuning: {
+      boss: { hpScale: 1, bossTempo: 1, damageScale: 0.86 },
+      player: { focus: 125, damageScale: 0.95, cardIntervalMs: 420, recoveryScale: 0.95 },
+      windows: { perfectWindow: 880 },
+      rewards: { rewardPower: 1.18 },
+      ai: { pressure: 7, repeatAdapt: 8 },
+    },
+  },
+  {
+    id: "storm-break-burst",
+    targetId: "storm-captain",
+    label: "破势爆发",
+    goal: "验证右砸和破势奖励是否能让玩家等窗口再打。",
+    rewardIds: ["drop-hammer", "execution-drum", "broken-armor", "boss-fragment"],
+    openingHand: ["breaker", "heavy-cleave", "guard", "chase-cut"],
+    tuning: {
+      boss: { hpScale: 1.12, bossTempo: 1, damageScale: 0.92 },
+      player: { focus: 118, damageScale: 1, cardIntervalMs: 430, recoveryScale: 1 },
+      windows: { perfectWindow: 840 },
+      rewards: { rewardPower: 1.22 },
+      ai: { pressure: 8, repeatAdapt: 9 },
+    },
+  },
+  {
+    id: "redline-strategy-pressure",
+    targetId: "redline-rival",
+    label: "赤线压力",
+    goal: "验证假动作和重复方向惩罚下，卡牌是否仍能救局。",
+    rewardIds: ["borrowed-edge", "mirror-scar", "floating-point", "thin-blade-vow"],
+    openingHand: ["guard", "shadow-step", "spin-cut", "breaker"],
+    tuning: {
+      boss: { hpScale: 1.06, bossTempo: 1.08, damageScale: 0.96 },
+      player: { focus: 128, damageScale: 1, cardIntervalMs: 440, recoveryScale: 1 },
+      windows: { perfectWindow: 820 },
+      rewards: { rewardPower: 1.14 },
+      ai: { pressure: 10, repeatAdapt: 12 },
+    },
+  },
+];
 
 const tuningPresets = {
   easy: {
@@ -2015,7 +2090,7 @@ const state = {
   lastActionResult: null,
   lastReadFeedback: null,
   debugConsoleOpen: false,
-  debugConsoleTab: "params",
+  debugConsoleTab: "experiment",
   debugConsoleConfig: null,
   debugConsoleMessage: "",
   debugConsoleImportText: "",
@@ -3089,6 +3164,23 @@ function saveDebugConfig(config = state.debugConsoleConfig) {
   return normalized;
 }
 
+function applyDebugExperimentPreset(presetId) {
+  const preset = debugExperimentPresets.find((item) => item.id === presetId);
+  if (!preset) throw new Error(`不存在的实验预设：${presetId ?? "空"}`);
+  const config = defaultDebugBossConfig(preset.targetId);
+  config.label = `${debugConfigTarget(config).label} ${preset.label}`;
+  config.notes = preset.goal;
+  config.playerBuild.enabledRewards = [...preset.rewardIds];
+  config.playerBuild.openingHand = [...preset.openingHand];
+  config.playerBuild.seed = `lab-${preset.id}`;
+  for (const [group, values] of Object.entries(preset.tuning)) {
+    for (const [key, value] of Object.entries(values)) {
+      setPathValue(config.tuning, `${group}.${key}`, value);
+    }
+  }
+  return saveDebugConfig(config);
+}
+
 function debugConfigTarget(config = state.debugConsoleConfig) {
   return debugBossTargetById.get(config?.target?.bossId) ?? debugBossTargets[0];
 }
@@ -3173,6 +3265,15 @@ function writeDebugPresets(presets) {
   localStorage.setItem(debugBossPresetStorageKey, JSON.stringify(presets.map((preset) => normalizeDebugBossConfig(preset)).slice(0, 12)));
 }
 
+function readDebugResults() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(debugBossResultStorageKey) ?? "[]");
+    return Array.isArray(parsed) ? parsed.slice(0, 8) : [];
+  } catch {
+    return [];
+  }
+}
+
 function saveDebugPreset(config = state.debugConsoleConfig) {
   const normalized = normalizeDebugBossConfig({ ...config, createdAt: debugNowIso() });
   const presets = readDebugPresets().filter((preset) => preset.label !== normalized.label || preset.target.bossId !== normalized.target.bossId);
@@ -3213,6 +3314,9 @@ function resetDebugStats(config) {
     directions: { tap: 0, up: 0, left: 0, right: 0, down: 0 },
     success: { perfect: 0, break: 0, heavy: 0, retreat: 0 },
     failures: {},
+    firstHitAtMs: null,
+    actionsBeforeFirstHit: null,
+    hitsByMove: {},
   };
 }
 
@@ -3233,6 +3337,11 @@ function trackDebugPlayerHit() {
   if (!state.debugRun || !state.debugStats) return;
   state.debugStats.takenHits += 1;
   const label = state.bossMove?.label ?? "Boss 命中";
+  if (state.debugStats.firstHitAtMs === null) {
+    state.debugStats.firstHitAtMs = Math.max(0, Math.round(performance.now() - state.debugStats.startedAt));
+    state.debugStats.actionsBeforeFirstHit = state.debugStats.actions;
+  }
+  state.debugStats.hitsByMove[label] = (state.debugStats.hitsByMove[label] ?? 0) + 1;
   state.debugStats.failures[label] = (state.debugStats.failures[label] ?? 0) + 1;
 }
 
@@ -6355,6 +6464,9 @@ function debugResultFor(won) {
     playerMaxHp: state.playerMaxHp,
     actions: state.debugStats?.actions ?? 0,
     takenHits: state.debugStats?.takenHits ?? 0,
+    firstHitAtMs: state.debugStats?.firstHitAtMs ?? null,
+    actionsBeforeFirstHit: state.debugStats?.actionsBeforeFirstHit ?? null,
+    hitsByMove: restoreObject({}, state.debugStats?.hitsByMove),
     maxCombo: state.maxCombo,
     reads: state.fightReads,
     breaks: state.fightBreaks,
@@ -6396,8 +6508,8 @@ function showDebugResultOverlay(won) {
   overlay.className = "overlay";
   overlay.innerHTML = `
     <div class="overlay-panel debug-console-panel debug-result-panel">
-      <h2>${won ? "调试战胜利" : "调试战失败"}</h2>
-      <p>${effectTextMarkup(`${debugConfigSummary(result.config)}。用时 ${Math.round(result.durationMs / 1000)}s，剩余专注 ${result.playerRemainingHp}/${result.playerMaxHp}，出牌 ${result.actions}，受击 ${result.takenHits}，最高 ${result.maxCombo} 连。`)}</p>
+      <h2>${won ? "实验战胜利" : "实验战失败"}</h2>
+      <p>${effectTextMarkup(`${debugConfigSummary(result.config)}。用时 ${Math.round(result.durationMs / 1000)}s，剩余专注 ${result.playerRemainingHp}/${result.playerMaxHp}，出牌 ${result.actions}，受击 ${result.takenHits}，首次受击 ${result.firstHitAtMs === null ? "无" : `${Math.round(result.firstHitAtMs / 1000)}s/${result.actionsBeforeFirstHit} 手`}，最高 ${result.maxCombo} 连。`)}</p>
       <div class="debug-result-grid">
         <span>上追 ${result.directions.up}</span>
         <span>左破 ${result.directions.left}</span>
@@ -6782,7 +6894,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.83",
+      version: "v0.2.84",
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -6852,6 +6964,18 @@ function showMobileAcceptanceOverlay(status = "") {
 function shouldOpenMobileAcceptanceFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return params.get("mobileQa") === "1" || params.get("mobileQa") === "true";
+}
+
+function bossLabDirectUrl() {
+  const url = new URL(window.location.href);
+  url.searchParams.set("bossLab", "1");
+  url.searchParams.delete("mobileQa");
+  return url.toString();
+}
+
+function shouldOpenBossLabFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("bossLab") === "1" || params.get("bossLab") === "true";
 }
 
 function isFormalActUnlocked(level) {
@@ -6974,14 +7098,24 @@ function showEquipmentOverlay() {
         <b>调配器</b>
         <span>先调难度和压力，再选武器开打。</span>
       </button>
+      <button class="choice" type="button" data-open-boss-lab>
+        <small class="choice-meta" style="${routeStyle("counter")}"><i>验</i>公开实验</small>
+        <b>Boss 实验战</b>
+        <span class="choice-effect">${effectTextMarkup("直打风暴队长和赤线宿敌，试回血、护盾、破势爆发和压力预设。")}</span>
+      </button>
+      <button class="choice" type="button" data-copy-boss-lab-link>
+        <small class="choice-meta" style="${routeStyle("counter")}"><i>链</i>实验入口</small>
+        <b>复制实验链接</b>
+        <span class="choice-effect">${effectTextMarkup("发给玩家可直达 Boss 实验战，结果留在本机方便反馈。")}</span>
+      </button>
       <button class="choice" type="button" data-open-save>
         <b>本地成长</b>
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>验</i>当前 v0.2.83</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>验</i>当前 v0.2.84</small>
         <b>版本记录</b>
-        <span class="choice-effect">${effectTextMarkup("这版新增 Boss 调试台，支持直达、改数值、导入导出和结果记录。")}</span>
+        <span class="choice-effect">${effectTextMarkup("这版开放 Boss 实验战，方便玩家直打预设并回传体验。")}</span>
       </button>
       <button class="choice" type="button" data-copy-mobile-link>
         <small class="choice-meta" style="${routeStyle("control")}"><i>链</i>Alpha 5</small>
@@ -7016,6 +7150,20 @@ function showEquipmentOverlay() {
   overlay.querySelector("[data-open-tuner]").addEventListener("click", () => {
     if (isDebugMode()) showDebugConsoleOverlay();
     else showTunerOverlay(true);
+  });
+  overlay.querySelector("[data-open-boss-lab]").addEventListener("click", () => {
+    showDebugConsoleOverlay();
+  });
+  overlay.querySelector("[data-copy-boss-lab-link]").addEventListener("click", async () => {
+    const button = overlay.querySelector("[data-copy-boss-lab-link]");
+    const effect = button.querySelector(".choice-effect");
+    const link = bossLabDirectUrl();
+    try {
+      await navigator.clipboard.writeText(link);
+      effect.innerHTML = effectTextMarkup("实验链接已复制。玩家打开后会直达 Boss 实验战。");
+    } catch {
+      effect.innerHTML = effectTextMarkup(`复制失败。手动打开：${link}`);
+    }
   });
   overlay.querySelector("[data-toggle-menu-bgm]").addEventListener("click", () => {
     toggleMenuBgm();
@@ -8109,12 +8257,41 @@ function debugControlValue(config, control) {
 
 function debugConsoleTabs() {
   const tabs = [
+    ["experiment", "实验预设"],
     ["params", "战斗参数"],
     ["growth", "成长奖励"],
     ["deck", "卡组手牌"],
     ["export", "预设导出"],
   ];
   return tabs.map(([id, label]) => `<button type="button" data-debug-tab="${id}" class="${state.debugConsoleTab === id ? "is-active" : ""}">${label}</button>`).join("");
+}
+
+function debugExperimentPanel(config = state.debugConsoleConfig) {
+  const currentSeed = config.playerBuild.seed;
+  const presetMarkup = debugExperimentPresets
+    .map((preset) => {
+      const active = currentSeed === `lab-${preset.id}`;
+      const target = debugBossTargetById.get(preset.targetId);
+      return `
+        <button class="debug-experiment-card ${active ? "is-active" : ""}" type="button" data-debug-experiment="${preset.id}">
+          <b>${preset.label}</b>
+          <span>${target?.label ?? "Boss"} · ${preset.rewardIds.length} 奖励 · ${preset.openingHand.length} 起手</span>
+          <em>${preset.goal}</em>
+        </button>
+      `;
+    })
+    .join("");
+  return `
+    <section class="debug-console-section">
+      <h3>实验目标</h3>
+      <p>${effectTextMarkup("先选一个假设，再反复打同一个 Boss。正式成长不受影响，结果会记录在本机。")}</p>
+      <div class="debug-experiment-grid">${presetMarkup}</div>
+    </section>
+    <section class="debug-console-section">
+      <h3>当前实验</h3>
+      <p>${effectTextMarkup(config.notes || "自定义配置。建议一次只改一个变量，然后至少连打三把。")}</p>
+    </section>
+  `;
 }
 
 function debugBossCards(config = state.debugConsoleConfig) {
@@ -8230,6 +8407,7 @@ function debugDeckPanel(config = state.debugConsoleConfig) {
 
 function debugExportPanel(config = state.debugConsoleConfig) {
   const presets = readDebugPresets();
+  const results = readDebugResults();
   const presetMarkup = presets.length
     ? presets
         .map(
@@ -8242,6 +8420,21 @@ function debugExportPanel(config = state.debugConsoleConfig) {
         )
         .join("")
     : `<p>还没有保存的本地预设。</p>`;
+  const resultMarkup = results.length
+    ? results
+        .map((result) => {
+          const title = result.config ? debugConfigSummary(result.config) : "未知配置";
+          const failures = Array.isArray(result.failures) && result.failures.length ? result.failures.map((item) => `${item.label} ${item.count}`).join("，") : "无集中失败";
+          return `
+            <div class="debug-result-row">
+              <b>${result.won ? "胜" : "败"} · ${Math.round((result.durationMs ?? 0) / 1000)}s · 受击 ${result.takenHits ?? 0} · 首击 ${result.firstHitAtMs === null || result.firstHitAtMs === undefined ? "无" : `${Math.round(result.firstHitAtMs / 1000)}s`}</b>
+              <span>${escapeHtml(title)}</span>
+              <em>${escapeHtml(failures)}</em>
+            </div>
+          `;
+        })
+        .join("")
+    : `<p>还没有 Boss 实验结果。打一场后会出现在这里。</p>`;
   return `
     <section class="debug-console-section">
       <h3>当前配置</h3>
@@ -8257,10 +8450,15 @@ function debugExportPanel(config = state.debugConsoleConfig) {
       <h3>本地预设</h3>
       <div class="debug-preset-list">${presetMarkup}</div>
     </section>
+    <section class="debug-console-section">
+      <h3>最近结果</h3>
+      <div class="debug-preset-list">${resultMarkup}</div>
+    </section>
   `;
 }
 
 function debugConsoleBody(config = state.debugConsoleConfig) {
+  if (state.debugConsoleTab === "experiment") return debugExperimentPanel(config);
   if (state.debugConsoleTab === "growth") return debugGrowthPanel(config);
   if (state.debugConsoleTab === "deck") return debugDeckPanel(config);
   if (state.debugConsoleTab === "export") return debugExportPanel(config);
@@ -8273,7 +8471,7 @@ function debugConsoleTemplate() {
   return `
     <div class="overlay-panel debug-console-panel">
       <div class="debug-console-head">
-        <span>Boss 调试台</span>
+        <span>Boss 实验战</span>
         <button type="button" data-debug-close>×</button>
       </div>
       <p>${effectTextMarkup(debugConfigSummary(config))}</p>
@@ -8325,6 +8523,17 @@ function bindDebugConsoleOverlay(overlay) {
     button.addEventListener("click", () => {
       state.debugConsoleTab = button.dataset.debugTab;
       state.debugConsoleMessage = "";
+      renderDebugConsoleOverlay(overlay);
+    });
+  });
+  overlay.querySelectorAll("[data-debug-experiment]").forEach((button) => {
+    button.addEventListener("click", () => {
+      try {
+        state.debugConsoleConfig = applyDebugExperimentPreset(button.dataset.debugExperiment);
+        state.debugConsoleMessage = `已套用实验：${state.debugConsoleConfig.label}`;
+      } catch (error) {
+        state.debugConsoleMessage = `实验预设失败：${error.message}`;
+      }
       renderDebugConsoleOverlay(overlay);
     });
   });
@@ -9545,6 +9754,13 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
   };
 }
 resetGame();
+if (shouldOpenBossLabFromUrl()) {
+  window.setTimeout(() => {
+    showDebugConsoleOverlay();
+    state.debugConsoleMessage = "Boss 实验战已直达。选一个实验预设后挑战。";
+    document.querySelector(".debug-console-overlay") && renderDebugConsoleOverlay(document.querySelector(".debug-console-overlay"));
+  }, 0);
+}
 if (shouldOpenMobileAcceptanceFromUrl()) {
   window.setTimeout(() => {
     showMobileAcceptanceOverlay("真机长测已直达。跑 60 秒后保存并复制记录。");
