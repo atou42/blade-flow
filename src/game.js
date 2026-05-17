@@ -246,6 +246,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.88",
+    title: "菜单版本修正",
+    date: "2026-05-17",
+    icon: "版",
+    color: "#a6d93a",
+    points: ["主菜单版本卡不再硬写旧版本", "手机端强制刷新脚本缓存", "长测记录使用当前版本号"],
+  },
+  {
     id: "v0.2.87",
     title: "进战与受击节奏",
     date: "2026-05-17",
@@ -7048,7 +7056,7 @@ function bindMobileAcceptanceOverlay(overlay) {
       return;
     }
     const record = {
-      version: "v0.2.84",
+      version: versionHistory[0].id,
       savedAt: new Date().toISOString(),
       device,
       heat: overlay.querySelector("[data-mobile-heat]").value,
@@ -7267,9 +7275,9 @@ function showEquipmentOverlay() {
         <span class="choice-effect">${effectTextMarkup("查看 5 个存档槽、配方工坊和正式/调试成长档。")}</span>
       </button>
       <button class="choice" type="button" data-open-version>
-        <small class="choice-meta" style="${routeStyle("control")}"><i>验</i>当前 v0.2.84</small>
+        <small class="choice-meta" style="${routeStyle("control")}"><i>息</i>当前 ${versionHistory[0].id}</small>
         <b>版本记录</b>
-        <span class="choice-effect">${effectTextMarkup("这版开放 Boss 实验战，方便玩家直打预设并回传体验。")}</span>
+        <span class="choice-effect">${effectTextMarkup("这版修复进战等待和受击后连续压招，节奏更稳。")}</span>
       </button>
       <button class="choice" type="button" data-copy-mobile-link>
         <small class="choice-meta" style="${routeStyle("control")}"><i>链</i>Alpha 5</small>
