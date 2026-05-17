@@ -125,7 +125,7 @@ const cardGradeMap = {
 };
 
 const routeMeta = {
-  neutral: { label: "待势", short: "待", icon: "◇", hint: "点击或滑动卡牌", color: "#f2ead9", shape: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)", stamp: routeStamps.neutral },
+  neutral: { label: "待势", short: "待", icon: "◇", hint: "战斗区任意位置滑动出招", color: "#f2ead9", shape: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)", stamp: routeStamps.neutral },
   speed: { label: "追 · 追身", short: "追", icon: "↟", hint: "上划追身保连", color: "#a6d93a", shape: "polygon(50% 0, 86% 46%, 64% 46%, 64% 100%, 36% 100%, 36% 46%, 14% 46%)", stamp: routeStamps.speed },
   control: { label: "退 · 回手", short: "退", icon: "↧", hint: "下划撤身回手，安全但断连", color: "#7f8aa8", shape: "polygon(14% 54%, 36% 54%, 36% 0, 64% 0, 64% 54%, 86% 54%, 50% 100%)", stamp: routeStamps.control },
   counter: { label: "破 · 快刀", short: "破", icon: "↺", hint: "左划快刀破招", color: "#d8cbb4", shape: "circle(45% at 50% 50%)", stamp: routeStamps.counter },
@@ -245,6 +245,14 @@ const bossActionTimelines = {
 };
 
 const versionHistory = [
+  {
+    id: "v0.2.86",
+    title: "全屏滑动出招",
+    date: "2026-05-17",
+    icon: "划",
+    color: "#4bbda8",
+    points: ["战斗区任意位置滑动都能出招", "方向动作改为固定输入，不再要求瞄准某张卡", "卡牌暂时保留为构筑和状态展示"],
+  },
   {
     id: "v0.2.85",
     title: "实验台可读性",
@@ -1522,6 +1530,13 @@ const profileStorageKeys = {
 const profileModeStorageKey = "blade-flow-profile-mode-v1";
 const saveSlotCount = 5;
 const cardById = new Map(cards.map((card) => [card.id, card]));
+const fixedActionCardIds = {
+  tap: "quick-slash",
+  up: "chase-cut",
+  left: "guard",
+  right: "breaker",
+  down: "shadow-step",
+};
 const equipmentById = new Map(equipmentPool.map((equipment) => [equipment.id, equipment]));
 const recipeById = new Map(recipeCatalog.map((recipe) => [recipe.id, recipe]));
 const rewardById = new Map([...rewards, ...dailyContractPool, ...eventChoices, ...recipeRewards].map((choice) => [choice.id, choice]));
@@ -5067,11 +5082,19 @@ function currentInputBufferWindow() {
   return Math.min(120, Math.max(80, state.recoveryLastMs * 0.42));
 }
 
-function queueCardInput(index, direction, point = null) {
+function queueCardInput(index, direction, point = null, options = {}) {
   const remaining = recoveryRemaining();
   if (remaining <= 0) return "ready";
   if (remaining <= currentInputBufferWindow() && !state.queuedInput) {
-    state.queuedInput = { index, direction, point, queuedAt: performance.now() };
+    state.queuedInput = {
+      index,
+      direction,
+      point,
+      queuedAt: performance.now(),
+      cardId: options.cardId ?? null,
+      consumeCard: options.consumeCard !== false,
+      screenAction: Boolean(options.screenAction),
+    };
     return "queued";
   }
   return "blocked";
@@ -5081,10 +5104,16 @@ function flushQueuedCardInput() {
   if (!state.queuedInput || isRecovering()) return;
   const queued = state.queuedInput;
   state.queuedInput = null;
-  const cardEl = els.hand.children[queued.index];
-  if (!cardEl || !state.hand[queued.index]) return;
-  animateCardDirection(cardEl, queued.direction, queued.point);
-  playCard(queued.index, queued.direction, { fromBuffer: true });
+  const queuedCard = queued.cardId ? cardById.get(queued.cardId) : state.hand[queued.index];
+  if (!queuedCard) return;
+  const cardEl = queued.index >= 0 ? els.hand.children[queued.index] : null;
+  if (cardEl) animateCardDirection(cardEl, queued.direction, queued.point);
+  else animateScreenDirection(queued.direction, queued.point);
+  playCard(queued.index, queued.direction, {
+    fromBuffer: true,
+    cardOverride: queuedCard,
+    consumeCard: queued.consumeCard,
+  });
 }
 
 function recordDirection(direction, resultType) {
@@ -5395,6 +5424,26 @@ function currentReadResult(card, direction, route, breakHit) {
   return result;
 }
 
+function fixedActionCardForDirection(direction = "tap") {
+  return cardById.get(fixedActionCardIds[direction] ?? fixedActionCardIds.tap) ?? cardById.get("quick-slash");
+}
+
+function playScreenAction(direction = "tap", point = null) {
+  const card = fixedActionCardForDirection(direction);
+  if (!card) return null;
+  const queueState = queueCardInput(-1, direction, point, { cardId: card.id, consumeCard: false, screenAction: true });
+  if (queueState === "queued") {
+    restartClass(els.arena, "is-buffered");
+    return { queued: true };
+  }
+  if (queueState === "blocked") {
+    restartClass(els.arena, "is-recovery-blocked");
+    return { blocked: true, remaining: Math.round(recoveryRemaining()) };
+  }
+  animateScreenDirection(direction, point);
+  return playCard(-1, direction, { cardOverride: card, consumeCard: false, inputMode: "screen" });
+}
+
 function playCard(index, direction = "tap", options = {}) {
   if (state.ended || state.notebookOpen || state.versionOpen || !state.runStarted) return null;
   const now = performance.now();
@@ -5404,7 +5453,7 @@ function playCard(index, direction = "tap", options = {}) {
   if (!options.ignoreRecovery && state.debugRun && state.debugCardIntervalMs > 0 && now - state.lastActionAt < state.debugCardIntervalMs) {
     return { blocked: true, remaining: Math.round(state.debugCardIntervalMs - (now - state.lastActionAt)), reason: "debug-card-interval" };
   }
-  const card = state.hand[index];
+  const card = options.cardOverride ?? state.hand[index];
   if (!card) return null;
 
   const variant = direction === "tap" ? [card.tap, card.route] : card.variants[direction];
@@ -5526,7 +5575,7 @@ function playCard(index, direction = "tap", options = {}) {
   applyStanceCost(route, direction, perfect, { suppressBreak: defeated });
   burstMovement(route, direction);
   spawnSlash(route, direction);
-  replaceCard(index);
+  if (options.consumeCard !== false) replaceCard(index);
   const vulnerabilityDrawn = resolveVulnerabilityDraw();
   if (isRetreat) {
     state.pressure = Math.max(0, state.pressure - 8 - state.rewardMods.control * 2);
@@ -5553,6 +5602,7 @@ function playCard(index, direction = "tap", options = {}) {
     cardId: card.id,
     direction,
     route,
+    inputMode: options.inputMode ?? (options.cardOverride ? "screen" : "card"),
     resultType: readResult.type,
     resultLabel: readResult.label,
     bossMove: readResult.moveKey,
@@ -6298,7 +6348,6 @@ function renderHand() {
             .join("")}
         </span>
       `;
-      attachGesture(cardEl, index);
       return cardEl;
     });
   nextChildren.forEach((child, index) => {
@@ -6343,6 +6392,13 @@ function cardColor(route) {
   return `color-mix(in srgb, ${color} 28%, #1b1914)`;
 }
 
+function directionFromDrag(dx, dy) {
+  const distance = Math.hypot(dx, dy);
+  if (distance < 24) return "tap";
+  if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? "right" : "left";
+  return dy > 0 ? "down" : "up";
+}
+
 function attachGesture(element, index) {
   let startX = 0;
   let startY = 0;
@@ -6365,15 +6421,7 @@ function attachGesture(element, index) {
     if (state.ended || state.notebookOpen || state.versionOpen || !state.runStarted) return;
     const dx = event.clientX - startX;
     const dy = event.clientY - startY;
-    const distance = Math.hypot(dx, dy);
-    let direction = "tap";
-    if (distance < 24) {
-      direction = "tap";
-    } else if (Math.abs(dx) > Math.abs(dy)) {
-      direction = dx > 0 ? "right" : "left";
-    } else {
-      direction = dy > 0 ? "down" : "up";
-    }
+    const direction = directionFromDrag(dx, dy);
     const queueState = queueCardInput(index, direction, { clientX: startX, clientY: startY });
     if (queueState === "queued") {
       element.classList.add("is-buffered");
@@ -6392,6 +6440,80 @@ function attachGesture(element, index) {
   element.addEventListener("pointercancel", () => {
     element.classList.remove("is-pressing");
   });
+}
+
+let screenGesture = null;
+
+function canUseScreenGesture(event) {
+  if (state.ended || state.notebookOpen || state.versionOpen || !state.runStarted) return false;
+  if (document.querySelector(".overlay")) return false;
+  const target = event.target instanceof Element ? event.target : null;
+  if (!target) return false;
+  const control = target.closest("button, input, textarea, select, a");
+  if (control && !control.classList.contains("card")) return false;
+  return true;
+}
+
+function handleScreenPointerDown(event) {
+  if (!canUseScreenGesture(event)) return;
+  unlockAudio();
+  playSfx("playerCardPress");
+  screenGesture = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY };
+  try {
+    els.game.setPointerCapture(event.pointerId);
+  } catch {
+    // Synthetic pointer events used by automated checks do not always create capture ids.
+  }
+  els.game.classList.add("is-screen-pressing");
+  event.preventDefault();
+}
+
+function handleScreenPointerUp(event) {
+  if (!screenGesture || screenGesture.pointerId !== event.pointerId) return;
+  const gesture = screenGesture;
+  screenGesture = null;
+  els.game.classList.remove("is-screen-pressing");
+  if (state.ended || state.notebookOpen || state.versionOpen || !state.runStarted) return;
+  const direction = directionFromDrag(event.clientX - gesture.startX, event.clientY - gesture.startY);
+  playScreenAction(direction, { clientX: gesture.startX, clientY: gesture.startY });
+  event.preventDefault();
+}
+
+function handleScreenPointerCancel(event) {
+  if (!screenGesture || screenGesture.pointerId !== event.pointerId) return;
+  screenGesture = null;
+  els.game.classList.remove("is-screen-pressing");
+}
+
+function animateScreenDirection(direction, fallbackPoint = null) {
+  if (isCompactMotionMode()) return;
+  const gameRect = els.game.getBoundingClientRect();
+  gameMotionRect = { left: gameRect.left, top: gameRect.top };
+  const meta = routeInfo(cardDirectionRoute(fixedActionCardForDirection(direction), direction));
+  const x = Math.max(28, Math.min(gameRect.width - 28, (fallbackPoint?.clientX ?? gameRect.left + gameRect.width / 2) - gameRect.left));
+  const y = Math.max(64, Math.min(gameRect.height - 64, (fallbackPoint?.clientY ?? gameRect.top + gameRect.height / 2) - gameRect.top));
+  const vector = {
+    tap: { x: 0, y: -90, glyph: "✦" },
+    up: { x: 0, y: -180, glyph: "↟" },
+    right: { x: 150, y: -28, glyph: "◆" },
+    left: { x: -150, y: -28, glyph: "↺" },
+    down: { x: 0, y: 150, glyph: "↧" },
+  }[direction] ?? { x: 0, y: -90, glyph: "✦" };
+  const burst = acquireMotionNode("burst");
+  burst.className = "card-direction-burst screen-direction-burst";
+  burst.textContent = vector.glyph;
+  burst.style.left = `${x}px`;
+  burst.style.top = `${y}px`;
+  burst.style.color = meta.color;
+  els.game.append(burst);
+  burst.animate(
+    [
+      { opacity: 0, transform: "translate(-50%, -50%) scale(0.5)" },
+      { opacity: 1, transform: `translate(calc(-50% + ${vector.x * 0.12}px), calc(-50% + ${vector.y * 0.12}px)) scale(1.28)`, offset: 0.32 },
+      { opacity: 0, transform: `translate(calc(-50% + ${vector.x * 0.42}px), calc(-50% + ${vector.y * 0.42}px)) scale(0.96)` },
+    ],
+    { duration: 340, easing: "cubic-bezier(0.16, 1, 0.3, 1)" },
+  ).finished.finally(() => releaseMotionNode("burst", burst));
 }
 
 function animateCardDirection(element, direction, fallbackPoint = null) {
@@ -8845,6 +8967,9 @@ els.tunerButton.addEventListener("click", () => {
 els.saveButton.addEventListener("click", showSaveOverlay);
 els.versionButton.addEventListener("click", () => showVersionOverlay(false));
 els.notebookButton.addEventListener("click", showNotebookOverlay);
+els.game.addEventListener("pointerdown", handleScreenPointerDown);
+els.game.addEventListener("pointerup", handleScreenPointerUp);
+els.game.addEventListener("pointercancel", handleScreenPointerCancel);
 document.addEventListener("pointerdown", handleAudioPointerDown, { capture: true });
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") pauseAllBgm();
