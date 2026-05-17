@@ -246,6 +246,14 @@ const bossActionTimelines = {
 
 const versionHistory = [
   {
+    id: "v0.2.87",
+    title: "进战与受击节奏",
+    date: "2026-05-17",
+    icon: "息",
+    color: "#d79f2b",
+    points: ["选关后不再等待整套战斗资源预热", "Boss 命中玩家后会留出恢复间隔", "高难仍保留更快追击节奏"],
+  },
+  {
     id: "v0.2.86",
     title: "全屏滑动出招",
     date: "2026-05-17",
@@ -3051,6 +3059,13 @@ async function warmBattleAssets(reason = "battle", encounter = currentRoom()) {
   return assetWarmState;
 }
 
+function scheduleBattleWarm(reason = "battle", encounter = currentRoom(), act = state.actLevel) {
+  window.setTimeout(() => {
+    void warmMapImages(act);
+    void warmBattleAssets(reason, encounter);
+  }, 80);
+}
+
 function normalizeTuning(source = {}) {
   const base = defaultTuning();
   const normalized = {};
@@ -4138,6 +4153,21 @@ function chooseBossMove(encounter = currentRoom()) {
   startPoiseForMove(state.bossMove, encounter);
 }
 
+function postPlayerHitGraceMs(kind = "进攻", encounter = currentRoom()) {
+  const isBoss = encounter?.type === "boss";
+  const tempo = Number(state.tuning.bossTempo || 1);
+  const base = isBoss ? 720 : 420;
+  const tempoPenalty = Math.max(0, tempo - 1) * 360;
+  const pressurePenalty = kind === "抢招" ? 120 : 0;
+  return Math.max(isBoss ? 180 : 120, Math.round(base - tempoPenalty - pressurePenalty));
+}
+
+function restartBossAfterPlayerHit(kind = "进攻", encounter = currentRoom()) {
+  chooseBossMove(encounter);
+  const grace = postPlayerHitGraceMs(kind, encounter);
+  state.intentTime = Math.max(state.intentTime, state.intentMax + grace);
+}
+
 function dailyThemeForSeed(seed = dailySeed()) {
   const rng = seededRandom(`${seed}-daily-theme`);
   return dailyThemes[Math.floor(rng() * dailyThemes.length)] ?? dailyThemes[0];
@@ -4306,10 +4336,6 @@ async function startDebugBossRun(sourceConfig = state.debugConsoleConfig) {
   const targetAct = target.act;
   const targetIndex = encounters.length - 1;
   const room = scaledEncounter(encounters[targetIndex], targetAct, targetIndex);
-  await Promise.all([
-    warmMapImages(targetAct),
-    warmBattleAssets(`debug-boss:${target.bossId}:${config.playerBuild.seed}`, room),
-  ]);
   setAudioScene("battle");
   playSfx("uiBattleStart");
   state.trainingLesson = null;
@@ -4360,6 +4386,7 @@ async function startDebugBossRun(sourceConfig = state.debugConsoleConfig) {
   state.debugConsoleOpen = false;
   startEncounter(room);
   applyDebugOpeningHand(config);
+  scheduleBattleWarm(`debug-boss:${target.bossId}:${config.playerBuild.seed}`, room, targetAct);
   state.lastActionAt = performance.now() - state.debugCardIntervalMs;
   wakeLoop(true);
   log(`调试战：${debugConfigSummary(config)}。不记录正式进度。`);
@@ -4371,10 +4398,6 @@ async function startRunAtAct(equipment, actLevel = 1, options = {}) {
   const targetAct = clamp(Number(actLevel) || 1, 1, actMax);
   const debug = Boolean(options.debug || targetAct > 1);
   const firstRoom = scaledEncounter(encounters[0], targetAct, 0);
-  await Promise.all([
-    warmMapImages(targetAct),
-    warmBattleAssets(`${debug ? "debug-act" : "start"}:${equipment.id}:a${targetAct}`, firstRoom),
-  ]);
   setAudioScene("battle");
   playSfx("uiBattleStart");
   state.trainingLesson = null;
@@ -4417,6 +4440,7 @@ async function startRunAtAct(equipment, actLevel = 1, options = {}) {
   document.querySelector(".overlay")?.remove();
   if (options.skipIntro) enterCurrentRoom();
   else showActIntroOverlay(targetAct, { debug });
+  scheduleBattleWarm(`${debug ? "debug-act" : "start"}:${equipment.id}:a${targetAct}`, firstRoom, targetAct);
   wakeLoop(true);
   log(debug ? `调试进入${actLabel(targetAct)}，非正式进度。${equipment.name} 已装备。` : `${equipment.name} 已装备。今日种子 ${state.dailySeed} 开始。`);
   return true;
@@ -5724,7 +5748,7 @@ function applyActionPressure(card, route, direction, perfect) {
   if (state.pressure >= state.tuning.pressureLimit) {
     state.pressure = Math.max(0, state.pressure - state.tuning.pressureLimit * 0.72);
     enemyAttack("抢招", state.tuning.riposteDamage);
-    state.intentTime = Math.min(state.intentTime, state.intentMax * 0.72);
+    restartBossAfterPlayerHit("抢招", encounter);
   }
 }
 
@@ -6061,10 +6085,10 @@ function tick(delta) {
         at: Math.round(performance.now()),
       };
     }
-    enemyAttack(state.bossMove?.label ?? "进攻", state.bossMove?.damageScale ?? 1);
+    const hitKind = state.bossMove?.label ?? "进攻";
+    enemyAttack(hitKind, state.bossMove?.damageScale ?? 1);
     if (poiseFailureLine) log(poiseFailureLine);
-    state.intentTime = state.intentMax;
-    chooseBossMove(encounter);
+    restartBossAfterPlayerHit(hitKind, encounter);
   }
 
   render();
@@ -6223,7 +6247,7 @@ function render() {
   setTransform(els.playerHp, scaleX(state.playerHp / state.playerMaxHp));
   setText(els.playerHpText, Math.ceil(state.playerHp));
   setText(els.intentName, state.intentName);
-  setStyleVar(els.intent, "--intent", `${Math.round(100 - (state.intentTime / state.intentMax) * 100)}%`);
+  setStyleVar(els.intent, "--intent", `${Math.round(clamp(100 - (state.intentTime / state.intentMax) * 100, 0, 100))}%`);
   const remainingRecovery = recoveryRemaining();
   const bufferWindow = currentInputBufferWindow();
   toggleClass(els.game, "is-recovering", remainingRecovery > 0);
@@ -9118,6 +9142,8 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
         recoveryRemaining: Math.round(recoveryRemaining()),
         recoveryLastMs: state.recoveryLastMs,
         recoverySource: state.recoverySource,
+        playerHp: state.playerHp,
+        playerMaxHp: state.playerMaxHp,
         queuedInput: state.queuedInput ? { index: state.queuedInput.index, direction: state.queuedInput.direction } : null,
         lastActionResult: state.lastActionResult,
         lastReadFeedback: state.lastReadFeedback,
@@ -9127,6 +9153,7 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
         bossTimeline: bossTimeline(state.bossMove),
         fastEarlyInterceptOpen: isFastEarlyInterceptOpen(state.bossMove, phase),
         intentTime: Math.round(state.intentTime),
+        intentMax: Math.round(state.intentMax),
         poise: {
           active: isPoiseActive(),
           max: state.poise.max,
