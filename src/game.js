@@ -125,7 +125,7 @@ const cardGradeMap = {
 };
 
 const routeMeta = {
-  neutral: { label: "待势", short: "待", icon: "◇", hint: "战斗区任意位置滑动出招", color: "#f2ead9", shape: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)", stamp: routeStamps.neutral },
+  neutral: { label: "待势", short: "待", icon: "◇", hint: "滑动出招，点手牌用技能", color: "#f2ead9", shape: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)", stamp: routeStamps.neutral },
   speed: { label: "追 · 追身", short: "追", icon: "↟", hint: "上划追身保连", color: "#a6d93a", shape: "polygon(50% 0, 86% 46%, 64% 46%, 64% 100%, 36% 100%, 36% 46%, 14% 46%)", stamp: routeStamps.speed },
   control: { label: "退 · 回手", short: "退", icon: "↧", hint: "下划撤身回手，安全但断连", color: "#7f8aa8", shape: "polygon(14% 54%, 36% 54%, 36% 0, 64% 0, 64% 54%, 86% 54%, 50% 100%)", stamp: routeStamps.control },
   counter: { label: "破 · 快刀", short: "破", icon: "↺", hint: "左划快刀破招", color: "#d8cbb4", shape: "circle(45% at 50% 50%)", stamp: routeStamps.counter },
@@ -245,6 +245,14 @@ const bossActionTimelines = {
 };
 
 const versionHistory = [
+  {
+    id: "v0.2.89",
+    title: "主动卡牌",
+    date: "2026-05-23",
+    icon: "技",
+    color: "#4bbda8",
+    points: ["点按手牌会主动消耗并触发技能", "全屏滑动仍然只负责方向出招", "防守、追击和爆发牌有不同战斗收益"],
+  },
   {
     id: "v0.2.88",
     title: "菜单版本修正",
@@ -3357,7 +3365,7 @@ function resetDebugStats(config) {
     startedAt: performance.now(),
     actions: 0,
     takenHits: 0,
-    directions: { tap: 0, up: 0, left: 0, right: 0, down: 0 },
+    directions: { tap: 0, up: 0, left: 0, right: 0, down: 0, active: 0 },
     success: { perfect: 0, break: 0, heavy: 0, retreat: 0 },
     failures: {},
     firstHitAtMs: null,
@@ -5476,6 +5484,180 @@ function playScreenAction(direction = "tap", point = null) {
   return playCard(-1, direction, { cardOverride: card, consumeCard: false, inputMode: "screen" });
 }
 
+function activeCardLabel(card) {
+  if (!card) return "主动技能";
+  if (card.id === "guard") return "点用：护住一拍";
+  if (card.id === "shadow-step") return "点用：闪避回气";
+  if (card.id === "breaker") return "点用：破势打击";
+  if (card.id === "heavy-cleave") return "点用：重击压血";
+  if (card.id === "execute") return "点用：终结爆发";
+  if (card.id === "overdrive") return "点用：爆发充能";
+  if (card.route === "speed") return "点用：拖慢 Boss";
+  if (card.route === "counter") return "点用：保命回稳";
+  if (card.route === "burst") return "点用：爆发伤害";
+  return "点用：压血攻击";
+}
+
+function applyActiveCardEffect(card) {
+  const route = card.route;
+  const routePower = 1 + (state.rewardMods[route] ?? 0) * 0.08 + (state.rewardMods.any ?? 0) * 0.06;
+  const effect = {
+    heal: 0,
+    damage: 0,
+    pressureRelief: 0,
+    stance: 0,
+    intentDelay: 0,
+    comboCharge: 0,
+    drawHasten: 0,
+    poiseDamage: 0,
+    poiseBreak: false,
+  };
+  const healFocus = (amount) => {
+    const before = state.playerHp;
+    state.playerHp = Math.min(state.playerMaxHp, state.playerHp + Math.round(amount * routePower));
+    effect.heal += state.playerHp - before;
+  };
+  const relievePressure = (amount) => {
+    const before = state.pressure;
+    state.pressure = Math.max(0, state.pressure - Math.round(amount * routePower));
+    effect.pressureRelief += before - state.pressure;
+  };
+  const restoreStance = (amount) => {
+    const before = state.stance;
+    state.stance = Math.min(100, state.stance + Math.round(amount * routePower));
+    effect.stance += state.stance - before;
+  };
+  const delayIntent = (amount) => {
+    const before = state.intentTime;
+    state.intentTime = Math.min(state.intentMax, state.intentTime + Math.round(amount * routePower));
+    effect.intentDelay += Math.round(state.intentTime - before);
+  };
+  const hastenDraw = (scale) => {
+    if (state.drawTimer <= 0) return;
+    const before = state.drawTimer;
+    state.drawTimer = Math.min(state.drawTimer, currentDrawCooldown() * scale);
+    effect.drawHasten += Math.round(before - state.drawTimer);
+  };
+  const charge = (amount) => {
+    const before = state.comboCharge;
+    state.comboCharge = Math.min(100, state.comboCharge + Math.round(amount * routePower));
+    effect.comboCharge += state.comboCharge - before;
+  };
+  const damageBoss = (amount, poiseDamage = 0) => {
+    let damage = Math.round(amount * routePower * state.tuning.playerDamage);
+    if (isBossVulnerable()) damage = Math.round(damage * poiseConfig.damageScale);
+    damage = Math.max(1, damage);
+    state.enemyHp = Math.max(0, state.enemyHp - damage);
+    effect.damage += damage;
+    if (poiseDamage > 0) {
+      const poise = applyPoiseDamage({ poiseDamage, poiseSource: "card-active", type: "card-active" });
+      effect.poiseDamage += poiseDamage;
+      effect.poiseBreak = effect.poiseBreak || Boolean(poise.broken);
+    }
+    animateEnemyDamage(route);
+  };
+
+  if (card.id === "guard") {
+    healFocus(14);
+    relievePressure(state.tuning.counterRelief * 0.9);
+    restoreStance(24);
+    delayIntent(170);
+    charge(8);
+  } else if (card.id === "shadow-step") {
+    healFocus(10);
+    relievePressure(state.tuning.counterRelief);
+    restoreStance(18);
+    delayIntent(240);
+    hastenDraw(0.62);
+    charge(10);
+  } else if (card.id === "breaker") {
+    damageBoss(22 + (state.rewardMods.burst ?? 0) * 2, 1);
+    relievePressure(state.tuning.breakPressure * 0.28);
+  } else if (card.id === "heavy-cleave") {
+    damageBoss(28 + Math.min(12, state.combo), 1.25);
+  } else if (card.id === "execute") {
+    damageBoss(30 + Math.min(22, state.combo * 1.5), 1.5);
+  } else if (card.id === "overdrive") {
+    charge(38);
+    delayIntent(150);
+    hastenDraw(0.45);
+    state.combo = Math.max(state.combo, Math.min(8, state.combo + 2));
+  } else if (route === "speed") {
+    delayIntent(250);
+    charge(18);
+    hastenDraw(0.55);
+    relievePressure(8);
+  } else if (route === "counter") {
+    healFocus(10);
+    relievePressure(state.tuning.counterRelief * 0.85);
+    restoreStance(18);
+    delayIntent(160);
+    charge(8);
+  } else if (route === "burst") {
+    damageBoss(24, 1);
+  } else {
+    damageBoss(16 + (state.rewardMods.damage ?? 0) * 2, 0.35);
+    charge(10);
+  }
+
+  state.routeScores[route] += 2;
+  state.route = dominantRoute();
+  state.maxCombo = Math.max(state.maxCombo, state.combo);
+  return effect;
+}
+
+function activeEffectText(card, effect) {
+  const parts = [];
+  if (effect.damage > 0) parts.push(`Boss -${effect.damage}`);
+  if (effect.heal > 0) parts.push(`专注 +${effect.heal}`);
+  if (effect.pressureRelief > 0) parts.push(`压力 -${effect.pressureRelief}`);
+  if (effect.stance > 0) parts.push(`架势 +${effect.stance}`);
+  if (effect.intentDelay > 0) parts.push("争取一拍");
+  if (effect.comboCharge > 0) parts.push(`充能 +${effect.comboCharge}`);
+  if (effect.drawHasten > 0) parts.push("补牌加快");
+  if (effect.poiseBreak) parts.push("护势碎裂");
+  return `${card.name}: 主动使用，${parts.length ? parts.join("，") : "保住节奏"}。`;
+}
+
+function useActiveCard(index, point = null) {
+  if (state.ended || state.notebookOpen || state.versionOpen || !state.runStarted) return null;
+  const card = state.hand[index];
+  if (!card) return null;
+  state.hasStarted = true;
+  const cardEl = els.hand.querySelector(`.card[data-index="${index}"]`);
+  if (cardEl) animateCardDirection(cardEl, "tap", point);
+  playSfx("playerCardRelease");
+  const effect = applyActiveCardEffect(card);
+  replaceCard(index);
+  trackDebugAction("active", { type: "card-active", feedback: activeCardLabel(card), breakSuccess: effect.poiseBreak });
+  const at = Math.round(performance.now());
+  state.lastActionResult = {
+    cardId: card.id,
+    direction: "active",
+    route: card.route,
+    inputMode: "card-active",
+    resultType: "card-active",
+    resultLabel: "主动牌",
+    effect,
+    at,
+  };
+  state.lastReadFeedback = {
+    text: activeCardLabel(card),
+    resultType: "card-active",
+    move: state.bossMove?.key ?? "",
+    phase: bossPhaseState().phase,
+    direction: "active",
+    at,
+  };
+  log(activeEffectText(card, effect));
+  if (state.enemyHp <= 0) {
+    scheduleVictory();
+    return state.lastActionResult;
+  }
+  scheduleRender();
+  return state.lastActionResult;
+}
+
 function playCard(index, direction = "tap", options = {}) {
   if (state.ended || state.notebookOpen || state.versionOpen || !state.runStarted) return null;
   const now = performance.now();
@@ -6355,6 +6537,8 @@ function renderHand() {
       cardEl.className = `card grade-${gradeId} ${affinity.best?.recipe || affinity.best?.cue ? "has-affinity" : ""} ${affinity.best?.active ? "is-window-lit" : ""}`;
       cardEl.dataset.index = index;
       cardEl.dataset.slotKey = slotKey;
+      cardEl.setAttribute("aria-label", `${card.name}，点按主动使用`);
+      cardEl.title = "点按主动使用，滑动仍按方向出招";
       cardEl.style.setProperty("--card-color", cardColor(card.route));
       cardEl.style.setProperty("--route-color", route.color);
       cardEl.style.setProperty("--route-shape", route.shape);
@@ -6366,7 +6550,7 @@ function renderHand() {
         <span class="card-route"><i>${routeIcon(card.route)}</i>${routeLabel(card.route)}</span>
         <span class="card-grade" aria-label="${grade.label}阶">${"◆".repeat(grade.pips)}</span>
         <strong class="card-name">${card.name}</strong>
-        <span class="card-action">${card.tap}</span>
+        <span class="card-action">${activeCardLabel(card)}</span>
         <span class="card-affinity ${affinityText ? "" : "is-empty"}">${affinityText}</span>
         <span class="card-arrows" aria-hidden="true">
           ${affinity.directions
@@ -6490,12 +6674,16 @@ function handleScreenPointerDown(event) {
   if (!canUseScreenGesture(event)) return;
   unlockAudio();
   playSfx("playerCardPress");
-  screenGesture = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY };
+  const target = event.target instanceof Element ? event.target : null;
+  const cardEl = target?.closest("button.card:not(.card-empty)") ?? null;
+  const cardIndex = cardEl ? Number(cardEl.dataset.index) : -1;
+  screenGesture = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, cardIndex, cardEl };
   try {
     els.game.setPointerCapture(event.pointerId);
   } catch {
     // Synthetic pointer events used by automated checks do not always create capture ids.
   }
+  cardEl?.classList.add("is-pressing");
   els.game.classList.add("is-screen-pressing");
   event.preventDefault();
 }
@@ -6505,14 +6693,20 @@ function handleScreenPointerUp(event) {
   const gesture = screenGesture;
   screenGesture = null;
   els.game.classList.remove("is-screen-pressing");
+  gesture.cardEl?.classList.remove("is-pressing");
   if (state.ended || state.notebookOpen || state.versionOpen || !state.runStarted) return;
   const direction = directionFromDrag(event.clientX - gesture.startX, event.clientY - gesture.startY);
-  playScreenAction(direction, { clientX: gesture.startX, clientY: gesture.startY });
+  if (direction === "tap" && gesture.cardIndex >= 0) {
+    useActiveCard(gesture.cardIndex, { clientX: gesture.startX, clientY: gesture.startY });
+  } else {
+    playScreenAction(direction, { clientX: gesture.startX, clientY: gesture.startY });
+  }
   event.preventDefault();
 }
 
 function handleScreenPointerCancel(event) {
   if (!screenGesture || screenGesture.pointerId !== event.pointerId) return;
+  screenGesture.cardEl?.classList.remove("is-pressing");
   screenGesture = null;
   els.game.classList.remove("is-screen-pressing");
 }
@@ -6632,7 +6826,7 @@ function debugResultFor(won) {
     maxCombo: state.maxCombo,
     reads: state.fightReads,
     breaks: state.fightBreaks,
-    directions: restoreObject({ tap: 0, up: 0, left: 0, right: 0, down: 0 }, state.debugStats?.directions),
+    directions: restoreObject({ tap: 0, up: 0, left: 0, right: 0, down: 0, active: 0 }, state.debugStats?.directions),
     success: restoreObject({ perfect: 0, break: 0, heavy: 0, retreat: 0 }, state.debugStats?.success),
     failures,
     log: els.combatLog?.textContent?.trim() ?? "",
@@ -9135,6 +9329,11 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
       render();
       return result ?? this.readState().lastActionResult;
     },
+    playActiveCardDirect(index = 0) {
+      const result = useActiveCard(index, null);
+      render();
+      return result ?? this.readState().lastActionResult;
+    },
     setHand(ids = ["quick-slash", "thrust", "guard", "breaker"]) {
       const next = ids.map((id) => cardById.get(id)).filter(Boolean).slice(0, handLimit());
       if (!next.length) return false;
@@ -9152,6 +9351,11 @@ if (location.hostname === "127.0.0.1" || location.search.includes("debug=1")) {
         recoverySource: state.recoverySource,
         playerHp: state.playerHp,
         playerMaxHp: state.playerMaxHp,
+        enemyHp: state.enemyHp,
+        enemyMaxHp: state.enemyMaxHp,
+        pressure: Math.round(state.pressure),
+        stance: Math.round(state.stance),
+        hand: state.hand.map((card) => card?.id ?? null),
         queuedInput: state.queuedInput ? { index: state.queuedInput.index, direction: state.queuedInput.direction } : null,
         lastActionResult: state.lastActionResult,
         lastReadFeedback: state.lastReadFeedback,
